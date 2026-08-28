@@ -1,3 +1,83 @@
 body {
-    background-color: red;
+    background-color: rgb(161 143 213);
+    color: #000000;
+}
+
+/* Navbar */
+
+.navbar {
+    background-color: #ffffff;
+    padding: 18px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.navbar-brand {
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    color: #333333;
+    text-decoration: none;
+}
+
+.btn-login {
+    background-color: #212529;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 8px;
+}
+
+.btn-login:hover {
+    background-color: #343a40;
+    color: white;
+}
+
+/* Hero */
+
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding-top: 100px;
+}
+
+.hero-tag {
+    font-weight: 600;
+    color:#000000;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-top: 15px;
+    line-height: 1.1;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #000000;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    max-width: 650px;
+}
+
+section {
+    scroll-margin-top: 90px;
+}
+.feature-card {
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card i {
+    color: #0d6efd;
 }
