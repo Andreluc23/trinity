@@ -30,7 +30,11 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
-                );
+                )
+                .logout(logout -> logout
+                .logoutSuccessUrl("/")
+                .permitAll()
+                 );
 
         return http.build();
     }
