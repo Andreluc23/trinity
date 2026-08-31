@@ -125,3 +125,9 @@ section {
 .footer small {
     color: #adb5bd;
 }
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    border-radius: 15px;
+}
