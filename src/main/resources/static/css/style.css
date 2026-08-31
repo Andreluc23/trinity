@@ -81,3 +81,47 @@ section {
 .feature-card i {
     color: #0d6efd;
 }
+
+.benefit-item {
+    padding: 20px;
+}
+
+.benefit-item i {
+    color: #0d6efd;
+}
+
+.benefit-item h5 {
+    font-weight: 600;
+}
+.benefits-section {
+    border-radius: 15px;
+}
+.cta-section {
+    margin-top: 40px;
+    border-radius: 15px;
+    padding: 60px 20px;
+}
+
+.cta-section h2 {
+    font-weight: 600;
+}
+
+.cta-section p {
+    color: #6c757d;
+}
+.footer {
+    margin-top: 40px;
+    padding: 30px 20px;
+    background-color: #ffffff;
+    color: white;
+}
+
+.footer h5 {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.footer p,
+.footer small {
+    color: #adb5bd;
+}
