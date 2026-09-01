@@ -5,6 +5,7 @@ import com.trinity.trinity.service.MembroService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class MembroController {
@@ -29,5 +30,12 @@ public class MembroController {
         model.addAttribute("membro", new Membro());
 
         return "membro-form";
+    }
+    @PostMapping("/membros")
+    public String salvarMembro(Membro membro) {
+
+        membroService.salvar(membro);
+
+        return "redirect:/membros";
     }
 }

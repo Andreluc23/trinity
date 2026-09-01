@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MembroRepository extends JpaRepository<Membro, Long> {
+
+    long countByAtivo(boolean ativo);
 }

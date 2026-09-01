@@ -22,4 +22,14 @@ public class MembroService {
     public Membro salvar(Membro membro) {
         return membroRepository.save(membro);
     }
+    public long contarTodos() {
+        return membroRepository.count();
+    }
+    public long contarAtivos() {
+        return membroRepository.countByAtivo(true);
+    }
+
+    public long contarInativos() {
+        return membroRepository.countByAtivo(false);
+    }
 }
