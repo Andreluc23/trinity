@@ -3,6 +3,7 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -22,14 +23,26 @@ public class MembroService {
     public Membro salvar(Membro membro) {
         return membroRepository.save(membro);
     }
+    public Membro buscarPorId(Long id) {
+        return membroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Membro não encontrado"));
+    }
+    public void desativar(Long id) {
+
+        Membro membro = buscarPorId(id);
+
+        membro.setAtivo(false);
+
+        membroRepository.save(membro);
+    }
     public long contarTodos() {
         return membroRepository.count();
     }
     public long contarAtivos() {
         return membroRepository.countByAtivo(true);
     }
-
     public long contarInativos() {
         return membroRepository.countByAtivo(false);
     }
+
 }

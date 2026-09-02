@@ -30,7 +30,7 @@
         <div class="card-body">
 
             <form th:action="@{/membros}" th:object="${membro}" method="post">
-
+                <input type="hidden" th:field="*{id}">
                 <div class="row g-3">
 
                     <div class="col-md-6">
