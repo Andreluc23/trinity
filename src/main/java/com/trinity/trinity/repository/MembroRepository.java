@@ -4,8 +4,24 @@ import com.trinity.trinity.model.Membro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MembroRepository extends JpaRepository<Membro, Long> {
 
     long countByAtivo(boolean ativo);
+
+    boolean existsByCpf(String cpf);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByCpfAndIdNot(String cpf, Long id);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
+    List<Membro> findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
+            String nome,
+            String cpf,
+            String telefone
+    );
 }

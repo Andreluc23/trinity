@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MembroController {
@@ -18,8 +19,13 @@ public class MembroController {
     }
 
     @GetMapping("/membros")
-    public String listarMembros(Model model) {
-        model.addAttribute("membros", membroService.listarTodos());
+    public String listarMembros(
+            @RequestParam(required = false) String busca,
+            Model model) {
+
+        model.addAttribute("membros", membroService.buscar(busca));
+        model.addAttribute("busca", busca);
+
         return "membros";
     }
 
@@ -43,8 +49,25 @@ public class MembroController {
     }
 
     @PostMapping("/membros")
-    public String salvarMembro(Membro membro) {
-        membroService.salvar(membro);
+    public String salvarMembro(Membro membro, Model model) {
+
+        try {
+            membroService.salvar(membro);
+            return "redirect:/membros";
+
+        } catch (RuntimeException e) {
+
+            model.addAttribute("erro", e.getMessage());
+            model.addAttribute("membro", membro);
+
+            return "membro-form";
+        }
+    }
+    @PostMapping("/membros/ativar/{id}")
+    public String ativarMembro(@PathVariable Long id) {
+
+        membroService.ativar(id);
+
         return "redirect:/membros";
     }
 }

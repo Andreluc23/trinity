@@ -28,7 +28,14 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            <div th:if="${erro}"
+                 class="alert alert-danger"
+                 role="alert">
 
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${erro}"></span>
+
+            </div>
             <form th:action="@{/membros}" th:object="${membro}" method="post">
                 <input type="hidden" th:field="*{id}">
                 <div class="row g-3">
@@ -45,7 +52,8 @@
                         <label class="form-label">Data de nascimento</label>
                         <input type="date"
                                class="form-control"
-                               th:field="*{dataNascimento}"
+                               name="dataNascimento"
+                               th:value="${membro.dataNascimento != null ? #temporals.format(membro.dataNascimento, 'yyyy-MM-dd') : ''}"
                                required>
                     </div>
 
