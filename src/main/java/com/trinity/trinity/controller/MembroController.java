@@ -21,9 +21,14 @@ public class MembroController {
     @GetMapping("/membros")
     public String listarMembros(
             @RequestParam(required = false) String busca,
+            @RequestParam(defaultValue = "0") int pagina,
             Model model) {
 
-        model.addAttribute("membros", membroService.buscar(busca));
+        var paginaMembros = membroService.buscar(busca, pagina);
+
+        model.addAttribute("membros", paginaMembros.getContent());
+        model.addAttribute("paginaAtual", pagina);
+        model.addAttribute("totalPaginas", paginaMembros.getTotalPages());
         model.addAttribute("busca", busca);
 
         return "membros";

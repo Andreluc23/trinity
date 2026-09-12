@@ -3,6 +3,9 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -92,17 +95,20 @@ public class MembroService {
         return membroRepository.countByAtivo(false);
     }
 
-    public List<Membro> buscar(String termo) {
+    public Page<Membro> buscar(String termo, int pagina) {
+
+        Pageable pageable = PageRequest.of(pagina, 5);
 
         if (termo == null || termo.isBlank()) {
-            return listarTodos();
+            return membroRepository.findAll(pageable);
         }
 
         return membroRepository
                 .findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
                         termo,
                         termo,
-                        termo
+                        termo,
+                        pageable
                 );
     }
 }

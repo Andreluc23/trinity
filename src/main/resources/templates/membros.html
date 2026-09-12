@@ -166,6 +166,44 @@
                     </tbody>
 
                 </table>
+                <!-- Paginação -->
+                <nav th:if="${totalPaginas > 1}" class="mt-4">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Anterior -->
+                        <li class="page-item"
+                            th:classappend="${paginaAtual == 0} ? 'disabled'">
+
+                            <a class="page-link"
+                               th:href="@{/membros(pagina=${paginaAtual - 1}, busca=${busca})}">
+                                Anterior
+                            </a>
+                        </li>
+
+                        <!-- Números das páginas -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}"
+                            th:classappend="${i == paginaAtual} ? 'active'">
+
+                            <a class="page-link"
+                               th:href="@{/membros(pagina=${i}, busca=${busca})}"
+                               th:text="${i + 1}">
+                                1
+                            </a>
+                        </li>
+
+                        <!-- Próxima -->
+                        <li class="page-item"
+                            th:classappend="${paginaAtual + 1 >= totalPaginas} ? 'disabled'">
+
+                            <a class="page-link"
+                               th:href="@{/membros(pagina=${paginaAtual + 1}, busca=${busca})}">
+                                Próxima
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
 
             </div>
 

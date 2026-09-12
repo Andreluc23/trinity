@@ -1,10 +1,10 @@
 package com.trinity.trinity.repository;
 
 import com.trinity.trinity.model.Membro;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface MembroRepository extends JpaRepository<Membro, Long> {
@@ -19,9 +19,10 @@ public interface MembroRepository extends JpaRepository<Membro, Long> {
 
     boolean existsByEmailAndIdNot(String email, Long id);
 
-    List<Membro> findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
+    Page<Membro> findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
             String nome,
             String cpf,
-            String telefone
+            String telefone,
+            Pageable pageable
     );
 }
