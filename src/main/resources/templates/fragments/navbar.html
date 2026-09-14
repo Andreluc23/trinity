@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<nav th:fragment="navbar(paginaAtiva)"
+     class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container-fluid">
+
+        <a class="navbar-brand fw-semibold"
+           th:href="@{/dashboard}">
+            Trinity
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarTrinity"
+                aria-controls="navbarTrinity"
+                aria-expanded="false"
+                aria-label="Abrir menu">
+
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarTrinity">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link text-white"
+                       th:classappend="${paginaAtiva == 'inicio'} ? ' opacity-50' : ''"
+                       th:href="@{/dashboard}">
+
+                        <i class="bi bi-house-door me-1"></i>
+                        Início
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white"
+                       th:classappend="${paginaAtiva == 'membros'} ? ' opacity-50' : ''"
+                       th:href="@{/membros}">
+
+                        <i class="bi bi-people me-1"></i>
+                        Membros
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white"
+                       th:classappend="${paginaAtiva == 'avisos'} ? ' opacity-50' : ''"
+                       th:href="@{/avisos}">
+
+                        <i class="bi bi-megaphone me-1"></i>
+                        Avisos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        Eventos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-cash-coin me-1"></i>
+                        Financeiro
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-book me-1"></i>
+                        Bíblia
+                    </a>
+                </li>
+
+            </ul>
+
+            <form th:action="@{/logout}" method="post">
+
+                <button type="submit"
+                        class="btn btn-outline-light">
+
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    Sair
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</nav>
+
+</body>
+</html>
