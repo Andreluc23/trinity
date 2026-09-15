@@ -17,17 +17,23 @@
 
 <body>
 
-<div class="container py-5">
+<div th:replace="~{fragments/navbar :: navbar('membros')}"></div>
+
+<div class="container py-4 py-md-5">
 
     <div class="mb-4">
-        <h1>Novo membro</h1>
+        <h1 th:text="${membro.id == null ? 'Novo membro' : 'Editar membro'}">
+            Novo membro
+        </h1>
+
         <p class="text-muted">
-            Preencha os dados abaixo para cadastrar um novo membro.
+            Preencha os dados abaixo para cadastrar ou atualizar um membro.
         </p>
     </div>
 
     <div class="card shadow-sm border-0">
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
+
             <div th:if="${erro}"
                  class="alert alert-danger"
                  role="alert">
@@ -36,20 +42,27 @@
                 <span th:text="${erro}"></span>
 
             </div>
-            <form th:action="@{/membros}" th:object="${membro}" method="post">
+
+            <form th:action="@{/membros}"
+                  th:object="${membro}"
+                  method="post">
+
                 <input type="hidden" th:field="*{id}">
+
                 <div class="row g-3">
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">Nome completo</label>
+
                         <input type="text"
                                class="form-control"
                                th:field="*{nomeCompleto}"
                                required>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">Data de nascimento</label>
+
                         <input type="date"
                                class="form-control"
                                name="dataNascimento"
@@ -57,31 +70,35 @@
                                required>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">CPF</label>
+
                         <input type="text"
                                class="form-control"
                                th:field="*{cpf}"
                                required>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">Telefone</label>
+
                         <input type="text"
                                class="form-control"
                                th:field="*{telefone}"
                                required>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">E-mail</label>
+
                         <input type="email"
                                class="form-control"
                                th:field="*{email}">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <label class="form-label">Endereço</label>
+
                         <input type="text"
                                class="form-control"
                                th:field="*{endereco}">
@@ -89,14 +106,15 @@
 
                 </div>
 
-                <div class="mt-4 d-flex gap-2">
+                <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
 
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg me-2"></i>
                         Salvar
                     </button>
 
-                    <a th:href="@{/membros}" class="btn btn-outline-secondary">
+                    <a th:href="@{/membros}"
+                       class="btn btn-outline-secondary">
                         Cancelar
                     </a>
 
@@ -108,6 +126,8 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
