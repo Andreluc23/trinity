@@ -1,5 +1,6 @@
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.service.EventoService;
 import com.trinity.trinity.service.MembroService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,10 +12,12 @@ public class HomeController {
 
     private final MembroService membroService;
     private final AvisoService avisoService;
+    private final EventoService eventoService;
 
-    public HomeController(MembroService membroService, AvisoService avisoService) {
+    public HomeController(MembroService membroService, AvisoService avisoService,EventoService eventoService) {
         this.membroService = membroService;
         this.avisoService = avisoService;
+        this.eventoService = eventoService;
     }
 
     @GetMapping("/")
@@ -34,6 +37,7 @@ public class HomeController {
         model.addAttribute("membrosAtivos", membroService.contarAtivos());
         model.addAttribute("membrosInativos", membroService.contarInativos());
         model.addAttribute("avisosRecentes", avisoService.listarRecentes());
+        model.addAttribute("proximosEventos", eventoService.listarProximos());
 
         return "dashboard";
     }
