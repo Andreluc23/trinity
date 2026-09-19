@@ -111,18 +111,11 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.5.1</version>
 		</dependency>
-		<!-- Driver JDBC do SQLite -->
+		<!-- Banco de dados H2 -->
 		<dependency>
-			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.53.2.1</version>
-		</dependency>
-
-		<!-- Dialect do Hibernate para SQLite (não vem por padrão no starter JPA) -->
-		<dependency>
-			<groupId>org.hibernate.orm</groupId>
-			<artifactId>hibernate-community-dialects</artifactId>
-			<version>7.1.4.Final</version>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 	</dependencies>
