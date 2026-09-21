@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title th:text="${patrimonio.id == null ? 'Novo Patrimônio - Trinity' : 'Editar Patrimônio - Trinity'}">
+        Patrimônio - Trinity
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('patrimonios')}"></div>
+
+<main class="container py-4 py-md-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8">
+
+            <div class="mb-4">
+
+                <h2 th:text="${patrimonio.id == null ? 'Novo patrimônio' : 'Editar patrimônio'}">
+                    Novo patrimônio
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Preencha as informações do bem ou equipamento.
+                </p>
+
+            </div>
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-3 p-md-4">
+
+                    <form th:action="@{/patrimonios}"
+                          th:object="${patrimonio}"
+                          method="post">
+
+                        <input type="hidden" th:field="*{id}">
+                        <input type="hidden" th:field="*{ativo}">
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Nome do item
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{nome}"
+                                   placeholder="Ex.: Mesa de som"
+                                   required>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-12 col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Categoria
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{categoria}"
+                                       placeholder="Ex.: Áudio"
+                                       required>
+
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Quantidade
+                                </label>
+
+                                <input type="number"
+                                       class="form-control"
+                                       th:field="*{quantidade}"
+                                       min="1"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-12 col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Estado de conservação
+                                </label>
+
+                                <select class="form-select"
+                                        th:field="*{estadoConservacao}"
+                                        required>
+
+                                    <option value="">
+                                        Selecione
+                                    </option>
+
+                                    <option value="Bom">Bom</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Ruim">Ruim</option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Localização
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{localizacao}"
+                                       placeholder="Ex.: Templo">
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Observação
+                            </label>
+
+                            <textarea class="form-control"
+                                      th:field="*{observacao}"
+                                      rows="4"
+                                      placeholder="Informações adicionais sobre o patrimônio"></textarea>
+
+                        </div>
+
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+
+                                <i class="bi bi-check-lg me-1"></i>
+                                Salvar
+
+                            </button>
+
+                            <a th:href="@{/patrimonios}"
+                               class="btn btn-outline-secondary">
+
+                                Cancelar
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
