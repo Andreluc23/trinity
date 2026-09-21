@@ -43,7 +43,7 @@ public class EscalaController {
 
         model.addAttribute("escala", new Escala());
 
-        return "escala-form";
+        return "forms/escala-form";
     }
 
     @GetMapping("/editar/{id}")
@@ -54,7 +54,7 @@ public class EscalaController {
         model.addAttribute("membros", membroService.listarTodos());
         model.addAttribute("funcoes", funcaoMusicalService.listarTodas());
 
-        return "escala-form";
+        return "forms/escala-form";
     }
 
     @PostMapping

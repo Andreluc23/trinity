@@ -25,7 +25,7 @@ public class FuncaoMusicalController {
     @GetMapping("/nova")
     public String nova(Model model) {
         model.addAttribute("funcaoMusical", new FuncaoMusical());
-        return "funcao-musical-form";
+        return "forms/funcao-musical-form";
     }
 
     @GetMapping("/editar/{id}")
@@ -35,7 +35,7 @@ public class FuncaoMusicalController {
                 funcaoMusicalService.buscarPorId(id)
         );
 
-        return "funcao-musical-form";
+        return "forms/funcao-musical-form";
     }
 
     @PostMapping

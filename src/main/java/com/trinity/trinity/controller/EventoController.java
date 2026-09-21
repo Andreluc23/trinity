@@ -30,7 +30,7 @@ public class EventoController {
 
         model.addAttribute("evento", new Evento());
 
-        return "evento-form";
+        return "forms/evento-form";
     }
 
     @GetMapping("/eventos/editar/{id}")
@@ -38,7 +38,7 @@ public class EventoController {
 
         model.addAttribute("evento", eventoService.buscarPorId(id));
 
-        return "evento-form";
+        return "forms/evento-form";
     }
 
     @PostMapping("/eventos")

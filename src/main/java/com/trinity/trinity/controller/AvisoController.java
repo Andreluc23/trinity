@@ -30,7 +30,7 @@ public class AvisoController {
 
         model.addAttribute("aviso", new Aviso());
 
-        return "aviso-form";
+        return "forms/aviso-form";
     }
 
     @GetMapping("/avisos/editar/{id}")
@@ -38,7 +38,7 @@ public class AvisoController {
 
         model.addAttribute("aviso", avisoService.buscarPorId(id));
 
-        return "aviso-form";
+        return "forms/aviso-form";
     }
 
     @PostMapping("/avisos")

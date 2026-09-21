@@ -37,13 +37,13 @@ public class MembroController {
     @GetMapping("/membros/novo")
     public String novoMembro(Model model) {
         model.addAttribute("membro", new Membro());
-        return "membro-form";
+        return "forms/membro-form";
     }
 
     @GetMapping("/membros/editar/{id}")
     public String editarMembro(@PathVariable Long id, Model model) {
         model.addAttribute("membro", membroService.buscarPorId(id));
-        return "membro-form";
+        return "forms/membro-form";
     }
     @PostMapping("/membros/desativar/{id}")
     public String desativarMembro(@PathVariable Long id) {
@@ -65,7 +65,7 @@ public class MembroController {
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("membro", membro);
 
-            return "membro-form";
+            return "forms/membro-form";
         }
     }
     @PostMapping("/membros/ativar/{id}")
