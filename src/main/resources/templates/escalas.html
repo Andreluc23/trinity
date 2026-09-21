@@ -13,9 +13,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
           rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
 <div th:replace="~{fragments/navbar :: navbar('escalas')}"></div>
 
@@ -35,7 +36,7 @@
         <div class="d-flex flex-column flex-sm-row gap-2">
 
             <a th:href="@{/funcoes-musicais}"
-               class="btn btn-outline-secondary text-nowrap">
+               class="btn btn-light text-nowrap">
 
                 <i class="bi bi-music-note-list me-1"></i>
                 Funções musicais
@@ -52,7 +53,7 @@
 
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
 
         <div class="card-body p-0">
 

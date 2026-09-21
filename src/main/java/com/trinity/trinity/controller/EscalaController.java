@@ -112,4 +112,18 @@ public class EscalaController {
 
         return "escala-detalhes";
     }
+    @PostMapping("/{escalaId}/integrantes/editar/{itemId}")
+    public String editarIntegrante(
+            @PathVariable Long escalaId,
+            @PathVariable Long itemId,
+            @RequestParam Long membroId,
+            @RequestParam Long funcaoId) {
+
+        var membro = membroService.buscarPorId(membroId);
+        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
+
+        escalaItemService.atualizar(itemId, membro, funcao);
+
+        return "redirect:/escalas/" + escalaId;
+    }
 }

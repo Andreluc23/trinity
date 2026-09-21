@@ -39,4 +39,20 @@ public class EscalaItemService {
     public void remover(Long id) {
         escalaItemRepository.deleteById(id);
     }
+    public EscalaItem buscarPorId(Long id) {
+        return escalaItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Integrante da escala não encontrado"));
+    }
+    public EscalaItem atualizar(
+            Long itemId,
+            Membro membro,
+            FuncaoMusical funcaoMusical) {
+
+        EscalaItem item = buscarPorId(itemId);
+
+        item.setMembro(membro);
+        item.setFuncaoMusical(funcaoMusical);
+
+        return escalaItemRepository.save(item);
+    }
 }

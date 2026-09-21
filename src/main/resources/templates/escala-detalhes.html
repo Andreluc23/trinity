@@ -13,9 +13,11 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
           rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
 <div th:replace="~{fragments/navbar :: navbar('escalas')}"></div>
 
@@ -177,39 +179,125 @@
 
                     <tbody>
 
-                    <tr th:each="item : ${itens}">
+                    <th:block th:each="item : ${itens}">
 
-                        <td th:text="${item.membro.nomeCompleto}">
-                            João
-                        </td>
+                        <tr>
 
-                        <td th:text="${item.funcaoMusical.nome}">
-                            Violão
-                        </td>
+                            <td th:text="${item.membro.nomeCompleto}">
+                                João
+                            </td>
 
-                        <td class="text-end">
+                            <td th:text="${item.funcaoMusical.nome}">
+                                Violão
+                            </td>
 
-                            <form th:action="@{/escalas/{escalaId}/integrantes/remover/{itemId}(
-                                    escalaId=${escala.id},
-                                    itemId=${item.id}
-                                )}"
-                                  method="post"
-                                  class="d-inline">
+                            <td class="text-end text-nowrap">
 
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Deseja realmente remover este integrante da escala?')">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#editarItem' + ${item.id}"
+                                        th:aria-controls="'editarItem' + ${item.id}">
 
-                                    <i class="bi bi-trash me-1"></i>
-                                    Remover
+                                    <i class="bi bi-pencil me-1"></i>
+                                    Editar
 
                                 </button>
 
-                            </form>
+                                <form th:action="@{/escalas/{escalaId}/integrantes/remover/{itemId}(
+                                        escalaId=${escala.id},
+                                        itemId=${item.id}
+                                    )}"
+                                      method="post"
+                                      class="d-inline">
 
-                        </td>
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Deseja realmente remover este integrante da escala?')">
 
-                    </tr>
+                                        <i class="bi bi-trash me-1"></i>
+                                        Remover
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        <!-- Edição do integrante -->
+                        <tr th:id="'editarItem' + ${item.id}"
+                            class="collapse">
+
+                            <td colspan="3">
+
+                                <form th:action="@{/escalas/{escalaId}/integrantes/editar/{itemId}(
+                                        escalaId=${escala.id},
+                                        itemId=${item.id}
+                                    )}"
+                                      method="post"
+                                      class="row g-3 align-items-end py-2">
+
+                                    <div class="col-12 col-md-5">
+
+                                        <label class="form-label">
+                                            Membro
+                                        </label>
+
+                                        <select class="form-select"
+                                                name="membroId"
+                                                required>
+
+                                            <option th:each="membro : ${membros}"
+                                                    th:value="${membro.id}"
+                                                    th:text="${membro.nomeCompleto}"
+                                                    th:selected="${membro.id == item.membro.id}">
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-12 col-md-5">
+
+                                        <label class="form-label">
+                                            Função / Instrumento
+                                        </label>
+
+                                        <select class="form-select"
+                                                name="funcaoId"
+                                                required>
+
+                                            <option th:each="funcao : ${funcoes}"
+                                                    th:value="${funcao.id}"
+                                                    th:text="${funcao.nome}"
+                                                    th:selected="${funcao.id == item.funcaoMusical.id}">
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-12 col-md-2">
+
+                                        <button type="submit"
+                                                class="btn btn-primary w-100">
+
+                                            <i class="bi bi-check-lg me-1"></i>
+                                            Salvar
+
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    </th:block>
 
                     <tr th:if="${#lists.isEmpty(itens)}">
 
