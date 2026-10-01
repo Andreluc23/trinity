@@ -24,6 +24,11 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/escalas/**",
+                                "/funcoes-musicais/**",
+                                "/patrimonios/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf
