@@ -1,6 +1,8 @@
+
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Usuario;
+import com.trinity.trinity.service.MembroService;
 import com.trinity.trinity.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,49 +13,83 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final MembroService membroService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(
+            UsuarioService usuarioService,
+            MembroService membroService) {
+
         this.usuarioService = usuarioService;
+        this.membroService = membroService;
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("usuarios", usuarioService.listarTodos());
-        return "usuarios";
+    public String listar() {
+        return "redirect:/membros";
     }
 
-    @GetMapping("/novo")
-    public String novo(Model model) {
-        model.addAttribute("usuario", new Usuario());
-        return "forms/usuario-form";
+    @GetMapping("/criar-acesso/{id}")
+    public String formularioCriarAcesso(
+            @PathVariable Long id,
+            Model model) {
+
+        if (usuarioService.possuiAcesso(id)) {
+            return "redirect:/usuarios/permissoes/" + id;
+        }
+
+        model.addAttribute("membro", membroService.buscarPorId(id));
+
+        return "forms/criar-acesso-form";
     }
 
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
-        Usuario usuario = usuarioService.buscarPorId(id);
+    @PostMapping("/criar-acesso/{id}")
+    public String criarAcesso(
+            @PathVariable Long id,
+            @RequestParam String senhaProvisoria,
+            Model model) {
 
-        // Não enviamos a senha criptografada para o formulário
-        usuario.setSenha("");
+        try {
+            usuarioService.criarAcesso(id, senhaProvisoria);
+            return "redirect:/membros";
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("erro", e.getMessage());
+            model.addAttribute("membro", membroService.buscarPorId(id));
+
+            return "forms/criar-acesso-form";
+        }
+    }
+
+    @GetMapping("/permissoes/{id}")
+    public String permissoes(
+            @PathVariable Long id,
+            Model model) {
+
+        Usuario usuario = usuarioService.buscarPorMembro(id);
 
         model.addAttribute("usuario", usuario);
-        return "forms/usuario-form";
+        model.addAttribute("membro", usuario.getMembro());
+
+        return "forms/permissoes-form";
     }
 
-    @PostMapping
-    public String salvar(@ModelAttribute Usuario usuario) {
+    @PostMapping("/permissoes/{id}")
+    public String salvarPermissoes(
+            @PathVariable Long id,
+            @ModelAttribute Usuario formulario) {
+
+        Usuario usuario = usuarioService.buscarPorMembro(id);
+
+        usuario.setGerenciarMembros(formulario.isGerenciarMembros());
+        usuario.setGerenciarAvisos(formulario.isGerenciarAvisos());
+        usuario.setGerenciarEventos(formulario.isGerenciarEventos());
+        usuario.setAcessoEscalas(formulario.isAcessoEscalas());
+        usuario.setGerenciarEscalas(formulario.isGerenciarEscalas());
+        usuario.setGerenciarPatrimonio(formulario.isGerenciarPatrimonio());
+        usuario.setGerenciarFinanceiro(formulario.isGerenciarFinanceiro());
+
         usuarioService.salvar(usuario);
-        return "redirect:/usuarios";
-    }
 
-    @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable Long id) {
-        usuarioService.desativar(id);
-        return "redirect:/usuarios";
-    }
-
-    @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable Long id) {
-        usuarioService.ativar(id);
-        return "redirect:/usuarios";
+        return "redirect:/membros";
     }
 }

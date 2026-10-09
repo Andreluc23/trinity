@@ -1,21 +1,29 @@
+
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Membro;
+import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.service.MembroService;
+import com.trinity.trinity.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class MembroController {
 
     private final MembroService membroService;
+    private final UsuarioService usuarioService;
 
-    public MembroController(MembroService membroService) {
+    public MembroController(
+            MembroService membroService,
+            UsuarioService usuarioService) {
+
         this.membroService = membroService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/membros")
@@ -26,10 +34,17 @@ public class MembroController {
 
         var paginaMembros = membroService.buscar(busca, pagina);
 
+        Set<Long> acessos = usuarioService.listarTodos()
+                .stream()
+                .map(Usuario::getMembro)
+                .map(Membro::getId)
+                .collect(Collectors.toSet());
+
         model.addAttribute("membros", paginaMembros.getContent());
         model.addAttribute("paginaAtual", pagina);
         model.addAttribute("totalPaginas", paginaMembros.getTotalPages());
         model.addAttribute("busca", busca);
+        model.addAttribute("acessos", acessos);
 
         return "membros";
     }
@@ -45,11 +60,16 @@ public class MembroController {
         model.addAttribute("membro", membroService.buscarPorId(id));
         return "forms/membro-form";
     }
+
     @PostMapping("/membros/desativar/{id}")
     public String desativarMembro(@PathVariable Long id) {
-
         membroService.desativar(id);
+        return "redirect:/membros";
+    }
 
+    @PostMapping("/membros/ativar/{id}")
+    public String ativarMembro(@PathVariable Long id) {
+        membroService.ativar(id);
         return "redirect:/membros";
     }
 
@@ -67,12 +87,5 @@ public class MembroController {
 
             return "forms/membro-form";
         }
-    }
-    @PostMapping("/membros/ativar/{id}")
-    public String ativarMembro(@PathVariable Long id) {
-
-        membroService.ativar(id);
-
-        return "redirect:/membros";
     }
 }

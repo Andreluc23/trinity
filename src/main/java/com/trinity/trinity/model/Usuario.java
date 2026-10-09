@@ -10,11 +10,9 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
-
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "membro_id", nullable = false, unique = true)
+    private Membro membro;
 
     @Column(nullable = false)
     private String senha;
@@ -26,22 +24,25 @@ public class Usuario {
     private boolean admin = false;
 
     @Column(nullable = false)
-    private boolean acessoMembros = false;
+    private boolean gerenciarMembros = false;
 
     @Column(nullable = false)
-    private boolean acessoAvisos = false;
+    private boolean gerenciarAvisos = false;
 
     @Column(nullable = false)
-    private boolean acessoEventos = false;
+    private boolean gerenciarEventos = false;
 
     @Column(nullable = false)
     private boolean acessoEscalas = false;
 
     @Column(nullable = false)
-    private boolean acessoPatrimonio = false;
+    private boolean gerenciarEscalas = false;
 
     @Column(nullable = false)
-    private boolean acessoFinanceiro = false;
+    private boolean gerenciarPatrimonio = false;
+
+    @Column(nullable = false)
+    private boolean gerenciarFinanceiro = false;
 
     public Usuario() {
     }
@@ -54,20 +55,12 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public Membro getMembro() {
+        return membro;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMembro(Membro membro) {
+        this.membro = membro;
     }
 
     public String getSenha() {
@@ -94,28 +87,28 @@ public class Usuario {
         this.admin = admin;
     }
 
-    public boolean isAcessoMembros() {
-        return acessoMembros;
+    public boolean isGerenciarMembros() {
+        return gerenciarMembros;
     }
 
-    public void setAcessoMembros(boolean acessoMembros) {
-        this.acessoMembros = acessoMembros;
+    public void setGerenciarMembros(boolean gerenciarMembros) {
+        this.gerenciarMembros = gerenciarMembros;
     }
 
-    public boolean isAcessoAvisos() {
-        return acessoAvisos;
+    public boolean isGerenciarAvisos() {
+        return gerenciarAvisos;
     }
 
-    public void setAcessoAvisos(boolean acessoAvisos) {
-        this.acessoAvisos = acessoAvisos;
+    public void setGerenciarAvisos(boolean gerenciarAvisos) {
+        this.gerenciarAvisos = gerenciarAvisos;
     }
 
-    public boolean isAcessoEventos() {
-        return acessoEventos;
+    public boolean isGerenciarEventos() {
+        return gerenciarEventos;
     }
 
-    public void setAcessoEventos(boolean acessoEventos) {
-        this.acessoEventos = acessoEventos;
+    public void setGerenciarEventos(boolean gerenciarEventos) {
+        this.gerenciarEventos = gerenciarEventos;
     }
 
     public boolean isAcessoEscalas() {
@@ -126,19 +119,27 @@ public class Usuario {
         this.acessoEscalas = acessoEscalas;
     }
 
-    public boolean isAcessoPatrimonio() {
-        return acessoPatrimonio;
+    public boolean isGerenciarEscalas() {
+        return gerenciarEscalas;
     }
 
-    public void setAcessoPatrimonio(boolean acessoPatrimonio) {
-        this.acessoPatrimonio = acessoPatrimonio;
+    public void setGerenciarEscalas(boolean gerenciarEscalas) {
+        this.gerenciarEscalas = gerenciarEscalas;
     }
 
-    public boolean isAcessoFinanceiro() {
-        return acessoFinanceiro;
+    public boolean isGerenciarPatrimonio() {
+        return gerenciarPatrimonio;
     }
 
-    public void setAcessoFinanceiro(boolean acessoFinanceiro) {
-        this.acessoFinanceiro = acessoFinanceiro;
+    public void setGerenciarPatrimonio(boolean gerenciarPatrimonio) {
+        this.gerenciarPatrimonio = gerenciarPatrimonio;
+    }
+
+    public boolean isGerenciarFinanceiro() {
+        return gerenciarFinanceiro;
+    }
+
+    public void setGerenciarFinanceiro(boolean gerenciarFinanceiro) {
+        this.gerenciarFinanceiro = gerenciarFinanceiro;
     }
 }

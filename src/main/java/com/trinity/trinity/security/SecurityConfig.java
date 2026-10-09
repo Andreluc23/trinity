@@ -13,10 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -29,28 +31,35 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**"
                         ).permitAll()
+
                         .requestMatchers(
+                                "/usuarios/**",
                                 "/escalas/**",
                                 "/funcoes-musicais/**",
                                 "/patrimonios/**"
                         ).hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
+
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**")
                 )
+
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
                 )
+
                 .logout(logout -> logout
-                .logoutSuccessUrl("/")
-                .permitAll()
-                 );
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                );
 
         return http.build();
     }
@@ -66,5 +75,4 @@ public class SecurityConfig {
 
         return new InMemoryUserDetailsManager(user);
     }
-
 }
