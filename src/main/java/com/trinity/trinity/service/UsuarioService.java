@@ -38,9 +38,8 @@ public class UsuarioService {
     }
 
     public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByMembro_Email(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+        return usuarioRepository.findByMembro_EmailIgnoreCase(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
     public Usuario buscarPorMembro(Long membroId) {
