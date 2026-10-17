@@ -30,7 +30,7 @@ public class UsuarioController {
 
     @GetMapping("/criar-acesso/{id}")
     public String formularioCriarAcesso(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             Model model) {
 
         if (usuarioService.possuiAcesso(id)) {
@@ -44,8 +44,8 @@ public class UsuarioController {
 
     @PostMapping("/criar-acesso/{id}")
     public String criarAcesso(
-            @PathVariable Long id,
-            @RequestParam String senhaProvisoria,
+            @PathVariable("id") Long id,
+            @RequestParam("senhaProvisoria") String senhaProvisoria,
             Model model) {
 
         try {
@@ -62,7 +62,7 @@ public class UsuarioController {
 
     @GetMapping("/permissoes/{id}")
     public String permissoes(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             Model model) {
 
         Usuario usuario = usuarioService.buscarPorMembro(id);
@@ -75,7 +75,7 @@ public class UsuarioController {
 
     @PostMapping("/permissoes/{id}")
     public String salvarPermissoes(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @ModelAttribute Usuario formulario) {
 
         Usuario usuario = usuarioService.buscarPorMembro(id);

@@ -18,7 +18,7 @@ public class PatrimonioController {
 
     @GetMapping
     public String listar(
-            @RequestParam(required = false) String termo,
+            @RequestParam(name = "termo", required = false) String termo,
             Model model) {
 
         model.addAttribute("patrimonios", patrimonioService.buscar(termo));
@@ -36,7 +36,7 @@ public class PatrimonioController {
     }
 
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(@PathVariable("id") Long id, Model model) {
 
         model.addAttribute(
                 "patrimonio",
@@ -55,7 +55,7 @@ public class PatrimonioController {
     }
 
     @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable Long id) {
+    public String desativar(@PathVariable("id") Long id) {
 
         patrimonioService.desativar(id);
 
@@ -63,7 +63,7 @@ public class PatrimonioController {
     }
 
     @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable Long id) {
+    public String ativar(@PathVariable("id") Long id) {
 
         patrimonioService.ativar(id);
 

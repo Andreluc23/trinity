@@ -34,7 +34,7 @@ public class EventoController {
     }
 
     @GetMapping("/eventos/editar/{id}")
-    public String editarEvento(@PathVariable Long id, Model model) {
+    public String editarEvento(@PathVariable("id") Long id, Model model) {
 
         model.addAttribute("evento", eventoService.buscarPorId(id));
 
@@ -50,7 +50,7 @@ public class EventoController {
     }
 
     @PostMapping("/eventos/cancelar/{id}")
-    public String cancelarEvento(@PathVariable Long id) {
+    public String cancelarEvento(@PathVariable("id") Long id) {
 
         eventoService.cancelar(id);
 
@@ -58,7 +58,7 @@ public class EventoController {
     }
 
     @PostMapping("/eventos/ativar/{id}")
-    public String ativarEvento(@PathVariable Long id) {
+    public String ativarEvento(@PathVariable("id") Long id) {
 
         eventoService.ativar(id);
 

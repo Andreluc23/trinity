@@ -29,7 +29,7 @@ public class FuncaoMusicalController {
     }
 
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(@PathVariable("id") Long id, Model model) {
         model.addAttribute(
                 "funcaoMusical",
                 funcaoMusicalService.buscarPorId(id)
@@ -45,13 +45,13 @@ public class FuncaoMusicalController {
     }
 
     @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable Long id) {
+    public String desativar(@PathVariable("id") Long id) {
         funcaoMusicalService.desativar(id);
         return "redirect:/funcoes-musicais";
     }
 
     @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable Long id) {
+    public String ativar(@PathVariable("id") Long id) {
         funcaoMusicalService.ativar(id);
         return "redirect:/funcoes-musicais";
     }

@@ -47,7 +47,7 @@ public class EscalaController {
     }
 
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Long id, Model model) {
+    public String editar(@PathVariable("id") Long id, Model model) {
 
         model.addAttribute("escala", escalaService.buscarPorId(id));
         model.addAttribute("itens", escalaItemService.listarPorEscala(id));
@@ -65,7 +65,7 @@ public class EscalaController {
         return "redirect:/escalas/" + escalaSalva.getId();
     }
     @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable Long id) {
+    public String desativar(@PathVariable("id") Long id) {
 
         escalaService.desativar(id);
 
@@ -73,7 +73,7 @@ public class EscalaController {
     }
 
     @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable Long id) {
+    public String ativar(@PathVariable("id") Long id) {
 
         escalaService.ativar(id);
 
@@ -81,9 +81,9 @@ public class EscalaController {
     }
     @PostMapping("/{escalaId}/integrantes")
     public String adicionarIntegrante(
-            @PathVariable Long escalaId,
-            @RequestParam Long membroId,
-            @RequestParam Long funcaoId) {
+            @PathVariable("escalaId") Long escalaId,
+            @RequestParam("membroId") Long membroId,
+            @RequestParam("funcaoId") Long funcaoId) {
 
         var escala = escalaService.buscarPorId(escalaId);
         var membro = membroService.buscarPorId(membroId);
@@ -95,15 +95,15 @@ public class EscalaController {
     }
     @PostMapping("/{escalaId}/integrantes/remover/{itemId}")
     public String removerIntegrante(
-            @PathVariable Long escalaId,
-            @PathVariable Long itemId) {
+            @PathVariable("escalaId") Long escalaId,
+            @PathVariable("itemId") Long itemId) {
 
         escalaItemService.remover(itemId);
 
         return "redirect:/escalas/" + escalaId;
     }
     @GetMapping("/{id}")
-    public String detalhes(@PathVariable Long id, Model model) {
+    public String detalhes(@PathVariable("id") Long id, Model model) {
 
         model.addAttribute("escala", escalaService.buscarPorId(id));
         model.addAttribute("itens", escalaItemService.listarPorEscala(id));
@@ -114,10 +114,10 @@ public class EscalaController {
     }
     @PostMapping("/{escalaId}/integrantes/editar/{itemId}")
     public String editarIntegrante(
-            @PathVariable Long escalaId,
-            @PathVariable Long itemId,
-            @RequestParam Long membroId,
-            @RequestParam Long funcaoId) {
+            @PathVariable("escalaId") Long escalaId,
+            @PathVariable("itemId") Long itemId,
+            @RequestParam("membroId") Long membroId,
+            @RequestParam("funcaoId") Long funcaoId) {
 
         var membro = membroService.buscarPorId(membroId);
         var funcao = funcaoMusicalService.buscarPorId(funcaoId);

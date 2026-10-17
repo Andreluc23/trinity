@@ -28,8 +28,8 @@ public class MembroController {
 
     @GetMapping("/membros")
     public String listarMembros(
-            @RequestParam(required = false) String busca,
-            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(name = "busca", required = false) String busca,
+            @RequestParam(name = "pagina", defaultValue = "0") int pagina,
             Model model) {
 
         var paginaMembros = membroService.buscar(busca, pagina);
@@ -56,19 +56,19 @@ public class MembroController {
     }
 
     @GetMapping("/membros/editar/{id}")
-    public String editarMembro(@PathVariable Long id, Model model) {
+    public String editarMembro(@PathVariable("id") Long id, Model model) {
         model.addAttribute("membro", membroService.buscarPorId(id));
         return "forms/membro-form";
     }
 
     @PostMapping("/membros/desativar/{id}")
-    public String desativarMembro(@PathVariable Long id) {
+    public String desativarMembro(@PathVariable("id") Long id) {
         membroService.desativar(id);
         return "redirect:/membros";
     }
 
     @PostMapping("/membros/ativar/{id}")
-    public String ativarMembro(@PathVariable Long id) {
+    public String ativarMembro(@PathVariable("id") Long id) {
         membroService.ativar(id);
         return "redirect:/membros";
     }

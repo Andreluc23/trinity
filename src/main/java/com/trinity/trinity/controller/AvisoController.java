@@ -34,7 +34,7 @@ public class AvisoController {
     }
 
     @GetMapping("/avisos/editar/{id}")
-    public String editarAviso(@PathVariable Long id, Model model) {
+    public String editarAviso(@PathVariable("id") Long id, Model model) {
 
         model.addAttribute("aviso", avisoService.buscarPorId(id));
 
@@ -50,7 +50,7 @@ public class AvisoController {
     }
 
     @PostMapping("/avisos/desativar/{id}")
-    public String desativarAviso(@PathVariable Long id) {
+    public String desativarAviso(@PathVariable("id") Long id) {
 
         avisoService.desativar(id);
 
@@ -58,7 +58,7 @@ public class AvisoController {
     }
 
     @PostMapping("/avisos/ativar/{id}")
-    public String ativarAviso(@PathVariable Long id) {
+    public String ativarAviso(@PathVariable("id") Long id) {
 
         avisoService.ativar(id);
 
