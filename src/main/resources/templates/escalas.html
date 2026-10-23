@@ -20,7 +20,8 @@
 
 <div th:replace="~{fragments/navbar :: navbar('escalas')}"></div>
 
-<main class="container py-4 py-md-5">
+<main class="container py-4 py-md-5"
+      th:with="podeGerenciar=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_EVENTOS'')')}">
 
     <div class="d-flex flex-column flex-sm-row
                 justify-content-between align-items-sm-center
@@ -29,11 +30,12 @@
         <div>
             <h2 class="mb-1">Escalas</h2>
             <p class="text-muted mb-0">
-                Gerencie as escalas de músicos da igreja.
+                Escalas de músicos da igreja.
             </p>
         </div>
 
-        <div class="d-flex flex-column flex-sm-row gap-2">
+        <div class="d-flex flex-column flex-sm-row gap-2"
+             th:if="${podeGerenciar}">
 
             <a th:href="@{/funcoes-musicais}"
                class="btn btn-light text-nowrap">
@@ -107,14 +109,16 @@
                                 Ver escala
 
                             </a>
-                            <a th:href="@{/escalas/editar/{id}(id=${escala.id})}"
+
+                            <a th:if="${podeGerenciar}"
+                               th:href="@{/escalas/editar/{id}(id=${escala.id})}"
                                class="btn btn-sm btn-outline-primary">
 
                                 <i class="bi bi-pencil"></i>
                                 Editar
                             </a>
 
-                            <form th:if="${escala.ativo}"
+                            <form th:if="${podeGerenciar and escala.ativo}"
                                   th:action="@{/escalas/desativar/{id}(id=${escala.id})}"
                                   method="post"
                                   class="d-inline">
@@ -126,7 +130,7 @@
 
                             </form>
 
-                            <form th:unless="${escala.ativo}"
+                            <form th:if="${podeGerenciar and !escala.ativo}"
                                   th:action="@{/escalas/ativar/{id}(id=${escala.id})}"
                                   method="post"
                                   class="d-inline">
