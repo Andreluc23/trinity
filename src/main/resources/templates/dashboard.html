@@ -18,7 +18,9 @@
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar('inicio')}"></div>
-    <main class="flex-grow-1 p-5">
+    <main class="flex-grow-1 p-5"
+      th:with="verMembros=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_MEMBROS'')')},
+               verFinanceiro=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_FINANCEIRO'')')}">
 
         <h1>Bem-vindo ao Trinity</h1>
 
@@ -28,7 +30,8 @@
         <div class="row g-4 mt-2">
 
             <!-- Total de membros -->
-            <div class="col-12 col-md-6 col-xl-3">
+            <div class="col-12 col-md-6 col-xl-3"
+                 th:if="${verMembros}">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -52,7 +55,8 @@
 
 
             <!-- Membros ativos -->
-            <div class="col-12 col-md-6 col-xl-3">
+            <div class="col-12 col-md-6 col-xl-3"
+                 th:if="${verMembros}">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -76,7 +80,8 @@
 
 
             <!-- Membros inativos -->
-            <div class="col-12 col-md-6 col-xl-3">
+            <div class="col-12 col-md-6 col-xl-3"
+                 th:if="${verMembros}">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -100,7 +105,8 @@
 
 
             <!-- Saldo financeiro -->
-            <div class="col-12 col-md-6 col-xl-3">
+            <div class="col-12 col-md-6 col-xl-3"
+                 th:if="${verFinanceiro}">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
@@ -127,7 +133,8 @@
         <div class="row g-4 mt-4">
 
             <!-- Resumo financeiro -->
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-lg-8"
+                 th:if="${verFinanceiro}">
                 <div class="card shadow-sm border-0 h-100">
 
                     <div class="card-body">
@@ -152,7 +159,8 @@
 
 
             <!-- Situação dos membros -->
-            <div class="col-lg-4">
+            <div class="col-lg-4"
+                 th:if="${verMembros}">
                 <div class="card shadow-sm border-0 h-100">
 
                     <div class="card-body">

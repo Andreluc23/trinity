@@ -1,6 +1,7 @@
 
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.repository.MembroRepository;
@@ -34,22 +35,17 @@ public class UsuarioService {
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+                        new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
     public Usuario buscarPorEmail(String email) {
         return usuarioRepository.findByMembro_EmailIgnoreCase(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
     public Usuario buscarPorMembro(Long membroId) {
-        return usuarioRepository.findAll()
-                .stream()
-                .filter(usuario ->
-                        usuario.getMembro().getId().equals(membroId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new RuntimeException("Membro não possui conta de acesso"));
+        return usuarioRepository.findByMembroId(membroId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não possui conta de acesso"));
     }
 
     public boolean possuiAcesso(Long membroId) {

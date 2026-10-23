@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Escala;
 import com.trinity.trinity.repository.EscalaRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class EscalaService {
 
     public Escala buscarPorId(Long id) {
         return escalaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Escala não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Escala não encontrada"));
     }
 
     public Escala salvar(Escala escala) {

@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Patrimonio;
 import com.trinity.trinity.repository.PatrimonioRepository;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class PatrimonioService {
 
     public Patrimonio buscarPorId(Long id) {
         return patrimonioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patrimônio não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Patrimônio não encontrado"));
     }
 
     public Patrimonio salvar(Patrimonio patrimonio) {

@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
@@ -66,7 +67,7 @@ public class MembroService {
 
     public Membro buscarPorId(Long id) {
         return membroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Membro não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado"));
     }
 
     public void desativar(Long id) {

@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Aviso;
 import com.trinity.trinity.repository.AvisoRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AvisoService {
 
     public Aviso buscarPorId(Long id) {
         return avisoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aviso não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Aviso não encontrado"));
     }
 
     public void desativar(Long id) {

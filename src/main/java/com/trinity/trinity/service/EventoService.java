@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Evento;
 import com.trinity.trinity.repository.EventoRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class EventoService {
 
     public Evento buscarPorId(Long id) {
         return eventoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Evento não encontrado"));
     }
 
     public void cancelar(Long id) {

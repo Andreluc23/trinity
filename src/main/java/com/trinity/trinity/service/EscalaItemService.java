@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Escala;
 import com.trinity.trinity.model.EscalaItem;
 import com.trinity.trinity.model.FuncaoMusical;
@@ -41,7 +42,7 @@ public class EscalaItemService {
     }
     public EscalaItem buscarPorId(Long id) {
         return escalaItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Integrante da escala não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Integrante da escala não encontrado"));
     }
     public EscalaItem atualizar(
             Long itemId,

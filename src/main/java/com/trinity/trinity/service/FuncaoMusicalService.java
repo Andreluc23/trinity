@@ -1,5 +1,6 @@
 package com.trinity.trinity.service;
 
+import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.FuncaoMusical;
 import com.trinity.trinity.repository.FuncaoMusicalRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class FuncaoMusicalService {
 
     public FuncaoMusical buscarPorId(Long id) {
         return funcaoMusicalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Função musical não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Função musical não encontrada"));
     }
 
     public FuncaoMusical salvar(FuncaoMusical funcaoMusical) {
