@@ -16,4 +16,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByMembroId(Long membroId);
 
     boolean existsByAdminTrue();
+    long countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue();
 }

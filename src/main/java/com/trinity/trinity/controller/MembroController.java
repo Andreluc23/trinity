@@ -8,6 +8,7 @@ import com.trinity.trinity.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,8 +63,13 @@ public class MembroController {
     }
 
     @PostMapping("/membros/desativar/{id}")
-    public String desativarMembro(@PathVariable("id") Long id) {
-        membroService.desativar(id);
+    public String desativarMembro(@PathVariable("id") Long id,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            membroService.desativar(id);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+        }
         return "redirect:/membros";
     }
 

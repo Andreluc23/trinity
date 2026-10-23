@@ -2,6 +2,7 @@ package com.trinity.trinity.service;
 
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
+import com.trinity.trinity.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +14,11 @@ import java.util.List;
 public class MembroService {
 
     private final MembroRepository membroRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public MembroService(MembroRepository membroRepository) {
+    public MembroService(MembroRepository membroRepository, UsuarioRepository usuarioRepository) {
         this.membroRepository = membroRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Membro> listarTodos() {
@@ -67,12 +70,23 @@ public class MembroService {
     }
 
     public void desativar(Long id) {
-
         Membro membro = buscarPorId(id);
 
-        membro.setAtivo(false);
+        if (ehUnicoAdministradorAtivo(membro)) {
+            throw new IllegalStateException("Não é possível desativar o único administrador ativo do sistema.");
+        }
 
+        membro.setAtivo(false);
         membroRepository.save(membro);
+    }
+
+    private boolean ehUnicoAdministradorAtivo(Membro membro) {
+        boolean ehAdministrador = usuarioRepository.findByMembroId(membro.getId())
+                .filter(usuario -> usuario.isAdmin() && usuario.isAtivo())
+                .isPresent();
+
+        return ehAdministrador
+                && usuarioRepository.countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue() <= 1;
     }
     public void ativar(Long id) {
 

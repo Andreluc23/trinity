@@ -21,7 +21,8 @@
 
 <div th:replace="~{fragments/navbar :: navbar('escalas')}"></div>
 
-<main class="container py-4 py-md-5">
+<main class="container py-4 py-md-5"
+      th:with="podeGerenciar=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_ESCALAS'')')}">
 
     <!-- Dados da escala -->
     <div class="card shadow-sm border-0 mb-4">
@@ -63,7 +64,8 @@
 
                 </div>
 
-                <a th:href="@{/escalas/editar/{id}(id=${escala.id})}"
+                <a th:if="${podeGerenciar}"
+                   th:href="@{/escalas/editar/{id}(id=${escala.id})}"
                    class="btn btn-outline-primary text-nowrap">
 
                     <i class="bi bi-pencil me-1"></i>
@@ -89,7 +91,8 @@
                     Integrantes
                 </h5>
 
-                <p class="text-muted mb-0">
+                <p class="text-muted mb-0"
+                   th:text="${podeGerenciar} ? 'Adicione os membros e suas funções nesta escala.' : 'Membros escalados e suas funções.'">
                     Adicione os membros e suas funções nesta escala.
                 </p>
 
@@ -97,7 +100,8 @@
 
 
             <!-- Adicionar integrante -->
-            <form th:action="@{/escalas/{id}/integrantes(id=${escala.id})}"
+            <form th:if="${podeGerenciar}"
+                  th:action="@{/escalas/{id}/integrantes(id=${escala.id})}"
                   method="post"
                   class="row g-3 align-items-end mb-4">
 
@@ -172,7 +176,7 @@
                     <tr>
                         <th>Membro</th>
                         <th>Função / Instrumento</th>
-                        <th class="text-end">Ação</th>
+                        <th th:if="${podeGerenciar}" class="text-end">Ação</th>
                     </tr>
 
                     </thead>
@@ -191,7 +195,7 @@
                                 Violão
                             </td>
 
-                            <td class="text-end text-nowrap">
+                            <td th:if="${podeGerenciar}" class="text-end text-nowrap">
 
                                 <button type="button"
                                         class="btn btn-sm btn-outline-primary"
@@ -227,7 +231,8 @@
                         </tr>
 
                         <!-- Edição do integrante -->
-                        <tr th:id="'editarItem' + ${item.id}"
+                        <tr th:if="${podeGerenciar}"
+                            th:id="'editarItem' + ${item.id}"
                             class="collapse">
 
                             <td colspan="3">
@@ -301,7 +306,7 @@
 
                     <tr th:if="${#lists.isEmpty(itens)}">
 
-                        <td colspan="3"
+                        <td th:colspan="${podeGerenciar} ? 3 : 2"
                             class="text-center text-muted py-4">
 
                             Nenhum integrante adicionado nesta escala.
