@@ -7,19 +7,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
+
+    private static final String ADMIN = "ROLE_ADMIN";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    private static final String ADMIN = "ROLE_ADMIN";
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtService jwtService,
+                                                   UsuarioDetailsService usuarioDetailsService) throws Exception {
 
         http
                 .authorizeHttpRequests(auth -> auth
@@ -52,12 +56,15 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                .addFilterBefore(new JwtAutenticacaoFiltro(jwtService, usuarioDetailsService),
+                        UsernamePasswordAuthenticationFilter.class)
+
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .successHandler(gerarTokenAoEntrar(jwtService))
                         .permitAll()
                 )
 
@@ -69,5 +76,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-
+    private AuthenticationSuccessHandler gerarTokenAoEntrar(JwtService jwtService) {
+        return (request, response, authentication) -> {
+            String token = jwtService.gerarToken(authentication.getName());
+            response.addCookie(JwtCookie.criar(token, jwtService.getValidade(), request.isSecure()));
+            response.sendRedirect(request.getContextPath() + "/dashboard");
+        };
+    }
 }
