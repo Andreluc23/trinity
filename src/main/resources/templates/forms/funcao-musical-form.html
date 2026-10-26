@@ -29,6 +29,11 @@
                 th:text="${funcaoMusical.id == null ? 'Nova função musical' : 'Editar função musical'}">
                 Nova função musical
             </h2>
+            <div th:if="${erro}"
+                 class="alert alert-danger"
+                 role="alert"
+                 th:text="${erro}">
+            </div>
 
             <form th:action="@{/funcoes-musicais}"
                   th:object="${funcaoMusical}"

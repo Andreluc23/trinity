@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface FuncaoMusicalRepository extends JpaRepository<FuncaoMusical, Long> {
 
     boolean existsByNomeIgnoreCase(String nome);
+    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Long id);
 }

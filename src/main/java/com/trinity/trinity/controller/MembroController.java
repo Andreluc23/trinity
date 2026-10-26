@@ -1,6 +1,7 @@
 
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.service.MembroService;
@@ -67,7 +68,7 @@ public class MembroController {
                                   RedirectAttributes redirectAttributes) {
         try {
             membroService.desativar(id);
-        } catch (IllegalStateException e) {
+        } catch (RegraNegocioException e) {
             redirectAttributes.addFlashAttribute("erro", e.getMessage());
         }
         return "redirect:/membros";
@@ -86,7 +87,7 @@ public class MembroController {
             membroService.salvar(membro);
             return "redirect:/membros";
 
-        } catch (RuntimeException e) {
+        } catch (RegraNegocioException e) {
 
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("membro", membro);

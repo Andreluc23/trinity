@@ -1,5 +1,6 @@
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.FuncaoMusical;
 import com.trinity.trinity.service.FuncaoMusicalService;
 import org.springframework.stereotype.Controller;
@@ -39,9 +40,15 @@ public class FuncaoMusicalController {
     }
 
     @PostMapping
-    public String salvar(FuncaoMusical funcaoMusical) {
-        funcaoMusicalService.salvar(funcaoMusical);
-        return "redirect:/funcoes-musicais";
+    public String salvar(FuncaoMusical funcaoMusical, Model model) {
+        try {
+            funcaoMusicalService.salvar(funcaoMusical);
+            return "redirect:/funcoes-musicais";
+        } catch (RegraNegocioException e) {
+            model.addAttribute("erro", e.getMessage());
+            model.addAttribute("funcaoMusical", funcaoMusical);
+            return "forms/funcao-musical-form";
+        }
     }
 
     @PostMapping("/desativar/{id}")

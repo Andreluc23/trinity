@@ -1,7 +1,7 @@
-
 package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.repository.MembroRepository;
@@ -14,15 +14,15 @@ import java.util.List;
 @Service
 public class UsuarioService {
 
+    private static final int TAMANHO_MINIMO_SENHA = 8;
+
     private final UsuarioRepository usuarioRepository;
     private final MembroRepository membroRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(
-            UsuarioRepository usuarioRepository,
-            MembroRepository membroRepository,
-            PasswordEncoder passwordEncoder) {
-
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          MembroRepository membroRepository,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.membroRepository = membroRepository;
         this.passwordEncoder = passwordEncoder;
@@ -34,8 +34,7 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RecursoNaoEncontradoException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
     public Usuario buscarPorEmail(String email) {
@@ -53,77 +52,35 @@ public class UsuarioService {
     }
 
     public Usuario criarAcesso(Long membroId, String senhaProvisoria) {
-
         Membro membro = membroRepository.findById(membroId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Membro não encontrado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado."));
 
         if (!membro.isAtivo()) {
-            throw new IllegalArgumentException(
-                    "Não é possível criar acesso para um membro inativo.");
+            throw new RegraNegocioException("Não é possível criar acesso para um membro inativo.");
         }
 
-        if (membro.getEmail() == null ||
-                membro.getEmail().isBlank()) {
-            throw new IllegalArgumentException(
-                    "O membro precisa ter um e-mail cadastrado.");
+        if (membro.getEmail() == null || membro.getEmail().isBlank()) {
+            throw new RegraNegocioException("O membro precisa ter um e-mail cadastrado.");
         }
 
         if (possuiAcesso(membroId)) {
-            throw new IllegalArgumentException(
-                    "Este membro já possui uma conta de acesso.");
+            throw new RegraNegocioException("Este membro já possui uma conta de acesso.");
         }
 
-        if (senhaProvisoria == null ||
-                senhaProvisoria.isBlank() ||
-                senhaProvisoria.length() < 8) {
-            throw new IllegalArgumentException(
-                    "A senha provisória deve ter pelo menos 8 caracteres.");
+        if (senhaProvisoria == null || senhaProvisoria.length() < TAMANHO_MINIMO_SENHA) {
+            throw new RegraNegocioException("A senha provisória deve ter pelo menos 8 caracteres.");
         }
 
         Usuario usuario = new Usuario();
         usuario.setMembro(membro);
-        usuario.setSenha(senhaProvisoria);
+        usuario.setSenha(passwordEncoder.encode(senhaProvisoria));
         usuario.setAtivo(true);
         usuario.setAdmin(false);
 
-        return salvar(usuario);
+        return usuarioRepository.save(usuario);
     }
 
     public Usuario salvar(Usuario usuario) {
-
-        if (usuario.getId() == null) {
-
-            if (usuario.getMembro() == null ||
-                    usuario.getMembro().getId() == null) {
-                throw new IllegalArgumentException("Selecione um membro.");
-            }
-
-            Long membroId = usuario.getMembro().getId();
-
-            if (usuarioRepository.existsByMembroId(membroId)) {
-                throw new IllegalArgumentException(
-                        "Este membro já possui uma conta de acesso.");
-            }
-
-            if (usuario.getSenha() == null ||
-                    usuario.getSenha().isBlank()) {
-                throw new IllegalArgumentException(
-                        "A senha é obrigatória.");
-            }
-
-            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-
-        } else {
-
-            Usuario usuarioAtual = buscarPorId(usuario.getId());
-
-            usuario.setMembro(usuarioAtual.getMembro());
-            usuario.setSenha(usuarioAtual.getSenha());
-            usuario.setAtivo(usuarioAtual.isAtivo());
-            usuario.setAdmin(usuarioAtual.isAdmin());
-        }
-
         return usuarioRepository.save(usuario);
     }
 

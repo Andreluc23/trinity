@@ -1,6 +1,7 @@
 package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.FuncaoMusical;
 import com.trinity.trinity.repository.FuncaoMusicalRepository;
 import org.springframework.stereotype.Service;
@@ -26,15 +27,18 @@ public class FuncaoMusicalService {
     }
 
     public FuncaoMusical salvar(FuncaoMusical funcaoMusical) {
+        String nome = funcaoMusical.getNome();
 
-        if (funcaoMusical.getId() == null
-                && funcaoMusicalRepository.existsByNomeIgnoreCase(funcaoMusical.getNome())) {
-            throw new RuntimeException("Essa função musical já está cadastrada.");
+        boolean nomeEmUso = funcaoMusical.getId() == null
+                ? funcaoMusicalRepository.existsByNomeIgnoreCase(nome)
+                : funcaoMusicalRepository.existsByNomeIgnoreCaseAndIdNot(nome, funcaoMusical.getId());
+
+        if (nomeEmUso) {
+            throw new RegraNegocioException("Essa função musical já está cadastrada.");
         }
 
         return funcaoMusicalRepository.save(funcaoMusical);
     }
-
     public void desativar(Long id) {
         FuncaoMusical funcao = buscarPorId(id);
         funcao.setAtivo(false);

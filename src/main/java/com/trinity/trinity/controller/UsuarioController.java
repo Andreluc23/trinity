@@ -1,6 +1,7 @@
 
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.service.MembroService;
 import com.trinity.trinity.service.UsuarioService;
@@ -52,7 +53,7 @@ public class UsuarioController {
             usuarioService.criarAcesso(id, senhaProvisoria);
             return "redirect:/membros";
 
-        } catch (IllegalArgumentException e) {
+        } catch (RegraNegocioException e) {
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("membro", membroService.buscarPorId(id));
 

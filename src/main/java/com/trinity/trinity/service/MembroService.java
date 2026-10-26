@@ -1,6 +1,7 @@
 package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
@@ -55,11 +56,11 @@ public class MembroService {
         }
 
         if (cpfDuplicado) {
-            throw new RuntimeException("CPF já cadastrado.");
+            throw new RegraNegocioException("CPF já cadastrado.");
         }
 
         if (emailDuplicado) {
-            throw new RuntimeException("E-mail já cadastrado.");
+            throw new RegraNegocioException("E-mail já cadastrado.");
         }
 
         return membroRepository.save(membro);
@@ -74,7 +75,7 @@ public class MembroService {
         Membro membro = buscarPorId(id);
 
         if (ehUnicoAdministradorAtivo(membro)) {
-            throw new IllegalStateException("Não é possível desativar o único administrador ativo do sistema.");
+            throw new RegraNegocioException("Não é possível desativar o único administrador ativo do sistema.");
         }
 
         membro.setAtivo(false);
