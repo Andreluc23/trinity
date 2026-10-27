@@ -16,10 +16,14 @@ import java.io.IOException;
 public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final EmissorDeTokens emissorDeTokens;
     private final UserDetailsService userDetailsService;
 
-    public JwtAutenticacaoFiltro(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAutenticacaoFiltro(JwtService jwtService,
+                                 EmissorDeTokens emissorDeTokens,
+                                 UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
+        this.emissorDeTokens = emissorDeTokens;
         this.userDetailsService = userDetailsService;
     }
 
@@ -29,12 +33,18 @@ public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            JwtCookie.ler(request)
+            JwtCookie.ler(request, JwtCookie.TOKEN)
                     .flatMap(jwtService::extrairEmail)
+                    .or(() -> emissorDeTokens.renovar(request, response))
                     .ifPresent(this::autenticar);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return false;
     }
 
     private void autenticar(String email) {
@@ -49,9 +59,5 @@ public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
         } catch (UsernameNotFoundException e) {
             // Usuário removido do banco: segue sem autenticar
         }
-    }
-    @Override
-    protected boolean shouldNotFilterErrorDispatch() {
-        return false;
     }
 }

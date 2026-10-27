@@ -8,7 +8,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -27,6 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtService jwtService,
+                                                   EmissorDeTokens emissorDeTokens,
                                                    UsuarioDetailsService usuarioDetailsService) throws Exception {
 
         http
@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                .addFilterBefore(new JwtAutenticacaoFiltro(jwtService, usuarioDetailsService),
+                .addFilterBefore(new JwtAutenticacaoFiltro(jwtService, emissorDeTokens, usuarioDetailsService),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new CsrfCookieFiltro(), CsrfFilter.class)
 
@@ -78,24 +78,20 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .successHandler(gerarTokenAoEntrar(jwtService))
+                        .successHandler((request, response, authentication) -> {
+                            emissorDeTokens.emitirNoLogin(authentication.getName(), request, response);
+                            response.sendRedirect(request.getContextPath() + "/dashboard");
+                        })
                         .permitAll()
                 )
 
                 .logout(logout -> logout
-                        .deleteCookies(JwtCookie.NOME)
+                        .addLogoutHandler((request, response, authentication) -> emissorDeTokens.revogar(request))
+                        .deleteCookies(JwtCookie.TOKEN, JwtCookie.REFRESH)
                         .logoutSuccessUrl("/")
                         .permitAll()
                 );
 
         return http.build();
-    }
-
-    private AuthenticationSuccessHandler gerarTokenAoEntrar(JwtService jwtService) {
-        return (request, response, authentication) -> {
-            String token = jwtService.gerarToken(authentication.getName());
-            response.addCookie(JwtCookie.criar(token, jwtService.getValidade(), request.isSecure()));
-            response.sendRedirect(request.getContextPath() + "/dashboard");
-        };
     }
 }

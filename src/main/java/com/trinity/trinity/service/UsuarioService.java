@@ -67,9 +67,7 @@ public class UsuarioService {
             throw new RegraNegocioException("Este membro já possui uma conta de acesso.");
         }
 
-        if (senhaProvisoria == null || senhaProvisoria.length() < TAMANHO_MINIMO_SENHA) {
-            throw new RegraNegocioException("A senha provisória deve ter pelo menos 8 caracteres.");
-        }
+        validarTamanhoSenha(senhaProvisoria);
 
         Usuario usuario = new Usuario();
         usuario.setMembro(membro);
@@ -94,5 +92,32 @@ public class UsuarioService {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(true);
         usuarioRepository.save(usuario);
+    }
+    public void alterarSenha(String email, String senhaAtual, String novaSenha, String confirmacao) {
+        Usuario usuario = buscarPorEmail(email);
+
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            throw new RegraNegocioException("A senha atual está incorreta.");
+        }
+
+        validarTamanhoSenha(novaSenha);
+
+        if (!novaSenha.equals(confirmacao)) {
+            throw new RegraNegocioException("A confirmação não confere com a nova senha.");
+        }
+
+        if (passwordEncoder.matches(novaSenha, usuario.getSenha())) {
+            throw new RegraNegocioException("A nova senha deve ser diferente da atual.");
+        }
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+    }
+
+    private void validarTamanhoSenha(String senha) {
+        if (senha == null || senha.length() < TAMANHO_MINIMO_SENHA) {
+            throw new RegraNegocioException(
+                    "A senha deve ter pelo menos " + TAMANHO_MINIMO_SENHA + " caracteres.");
+        }
     }
 }

@@ -91,13 +91,21 @@
 
             </ul>
 
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn btn-outline-light">
-                    <i class="bi bi-box-arrow-right me-1"></i> Sair
-                </button>
-            </form>
+            <div class="d-flex gap-2">
 
-        </div>
+                <a th:href="@{/perfil}"
+                   class="btn btn-outline-light"
+                   th:classappend="${paginaAtiva == 'perfil'} ? ' active' : ''">
+                    <i class="bi bi-person-circle me-1"></i> Meu perfil
+                </a>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right me-1"></i> Sair
+                    </button>
+                </form>
+
+            </div>
 
     </div>
 

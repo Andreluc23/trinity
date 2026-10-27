@@ -9,13 +9,14 @@ import java.util.Optional;
 
 public final class JwtCookie {
 
-    public static final String NOME = "trinity_token";
+    public static final String TOKEN = "trinity_token";
+    public static final String REFRESH = "trinity_refresh";
 
     private JwtCookie() {
     }
 
-    public static Cookie criar(String token, Duration validade, boolean seguro) {
-        Cookie cookie = new Cookie(NOME, token);
+    public static Cookie criar(String nome, String valor, Duration validade, boolean seguro) {
+        Cookie cookie = new Cookie(nome, valor);
         cookie.setHttpOnly(true);
         cookie.setSecure(seguro);
         cookie.setPath("/");
@@ -24,13 +25,13 @@ public final class JwtCookie {
         return cookie;
     }
 
-    public static Optional<String> ler(HttpServletRequest request) {
+    public static Optional<String> ler(HttpServletRequest request, String nome) {
         if (request.getCookies() == null) {
             return Optional.empty();
         }
 
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> NOME.equals(cookie.getName()))
+                .filter(cookie -> nome.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst();
     }
