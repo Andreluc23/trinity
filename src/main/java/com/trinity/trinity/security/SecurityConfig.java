@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 
@@ -69,6 +70,7 @@ public class SecurityConfig {
 
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(new CookieCsrfTokenRepository())
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                         .ignoringRequestMatchers("/h2-console/**")
                 )
 
