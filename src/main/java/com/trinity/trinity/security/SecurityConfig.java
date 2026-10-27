@@ -4,11 +4,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -58,8 +61,17 @@ public class SecurityConfig {
 
                 .addFilterBefore(new JwtAutenticacaoFiltro(jwtService, usuarioDetailsService),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CsrfCookieFiltro(), CsrfFilter.class)
 
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(new CookieCsrfTokenRepository())
+                        .ignoringRequestMatchers("/h2-console/**")
+                )
+
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
                 .formLogin(form -> form
@@ -69,6 +81,7 @@ public class SecurityConfig {
                 )
 
                 .logout(logout -> logout
+                        .deleteCookies(JwtCookie.NOME)
                         .logoutSuccessUrl("/")
                         .permitAll()
                 );

@@ -50,4 +50,8 @@ public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
             // Usuário removido do banco: segue sem autenticar
         }
     }
+    @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return false;
+    }
 }
