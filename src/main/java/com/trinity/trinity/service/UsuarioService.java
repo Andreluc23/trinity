@@ -120,4 +120,11 @@ public class UsuarioService {
                     "A senha deve ter pelo menos " + TAMANHO_MINIMO_SENHA + " caracteres.");
         }
     }
+    public void redefinirSenha(Long membroId, String novaSenha) {
+        Usuario usuario = buscarPorMembro(membroId);
+        validarTamanhoSenha(novaSenha);
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+    }
 }

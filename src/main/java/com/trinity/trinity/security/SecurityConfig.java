@@ -3,6 +3,7 @@ package com.trinity.trinity.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class SecurityConfig {
@@ -81,6 +85,13 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             emissorDeTokens.emitirNoLogin(authentication.getName(), request, response);
                             response.sendRedirect(request.getContextPath() + "/dashboard");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            String motivo = exception instanceof DisabledException ? "inativo" : "erro";
+                            String email = request.getParameter("username");
+                            String emailCodificado = URLEncoder.encode(email == null ? "" : email, StandardCharsets.UTF_8);
+
+                            response.sendRedirect(request.getContextPath() + "/login?" + motivo + "&email=" + emailCodificado);
                         })
                         .permitAll()
                 )

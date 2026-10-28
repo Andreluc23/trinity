@@ -26,17 +26,28 @@
                 </p>
             </div>
 
+            <div th:if="${param.erro}" class="alert alert-danger" role="alert">
+                E-mail ou senha incorretos.
+            </div>
+
+            <div th:if="${param.inativo}" class="alert alert-warning" role="alert">
+                Sua conta está desativada. Fale com a administração da igreja.
+            </div>
+
             <form method="post" th:action="@{/login}">
 
                 <div class="mb-3">
                     <label for="username" class="form-label">
-                        Usuário
+                        E-mail
                     </label>
 
-                    <input type="text"
+                    <input type="email"
                            class="form-control"
                            id="username"
                            name="username"
+                           autocomplete="username"
+                           th:value="${param.email} ? ${param.email[0]} : ''"
+                           th:autofocus="${param.email == null}"
                            required>
                 </div>
 
@@ -49,6 +60,8 @@
                            class="form-control"
                            id="password"
                            name="password"
+                           autocomplete="current-password"
+                           th:autofocus="${param.email != null}"
                            required>
                 </div>
 
@@ -60,7 +73,21 @@
             </form>
 
             <div class="text-center mt-3">
-                <a href="/" class="text-decoration-none">
+                <a class="small text-decoration-none"
+                   data-bs-toggle="collapse"
+                   href="#ajudaSenha"
+                   role="button"
+                   aria-controls="ajudaSenha">
+                    Esqueci minha senha
+                </a>
+
+                <div id="ajudaSenha" class="collapse small text-muted mt-2">
+                    Procure a administração da igreja para redefinir sua senha.
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a th:href="@{/}" class="text-decoration-none">
                     Voltar para o início
                 </a>
             </div>
@@ -69,6 +96,6 @@
     </div>
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

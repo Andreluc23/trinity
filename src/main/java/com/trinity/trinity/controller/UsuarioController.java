@@ -8,6 +8,7 @@ import com.trinity.trinity.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/usuarios")
@@ -92,5 +93,18 @@ public class UsuarioController {
         usuarioService.salvar(usuario);
 
         return "redirect:/membros";
+    }
+    @PostMapping("/redefinir-senha/{id}")
+    public String redefinirSenha(@PathVariable("id") Long id,
+                                 @RequestParam("novaSenha") String novaSenha,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.redefinirSenha(id, novaSenha);
+            redirectAttributes.addFlashAttribute("sucesso",
+                    "Senha redefinida. Informe a nova senha ao membro.");
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+        }
+        return "redirect:/usuarios/permissoes/" + id;
     }
 }
