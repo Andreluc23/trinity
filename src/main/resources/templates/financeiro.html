@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Financeiro - Trinity</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('financeiro')}"></div>
+
+<main class="container py-4 py-md-5">
+
+    <!-- Cabeçalho -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+        <div>
+            <h2 class="mb-1">Financeiro</h2>
+            <p class="text-muted mb-0">Entradas, saídas e saldo da igreja.</p>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <button type="button"
+                    class="btn btn-outline-dark text-nowrap"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCategorias">
+                <i class="bi bi-tags me-1"></i>
+                Categorias
+            </button>
+
+            <a th:href="@{/financeiro/lancamentos/novo}" class="btn btn-dark text-nowrap">
+                <i class="bi bi-plus-circle me-1"></i>
+                Novo lançamento
+            </a>
+        </div>
+
+    </div>
+
+    <div th:if="${sucesso}" class="alert alert-success" role="alert" th:text="${sucesso}"></div>
+
+    <!-- Navegação entre meses -->
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+
+        <a th:href="@{/financeiro(mes=${mes.minusMonths(1)})}"
+           class="btn btn-sm btn-outline-secondary"
+           title="Mês anterior">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+
+        <span class="fw-semibold text-capitalize"
+              th:text="${#temporals.format(mes.atDay(1), 'MMMM/yyyy')}">
+            outubro/2026
+        </span>
+
+        <a th:href="@{/financeiro(mes=${mes.plusMonths(1)})}"
+           class="btn btn-sm btn-outline-secondary"
+           title="Próximo mês">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+
+    </div>
+
+    <!-- Cards do mês -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-arrow-down-circle text-success me-1"></i>Entradas
+                    </p>
+                    <h4 class="mb-0 text-success"
+                        th:text="${#numbers.formatCurrency(entradas)}">R$ 0,00</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-arrow-up-circle text-danger me-1"></i>Saídas
+                    </p>
+                    <h4 class="mb-0 text-danger"
+                        th:text="${#numbers.formatCurrency(saidas)}">R$ 0,00</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-wallet2 me-1"></i>Saldo do mês
+                    </p>
+                    <h4 class="mb-0"
+                        th:classappend="${saldo.signum() < 0} ? 'text-danger' : 'text-success'"
+                        th:text="${#numbers.formatCurrency(saldo)}">R$ 0,00</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lançamentos do mês -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+                    <thead class="table-light">
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th class="text-end">Valor</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="lancamento : ${lancamentos}">
+
+                        <td class="text-nowrap"
+                            th:text="${#temporals.format(lancamento.data, 'dd/MM/yyyy')}">10/10/2026</td>
+
+                        <td>
+                            <div th:text="${lancamento.descricao}">Conta de luz</div>
+                            <small class="text-muted"
+                                   th:if="${lancamento.membro != null}"
+                                   th:text="${lancamento.membro.nomeCompleto}">João</small>
+                            <span th:if="${lancamento.origem.name() == 'PIX'}"
+                                  class="badge text-bg-info ms-1">PIX</span>
+                        </td>
+
+                        <td th:text="${lancamento.categoria.nome}">Energia elétrica</td>
+
+                        <td class="text-end text-nowrap fw-semibold"
+                            th:classappend="${lancamento.tipo.name() == 'ENTRADA'} ? 'text-success' : 'text-danger'"
+                            th:text="${(lancamento.tipo.name() == 'ENTRADA' ? '+ ' : '- ') + #numbers.formatCurrency(lancamento.valor)}">
+                            - R$ 180,00
+                        </td>
+
+                        <td class="text-end text-nowrap">
+
+                            <a th:href="@{/financeiro/lancamentos/editar/{id}(id=${lancamento.id})}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                            <form th:action="@{/financeiro/lancamentos/inativar/{id}(id=${lancamento.id})}"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Inativar"
+                                        onclick="return confirm('Inativar este lançamento? Ele deixará de compor os totais.')">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(lancamentos)}">
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <i class="bi bi-cash-stack fs-3 d-block mb-2"></i>
+                            Nenhum lançamento neste mês.
+                        </td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Modal de categorias -->
+<div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="tituloCategorias" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloCategorias">Categorias financeiras</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div th:if="${sucessoCategoria}" class="alert alert-success" role="alert" th:text="${sucessoCategoria}"></div>
+                <div th:if="${erroCategoria}" class="alert alert-danger" role="alert" th:text="${erroCategoria}"></div>
+
+                <form th:action="@{/financeiro/categorias}"
+                      th:object="${novaCategoria}"
+                      method="post"
+                      class="row g-2 align-items-end mb-4">
+
+                    <div class="col-12 col-md-6">
+                        <label for="nome" class="form-label">Nova categoria</label>
+                        <input type="text"
+                               id="nome"
+                               class="form-control"
+                               th:field="*{nome}"
+                               maxlength="60"
+                               placeholder="Ex.: Dízimo, Energia elétrica"
+                               required>
+                    </div>
+
+                    <div class="col-7 col-md-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <select id="tipo" class="form-select" th:field="*{tipo}" required>
+                            <option value="">Selecione</option>
+                            <option th:each="tipo : ${tipos}"
+                                    th:value="${tipo}"
+                                    th:text="${tipo.descricao}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-5 col-md-3">
+                        <button type="submit" class="btn btn-dark w-100">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Adicionar
+                        </button>
+                    </div>
+
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+
+                        <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <tr th:each="categoria : ${categorias}">
+
+                            <td th:text="${categoria.nome}">Dízimo</td>
+
+                            <td>
+                                <span th:if="${categoria.tipo.name() == 'ENTRADA'}"
+                                      class="badge text-bg-success">Entrada</span>
+                                <span th:if="${categoria.tipo.name() == 'SAIDA'}"
+                                      class="badge text-bg-danger">Saída</span>
+                            </td>
+
+                            <td>
+                                <span th:if="${categoria.ativo}" class="badge text-bg-success">Ativa</span>
+                                <span th:unless="${categoria.ativo}" class="badge text-bg-secondary">Inativa</span>
+                            </td>
+
+                            <td class="text-end text-nowrap">
+
+                                <a th:href="@{/financeiro/categorias/editar/{id}(id=${categoria.id})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <form th:if="${categoria.ativo}"
+                                      th:action="@{/financeiro/categorias/desativar/{id}(id=${categoria.id})}"
+                                      method="post"
+                                      class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Desativar esta categoria? Ela não aparecerá em novos lançamentos.')">
+                                        Desativar
+                                    </button>
+                                </form>
+
+                                <form th:unless="${categoria.ativo}"
+                                      th:action="@{/financeiro/categorias/ativar/{id}(id=${categoria.id})}"
+                                      method="post"
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        Ativar
+                                    </button>
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(categorias)}">
+                            <td colspan="4" class="text-center text-muted py-4">
+                                Nenhuma categoria cadastrada.
+                            </td>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:if="${abrirCategorias}">
+    new bootstrap.Modal(document.getElementById('modalCategorias')).show();
+</script>
+
+</body>
+</html>

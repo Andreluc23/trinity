@@ -127,4 +127,8 @@ public class MembroService {
                         pageable
                 );
     }
+
+    public List<Membro> listarAtivos() {
+        return membroRepository.findByAtivoTrueOrderByNomeCompletoAsc();
+    }
 }
