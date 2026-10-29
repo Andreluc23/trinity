@@ -77,14 +77,30 @@
                     </a>
                 </li>
 
+                <!-- Financeiro: quem gerencia vê o painel completo -->
                 <li class="nav-item"
                     sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'GERENCIAR_FINANCEIRO')">
                     <a class="nav-link text-white"
                        th:classappend="${paginaAtiva == 'financeiro'} ? ' opacity-50' : ''"
                        th:href="@{/financeiro}">
                         <i class="bi bi-cash-coin me-1"></i> Financeiro
+                        <span th:if="${contribuicoesAguardando != null and contribuicoesAguardando > 0}"
+                              class="badge rounded-pill text-bg-warning ms-1"
+                              th:text="${contribuicoesAguardando}">2</span>
                     </a>
                 </li>
+
+                <!-- Financeiro: o membro comum vai direto para as contribuições -->
+                <li class="nav-item"
+                    sec:authorize="!hasAnyAuthority('ROLE_ADMIN', 'GERENCIAR_FINANCEIRO')">
+                    <a class="nav-link text-white"
+                       th:classappend="${paginaAtiva == 'financeiro'} ? ' opacity-50' : ''"
+                       th:href="@{/contribuicoes}">
+                        <i class="bi bi-cash-coin me-1"></i> Financeiro
+                    </a>
+                </li>
+
+
 
                 <li class="nav-item">
                     <a class="nav-link text-white" href="#">

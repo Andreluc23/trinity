@@ -2,11 +2,7 @@ package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.exception.RegraNegocioException;
-import com.trinity.trinity.model.CategoriaFinanceira;
-import com.trinity.trinity.model.Lancamento;
-import com.trinity.trinity.model.Membro;
-import com.trinity.trinity.model.OrigemLancamento;
-import com.trinity.trinity.model.TipoLancamento;
+import com.trinity.trinity.model.*;
 import com.trinity.trinity.repository.LancamentoRepository;
 import org.springframework.stereotype.Service;
 
@@ -115,5 +111,17 @@ public class LancamentoService {
         if (lancamento.getCategoria() == null || lancamento.getCategoria().getId() == null) {
             throw new RegraNegocioException("Selecione a categoria.");
         }
+    }
+    public Lancamento registrarEntradaPix(Contribuicao contribuicao) {
+        Lancamento lancamento = new Lancamento();
+        lancamento.setDescricao("Contribuição PIX " + contribuicao.getIdentificador());
+        lancamento.setValor(contribuicao.getValor());
+        lancamento.setData(LocalDate.now());
+        lancamento.setCategoria(contribuicao.getCategoria());
+        lancamento.setTipo(TipoLancamento.ENTRADA);
+        lancamento.setMembro(contribuicao.getMembro());
+        lancamento.setOrigem(OrigemLancamento.PIX);
+
+        return lancamentoRepository.save(lancamento);
     }
 }

@@ -39,6 +39,18 @@
                 Categorias
             </button>
 
+            <a th:href="@{/contribuicoes}" class="btn btn-outline-dark text-nowrap">
+                <i class="bi bi-heart me-1"></i>
+                Contribuir
+            </a>
+            <a th:href="@{/financeiro/contribuicoes}" class="btn btn-outline-dark text-nowrap">
+                <i class="bi bi-inbox me-1"></i>
+                Contribuições
+                <span th:if="${contribuicoesAguardando > 0}"
+                      class="badge rounded-pill text-bg-warning ms-1"
+                      th:text="${contribuicoesAguardando}">2</span>
+            </a>
+
             <a th:href="@{/financeiro/lancamentos/novo}" class="btn btn-dark text-nowrap">
                 <i class="bi bi-plus-circle me-1"></i>
                 Novo lançamento
