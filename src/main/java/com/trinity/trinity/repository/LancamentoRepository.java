@@ -3,6 +3,7 @@ package com.trinity.trinity.repository;
 import com.trinity.trinity.model.Lancamento;
 import com.trinity.trinity.model.TipoLancamento;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
+public interface LancamentoRepository extends JpaRepository<Lancamento, Long>, JpaSpecificationExecutor<Lancamento> {
 
     List<Lancamento> findByAtivoTrueAndDataBetweenOrderByDataDescIdDesc(LocalDate inicio, LocalDate fim);
 

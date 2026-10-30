@@ -131,4 +131,8 @@ public class MembroService {
     public List<Membro> listarAtivos() {
         return membroRepository.findByAtivoTrueOrderByNomeCompletoAsc();
     }
+
+    public List<Membro> listarTodosPorNome() {
+        return membroRepository.findAllByOrderByNomeCompletoAsc();
+    }
 }

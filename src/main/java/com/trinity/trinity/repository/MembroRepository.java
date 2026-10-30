@@ -31,4 +31,6 @@ public interface MembroRepository extends JpaRepository<Membro, Long> {
             Pageable pageable
     );
     List<Membro> findByAtivoTrueOrderByNomeCompletoAsc();
+
+    List<Membro> findAllByOrderByNomeCompletoAsc();
 }

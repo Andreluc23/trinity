@@ -57,6 +57,10 @@ public class SecurityConfig {
                         .hasAnyAuthority(ADMIN, "VISUALIZAR_ESCALAS", "GERENCIAR_ESCALAS")
                         .requestMatchers("/escalas/**").hasAnyAuthority(ADMIN, "GERENCIAR_ESCALAS")
 
+                        // Relatórios
+                        .requestMatchers("/relatorios/financeiro/**").hasAnyAuthority(ADMIN, "GERENCIAR_FINANCEIRO")
+                        .requestMatchers("/relatorios/membros/**").hasAnyAuthority(ADMIN, "GERENCIAR_MEMBROS")
+
                         // Patrimônio e financeiro
                         .requestMatchers("/patrimonios/**").hasAnyAuthority(ADMIN, "GERENCIAR_PATRIMONIO")
                         .requestMatchers("/financeiro/**").hasAnyAuthority(ADMIN, "GERENCIAR_FINANCEIRO")
