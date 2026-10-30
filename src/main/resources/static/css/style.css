@@ -134,6 +134,10 @@ section {
     border: none;
     border-radius: 15px;
 }
+/* ---------- Tabelas zebradas ---------- */
+.table:not(.sem-zebra) > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-bg-type: rgba(0, 0, 0, 0.05);
+}
 /* ---------- Impressão ---------- */
 @media print {
     @page {
