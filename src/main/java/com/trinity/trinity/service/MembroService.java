@@ -5,6 +5,7 @@ import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.repository.MembroRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
+import com.trinity.trinity.util.Cpf;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,10 +32,14 @@ public class MembroService {
 
         boolean cpfDuplicado;
         boolean emailDuplicado = false;
+        if (!Cpf.isValido(membro.getCpfFormatado())) {
+            throw new RegraNegocioException("CPF inválido.");
+        }
 
+        membro.setCpf(Cpf.somenteDigitos(membro.getCpfFormatado()));
         if (membro.getId() == null) {
             // Novo membro
-            cpfDuplicado = membroRepository.existsByCpf(membro.getCpf());
+            cpfDuplicado = membroRepository.existsByCpf(membro.getCpfFormatado());
 
             if (membro.getEmail() != null && !membro.getEmail().isBlank()) {
                 emailDuplicado = membroRepository.existsByEmail(membro.getEmail());
@@ -43,7 +48,7 @@ public class MembroService {
         } else {
             // Edição
             cpfDuplicado = membroRepository.existsByCpfAndIdNot(
-                    membro.getCpf(),
+                    membro.getCpfFormatado(),
                     membro.getId()
             );
 
@@ -119,10 +124,13 @@ public class MembroService {
             return membroRepository.findAll(pageable);
         }
 
+        String digitos = Cpf.somenteDigitos(termo);
+        String termoCpf = digitos.isEmpty() ? termo : digitos;
+
         return membroRepository
                 .findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
                         termo,
-                        termo,
+                        termoCpf,
                         termo,
                         pageable
                 );

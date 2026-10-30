@@ -1,5 +1,6 @@
 package com.trinity.trinity.model;
 
+import com.trinity.trinity.util.Cpf;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -59,8 +60,8 @@ public class Membro {
         this.dataNascimento = dataNascimento;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getCpfFormatado() {
+        return Cpf.formatar(cpf);
     }
 
     public void setCpf(String cpf) {

@@ -67,7 +67,7 @@ public class UsuarioService {
             throw new RegraNegocioException("Este membro já possui uma conta de acesso.");
         }
 
-        validarTamanhoSenha(senhaProvisoria);
+        validarSenha(senhaProvisoria);
 
         Usuario usuario = new Usuario();
         usuario.setMembro(membro);
@@ -100,7 +100,7 @@ public class UsuarioService {
             throw new RegraNegocioException("A senha atual está incorreta.");
         }
 
-        validarTamanhoSenha(novaSenha);
+        validarSenha(novaSenha);
 
         if (!novaSenha.equals(confirmacao)) {
             throw new RegraNegocioException("A confirmação não confere com a nova senha.");
@@ -114,15 +114,19 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    private void validarTamanhoSenha(String senha) {
+    private void validarSenha(String senha) {
         if (senha == null || senha.length() < TAMANHO_MINIMO_SENHA) {
             throw new RegraNegocioException(
                     "A senha deve ter pelo menos " + TAMANHO_MINIMO_SENHA + " caracteres.");
         }
+
+        if (senha.chars().anyMatch(Character::isWhitespace)) {
+            throw new RegraNegocioException("A senha não pode conter espaços.");
+        }
     }
     public void redefinirSenha(Long membroId, String novaSenha) {
         Usuario usuario = buscarPorMembro(membroId);
-        validarTamanhoSenha(novaSenha);
+        validarSenha(novaSenha);
 
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuarioRepository.save(usuario);
