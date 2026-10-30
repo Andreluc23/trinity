@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -123,5 +124,23 @@ public class LancamentoService {
         lancamento.setOrigem(OrigemLancamento.PIX);
 
         return lancamentoRepository.save(lancamento);
+    }
+    public BigDecimal saldoGeral() {
+        return lancamentoRepository.somarTudo(TipoLancamento.ENTRADA)
+                .subtract(lancamentoRepository.somarTudo(TipoLancamento.SAIDA));
+    }
+
+    public List<ResumoMensal> resumoUltimosMeses(int quantidade) {
+        YearMonth atual = YearMonth.now();
+        List<ResumoMensal> resumo = new ArrayList<>();
+
+        for (int i = quantidade - 1; i >= 0; i--) {
+            YearMonth mes = atual.minusMonths(i);
+            resumo.add(new ResumoMensal(mes,
+                    somarDoMes(TipoLancamento.ENTRADA, mes),
+                    somarDoMes(TipoLancamento.SAIDA, mes)));
+        }
+
+        return resumo;
     }
 }

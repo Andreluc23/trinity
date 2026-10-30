@@ -25,4 +25,12 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long>, J
     BigDecimal somar(@Param("tipo") TipoLancamento tipo,
                      @Param("inicio") LocalDate inicio,
                      @Param("fim") LocalDate fim);
+
+    @Query("""
+        select coalesce(sum(l.valor), 0)
+        from Lancamento l
+        where l.ativo = true
+          and l.tipo = :tipo
+        """)
+    BigDecimal somarTudo(@Param("tipo") TipoLancamento tipo);
 }
