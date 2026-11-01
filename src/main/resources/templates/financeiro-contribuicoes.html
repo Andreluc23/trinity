@@ -87,7 +87,7 @@
                                   class="d-inline">
                                 <button type="submit"
                                         class="btn btn-sm btn-success"
-                                        onclick="return confirm('Confirmar que este valor caiu na conta da igreja? Um lançamento de entrada será criado.')">
+                                        data-confirmar="Confirmar que este valor caiu na conta da igreja? Um lançamento de entrada será criado.">
                                     <i class="bi bi-check-lg me-1"></i>Confirmar
                                 </button>
                             </form>
@@ -97,7 +97,7 @@
                                   class="d-inline">
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Rejeitar esta contribuição? Nenhum lançamento será criado.')">
+                                        data-confirmar="Rejeitar esta contribuição? Nenhum lançamento será criado.">
                                     Rejeitar
                                 </button>
                             </form>
@@ -124,6 +124,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 </body>
 </html>

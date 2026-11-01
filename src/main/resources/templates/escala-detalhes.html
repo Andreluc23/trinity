@@ -217,7 +217,7 @@
 
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Deseja realmente remover este integrante da escala?')">
+                                            data-confirmar="Deseja realmente remover este integrante da escala?">
 
                                         <i class="bi bi-trash me-1"></i>
                                         Remover
@@ -340,6 +340,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 </body>
 </html>

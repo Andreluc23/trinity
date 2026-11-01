@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="modal">
+
+    <div class="modal fade" id="modalConfirmacao" tabindex="-1"
+         aria-labelledby="modalConfirmacaoTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" id="modalConfirmacaoTitulo">
+                        <i class="bi bi-question-circle me-2"></i>Confirmar ação
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-0" id="modalConfirmacaoMensagem">Deseja continuar?</p>
+                </div>
+
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-dark" id="modalConfirmacaoBotao">
+                        Confirmar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Substitui o confirm() do navegador por um modal do sistema.
+        // Uso: <button type="submit" data-confirmar="Mensagem">...</button>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmacao'));
+            const mensagem = document.getElementById('modalConfirmacaoMensagem');
+            const botaoConfirmar = document.getElementById('modalConfirmacaoBotao');
+            let formularioPendente = null;
+
+            document.querySelectorAll('[data-confirmar]').forEach(botao => {
+                botao.addEventListener('click', evento => {
+                    const formulario = botao.closest('form');
+
+                    if (!formulario.reportValidity()) {
+                        return;
+                    }
+
+                    evento.preventDefault();
+                    formularioPendente = formulario;
+                    mensagem.textContent = botao.dataset.confirmar;
+                    modal.show();
+                });
+            });
+
+            botaoConfirmar.addEventListener('click', () => {
+                if (formularioPendente) {
+                    formularioPendente.submit();
+                }
+            });
+        });
+    </script>
+
+</th:block>
+
+</body>
+</html>

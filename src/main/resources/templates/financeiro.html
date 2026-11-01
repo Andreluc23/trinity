@@ -180,7 +180,7 @@
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"
                                         title="Inativar"
-                                        onclick="return confirm('Inativar este lançamento? Ele deixará de compor os totais.')">
+                                        data-confirmar="Inativar este lançamento? Ele deixará de compor os totais.">
                                     <i class="bi bi-x-circle"></i>
                                 </button>
                             </form>
@@ -301,7 +301,7 @@
                                       class="d-inline">
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Desativar esta categoria? Ela não aparecerá em novos lançamentos.')">
+                                            data-confirmar="Desativar esta categoria? Ela não aparecerá em novos lançamentos.">
                                         Desativar
                                     </button>
                                 </form>
@@ -337,7 +337,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 <script th:if="${abrirCategorias}">
     new bootstrap.Modal(document.getElementById('modalCategorias')).show();
 </script>
