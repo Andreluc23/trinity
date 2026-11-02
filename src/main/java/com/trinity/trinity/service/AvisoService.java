@@ -17,7 +17,15 @@ public class AvisoService {
     }
 
     public List<Aviso> listarTodos() {
-        return avisoRepository.findAll();
+        return avisoRepository.findAllByOrderByDataPublicacaoDesc();
+    }
+
+    public List<Aviso> listarAtivos() {
+        return avisoRepository.findByAtivoTrueOrderByDataPublicacaoDesc();
+    }
+
+    public List<Aviso> listarRecentes() {
+        return avisoRepository.findTop5ByAtivoTrueOrderByDataPublicacaoDesc();
     }
 
     public Aviso salvar(Aviso aviso) {
@@ -30,23 +38,14 @@ public class AvisoService {
     }
 
     public void desativar(Long id) {
-
         Aviso aviso = buscarPorId(id);
-
         aviso.setAtivo(false);
-
         avisoRepository.save(aviso);
     }
 
     public void ativar(Long id) {
-
         Aviso aviso = buscarPorId(id);
-
         aviso.setAtivo(true);
-
         avisoRepository.save(aviso);
-    }
-    public List<Aviso> listarRecentes() {
-        return avisoRepository.findTop5ByAtivoTrueOrderByDataPublicacaoDesc();
     }
 }

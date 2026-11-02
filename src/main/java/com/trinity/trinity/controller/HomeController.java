@@ -1,12 +1,12 @@
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.security.Permissoes;
 import com.trinity.trinity.service.AvisoService;
 import com.trinity.trinity.service.EventoService;
 import com.trinity.trinity.service.LancamentoService;
 import com.trinity.trinity.service.MembroService;
 import com.trinity.trinity.service.ResumoMensal;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -53,13 +52,13 @@ public class HomeController {
         model.addAttribute("avisosRecentes", avisoService.listarRecentes());
         model.addAttribute("proximosEventos", eventoService.listarProximos());
 
-        if (possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_MEMBROS")) {
+        if (Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_MEMBROS")) {
             model.addAttribute("totalMembros", membroService.contarTodos());
             model.addAttribute("membrosAtivos", membroService.contarAtivos());
             model.addAttribute("membrosInativos", membroService.contarInativos());
         }
 
-        if (possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_FINANCEIRO")) {
+        if (Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_FINANCEIRO")) {
             List<ResumoMensal> resumo = lancamentoService.resumoUltimosMeses(MESES_NO_GRAFICO);
 
             model.addAttribute("saldoGeral", lancamentoService.saldoGeral());
@@ -69,12 +68,5 @@ public class HomeController {
         }
 
         return "dashboard";
-    }
-
-    private boolean possuiAlguma(Authentication authentication, String... permissoes) {
-        Set<String> procuradas = Set.of(permissoes);
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(procuradas::contains);
     }
 }

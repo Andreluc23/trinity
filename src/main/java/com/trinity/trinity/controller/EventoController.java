@@ -1,7 +1,9 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Evento;
+import com.trinity.trinity.security.Permissoes;
 import com.trinity.trinity.service.EventoService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,10 @@ public class EventoController {
     }
 
     @GetMapping("/eventos")
-    public String listarEventos(Model model) {
+    public String listarEventos(Authentication authentication, Model model) {
+        boolean podeGerenciar = Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_EVENTOS");
 
-        model.addAttribute("eventos", eventoService.listarTodos());
-
+        model.addAttribute("eventos", podeGerenciar ? eventoService.listarTodos() : eventoService.listarFuturos());
         return "eventos";
     }
 

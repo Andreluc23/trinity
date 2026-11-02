@@ -10,5 +10,8 @@ import java.util.List;
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Long> {
     List<Evento> findTop5ByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(LocalDate data);
+    List<Evento> findAllByOrderByDataDescHorarioDesc();
+
+    List<Evento> findByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(LocalDate data);
 
 }

@@ -18,9 +18,12 @@ public class EventoService {
     }
 
     public List<Evento> listarTodos() {
-        return eventoRepository.findAll();
+        return eventoRepository.findAllByOrderByDataDescHorarioDesc();
     }
 
+    public List<Evento> listarFuturos() {
+        return eventoRepository.findByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(LocalDate.now());
+    }
     public Evento salvar(Evento evento) {
         return eventoRepository.save(evento);
     }

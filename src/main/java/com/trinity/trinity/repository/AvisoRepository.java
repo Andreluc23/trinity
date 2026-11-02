@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface AvisoRepository extends JpaRepository<Aviso, Long> {
     List<Aviso> findTop5ByAtivoTrueOrderByDataPublicacaoDesc();
+
+    List<Aviso> findAllByOrderByDataPublicacaoDesc();
+
+    List<Aviso> findByAtivoTrueOrderByDataPublicacaoDesc();
 }

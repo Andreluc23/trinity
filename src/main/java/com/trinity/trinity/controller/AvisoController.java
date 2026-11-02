@@ -1,7 +1,9 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Aviso;
+import com.trinity.trinity.security.Permissoes;
 import com.trinity.trinity.service.AvisoService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,10 @@ public class AvisoController {
     }
 
     @GetMapping("/avisos")
-    public String listarAvisos(Model model) {
+    public String listarAvisos(Authentication authentication, Model model) {
+        boolean podeGerenciar = Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_AVISOS");
 
-        model.addAttribute("avisos", avisoService.listarTodos());
-
+        model.addAttribute("avisos", podeGerenciar ? avisoService.listarTodos() : avisoService.listarAtivos());
         return "avisos";
     }
 
