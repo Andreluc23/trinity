@@ -10,4 +10,8 @@ import java.util.List;
 public interface EscalaItemRepository extends JpaRepository<EscalaItem, Long> {
 
     List<EscalaItem> findByEscalaId(Long escalaId);
+
+    List<EscalaItem> findByEscalaIdOrderByFuncaoMusicalNomeAsc(Long escalaId);
+
+    void deleteByEscalaId(Long escalaId);
 }

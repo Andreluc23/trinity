@@ -18,7 +18,11 @@ public class FuncaoMusicalService {
     }
 
     public List<FuncaoMusical> listarTodas() {
-        return funcaoMusicalRepository.findAll();
+        return funcaoMusicalRepository.findAllByOrderByNomeAsc();
+    }
+
+    public List<FuncaoMusical> listarAtivas() {
+        return funcaoMusicalRepository.findByAtivoTrueOrderByNomeAsc();
     }
 
     public FuncaoMusical buscarPorId(Long id) {
@@ -27,7 +31,11 @@ public class FuncaoMusicalService {
     }
 
     public FuncaoMusical salvar(FuncaoMusical funcaoMusical) {
-        String nome = funcaoMusical.getNome();
+        if (funcaoMusical.getNome() == null || funcaoMusical.getNome().isBlank()) {
+            throw new RegraNegocioException("Informe o nome da função.");
+        }
+
+        String nome = funcaoMusical.getNome().trim();
 
         boolean nomeEmUso = funcaoMusical.getId() == null
                 ? funcaoMusicalRepository.existsByNomeIgnoreCase(nome)
@@ -37,17 +45,21 @@ public class FuncaoMusicalService {
             throw new RegraNegocioException("Essa função musical já está cadastrada.");
         }
 
+        funcaoMusical.setNome(nome);
         return funcaoMusicalRepository.save(funcaoMusical);
     }
+
     public void desativar(Long id) {
-        FuncaoMusical funcao = buscarPorId(id);
-        funcao.setAtivo(false);
-        funcaoMusicalRepository.save(funcao);
+        alterarStatus(id, false);
     }
 
     public void ativar(Long id) {
+        alterarStatus(id, true);
+    }
+
+    private void alterarStatus(Long id, boolean ativo) {
         FuncaoMusical funcao = buscarPorId(id);
-        funcao.setAtivo(true);
+        funcao.setAtivo(ativo);
         funcaoMusicalRepository.save(funcao);
     }
 }
