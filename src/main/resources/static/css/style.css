@@ -187,3 +187,17 @@ section {
 .placar:hover {
     filter: brightness(0.94);
 }
+/* ---------- Bíblia ---------- */
+.texto-biblico {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.versiculo {
+    scroll-margin-top: 1rem;
+}
+
+.versiculo:target {
+    background: #fff3cd;
+    border-radius: 0.25rem;
+}

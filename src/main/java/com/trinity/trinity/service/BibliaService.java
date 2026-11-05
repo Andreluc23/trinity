@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import org.springframework.core.io.ClassPathResource;
@@ -79,5 +79,27 @@ public class BibliaService {
         }
 
         return List.copyOf(livrosLidos.values());
+    }
+    public ReferenciaBiblica capituloAnterior(int numeroLivro, int capitulo) {
+        if (capitulo > 1) {
+            return new ReferenciaBiblica(buscarLivro(numeroLivro), capitulo - 1);
+        }
+        if (numeroLivro > 1) {
+            LivroBiblia anterior = buscarLivro(numeroLivro - 1);
+            return new ReferenciaBiblica(anterior, anterior.quantidadeCapitulos());
+        }
+        return null;
+    }
+
+    public ReferenciaBiblica proximoCapitulo(int numeroLivro, int capitulo) {
+        LivroBiblia livro = buscarLivro(numeroLivro);
+
+        if (capitulo < livro.quantidadeCapitulos()) {
+            return new ReferenciaBiblica(livro, capitulo + 1);
+        }
+        if (numeroLivro < livros.size()) {
+            return new ReferenciaBiblica(buscarLivro(numeroLivro + 1), 1);
+        }
+        return null;
     }
 }

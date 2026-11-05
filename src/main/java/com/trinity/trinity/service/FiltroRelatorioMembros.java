@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 public record FiltroRelatorioMembros(Boolean ativo, Boolean comAcesso, String nome) {
 }

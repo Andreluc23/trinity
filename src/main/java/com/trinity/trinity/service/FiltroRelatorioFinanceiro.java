@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 import com.trinity.trinity.model.TipoLancamento;
 import org.springframework.format.annotation.DateTimeFormat;

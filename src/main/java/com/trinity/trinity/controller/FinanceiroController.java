@@ -2,8 +2,8 @@ package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.CategoriaFinanceira;
 import com.trinity.trinity.model.TipoLancamento;
-import com.trinity.trinity.biblia.CategoriaFinanceiraService;
-import com.trinity.trinity.biblia.LancamentoService;
+import com.trinity.trinity.service.CategoriaFinanceiraService;
+import com.trinity.trinity.service.LancamentoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

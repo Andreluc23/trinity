@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 import java.util.List;
 

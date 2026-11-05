@@ -1,11 +1,11 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.security.Permissoes;
-import com.trinity.trinity.biblia.AvisoService;
-import com.trinity.trinity.biblia.EventoService;
-import com.trinity.trinity.biblia.LancamentoService;
-import com.trinity.trinity.biblia.MembroService;
-import com.trinity.trinity.biblia.ResumoMensal;
+import com.trinity.trinity.service.AvisoService;
+import com.trinity.trinity.service.EventoService;
+import com.trinity.trinity.service.LancamentoService;
+import com.trinity.trinity.service.MembroService;
+import com.trinity.trinity.service.ResumoMensal;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

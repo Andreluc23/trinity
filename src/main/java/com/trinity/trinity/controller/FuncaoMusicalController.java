@@ -2,7 +2,7 @@ package com.trinity.trinity.controller;
 
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.FuncaoMusical;
-import com.trinity.trinity.biblia.FuncaoMusicalService;
+import com.trinity.trinity.service.FuncaoMusicalService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.trinity.trinity.biblia;
+package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Evento;
