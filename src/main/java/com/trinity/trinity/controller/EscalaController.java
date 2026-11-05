@@ -3,11 +3,7 @@ package com.trinity.trinity.controller;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Escala;
 import com.trinity.trinity.model.FuncaoMusical;
-import com.trinity.trinity.service.EscalaItemService;
-import com.trinity.trinity.service.EscalaService;
-import com.trinity.trinity.service.FuncaoMusicalService;
-import com.trinity.trinity.service.IntegranteEscala;
-import com.trinity.trinity.service.MembroService;
+import com.trinity.trinity.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,17 +21,17 @@ public class EscalaController {
     private final MembroService membroService;
     private final FuncaoMusicalService funcaoMusicalService;
 
-    public EscalaController(EscalaService escalaService,
-                            EscalaItemService escalaItemService,
-                            MembroService membroService,
-                            FuncaoMusicalService funcaoMusicalService) {
+    public EscalaController(
+            EscalaService escalaService,
+            EscalaItemService escalaItemService,
+            MembroService membroService,
+            FuncaoMusicalService funcaoMusicalService) {
+
         this.escalaService = escalaService;
         this.escalaItemService = escalaItemService;
         this.membroService = membroService;
         this.funcaoMusicalService = funcaoMusicalService;
     }
-
-    // ---------- Lista ----------
 
     @GetMapping
     public String listar(Model model) {
@@ -44,8 +40,6 @@ public class EscalaController {
         model.addAttribute("novaFuncao", new FuncaoMusical());
         return "escalas";
     }
-
-    // ---------- Formulário único (dados + integrantes) ----------
 
     @GetMapping("/nova")
     public String nova(Model model) {
@@ -80,60 +74,6 @@ public class EscalaController {
         }
     }
 
-    @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable("id") Long id) {
-        escalaService.desativar(id);
-        return "redirect:/escalas";
-    }
-
-    @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable("id") Long id) {
-        escalaService.ativar(id);
-        return "redirect:/escalas";
-    }
-
-    // ---------- Detalhes (rotas antigas, saem no passo 51) ----------
-
-    @GetMapping("/{id}")
-    public String detalhes(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("escala", escalaService.buscarPorId(id));
-        model.addAttribute("itens", escalaService.listarIntegrantes(id));
-        model.addAttribute("membros", membroService.listarAtivos());
-        model.addAttribute("funcoes", funcaoMusicalService.listarAtivas());
-        return "escala-detalhes";
-    }
-
-    @PostMapping("/{escalaId}/integrantes")
-    public String adicionarIntegrante(@PathVariable("escalaId") Long escalaId,
-                                      @RequestParam("membroId") Long membroId,
-                                      @RequestParam("funcaoId") Long funcaoId) {
-        var escala = escalaService.buscarPorId(escalaId);
-        var membro = membroService.buscarPorId(membroId);
-        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
-        escalaItemService.salvar(escala, membro, funcao);
-        return "redirect:/escalas/" + escalaId;
-    }
-
-    @PostMapping("/{escalaId}/integrantes/editar/{itemId}")
-    public String editarIntegrante(@PathVariable("escalaId") Long escalaId,
-                                   @PathVariable("itemId") Long itemId,
-                                   @RequestParam("membroId") Long membroId,
-                                   @RequestParam("funcaoId") Long funcaoId) {
-        var membro = membroService.buscarPorId(membroId);
-        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
-        escalaItemService.atualizar(itemId, membro, funcao);
-        return "redirect:/escalas/" + escalaId;
-    }
-
-    @PostMapping("/{escalaId}/integrantes/remover/{itemId}")
-    public String removerIntegrante(@PathVariable("escalaId") Long escalaId,
-                                    @PathVariable("itemId") Long itemId) {
-        escalaItemService.remover(itemId);
-        return "redirect:/escalas/" + escalaId;
-    }
-
-    // ---------- Apoio ----------
-
     private String exibirFormulario(Escala escala, List<IntegranteEscala> integrantes, Model model) {
         model.addAttribute("escala", escala);
         model.addAttribute("integrantes", integrantes);
@@ -154,5 +94,67 @@ public class EscalaController {
         return IntStream.range(0, Math.min(membroIds.size(), funcaoIds.size()))
                 .mapToObj(i -> new IntegranteEscala(membroIds.get(i), funcaoIds.get(i)))
                 .toList();
+    }
+    @PostMapping("/desativar/{id}")
+    public String desativar(@PathVariable("id") Long id) {
+
+        escalaService.desativar(id);
+
+        return "redirect:/escalas";
+    }
+
+    @PostMapping("/ativar/{id}")
+    public String ativar(@PathVariable("id") Long id) {
+
+        escalaService.ativar(id);
+
+        return "redirect:/escalas";
+    }
+    @PostMapping("/{escalaId}/integrantes")
+    public String adicionarIntegrante(
+            @PathVariable("escalaId") Long escalaId,
+            @RequestParam("membroId") Long membroId,
+            @RequestParam("funcaoId") Long funcaoId) {
+
+        var escala = escalaService.buscarPorId(escalaId);
+        var membro = membroService.buscarPorId(membroId);
+        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
+
+        escalaItemService.salvar(escala, membro, funcao);
+
+        return "redirect:/escalas/" + escalaId;
+    }
+    @PostMapping("/{escalaId}/integrantes/remover/{itemId}")
+    public String removerIntegrante(
+            @PathVariable("escalaId") Long escalaId,
+            @PathVariable("itemId") Long itemId) {
+
+        escalaItemService.remover(itemId);
+
+        return "redirect:/escalas/" + escalaId;
+    }
+    @GetMapping("/{id}")
+    public String detalhes(@PathVariable("id") Long id, Model model) {
+
+        model.addAttribute("escala", escalaService.buscarPorId(id));
+        model.addAttribute("itens", escalaItemService.listarPorEscala(id));
+        model.addAttribute("membros", membroService.listarTodos());
+        model.addAttribute("funcoes", funcaoMusicalService.listarTodas());
+
+        return "escala-detalhes";
+    }
+    @PostMapping("/{escalaId}/integrantes/editar/{itemId}")
+    public String editarIntegrante(
+            @PathVariable("escalaId") Long escalaId,
+            @PathVariable("itemId") Long itemId,
+            @RequestParam("membroId") Long membroId,
+            @RequestParam("funcaoId") Long funcaoId) {
+
+        var membro = membroService.buscarPorId(membroId);
+        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
+
+        escalaItemService.atualizar(itemId, membro, funcao);
+
+        return "redirect:/escalas/" + escalaId;
     }
 }

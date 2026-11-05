@@ -3,10 +3,13 @@ package com.trinity.trinity.controller;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.FuncaoMusical;
 import com.trinity.trinity.service.FuncaoMusicalService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/funcoes-musicais")
@@ -58,5 +61,18 @@ public class FuncaoMusicalController {
     private String voltarComModalAberto(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("abrirFuncoes", true);
         return "redirect:/escalas";
+    }
+    @PostMapping("/rapida")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> criarRapida(@RequestParam(name = "nome", required = false) String nome) {
+        try {
+            FuncaoMusical funcao = new FuncaoMusical();
+            funcao.setNome(nome);
+
+            FuncaoMusical salva = funcaoMusicalService.salvar(funcao);
+            return ResponseEntity.ok(Map.of("id", salva.getId(), "nome", salva.getNome()));
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
+        }
     }
 }
