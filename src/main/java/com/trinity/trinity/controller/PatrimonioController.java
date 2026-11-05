@@ -1,7 +1,7 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Patrimonio;
-import com.trinity.trinity.service.PatrimonioService;
+import com.trinity.trinity.biblia.PatrimonioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

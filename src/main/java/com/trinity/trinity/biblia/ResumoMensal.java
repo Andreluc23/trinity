@@ -1,4 +1,4 @@
-package com.trinity.trinity.service;
+package com.trinity.trinity.biblia;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

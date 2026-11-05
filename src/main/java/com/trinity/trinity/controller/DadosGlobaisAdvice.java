@@ -1,6 +1,6 @@
 package com.trinity.trinity.controller;
 
-import com.trinity.trinity.service.ContribuicaoService;
+import com.trinity.trinity.biblia.ContribuicaoService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.ControllerAdvice;

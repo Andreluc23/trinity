@@ -1,4 +1,4 @@
-package com.trinity.trinity.service;
+package com.trinity.trinity.biblia;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.exception.RegraNegocioException;

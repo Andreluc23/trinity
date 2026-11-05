@@ -3,7 +3,7 @@ package com.trinity.trinity.controller;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Escala;
 import com.trinity.trinity.model.FuncaoMusical;
-import com.trinity.trinity.service.*;
+import com.trinity.trinity.biblia.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

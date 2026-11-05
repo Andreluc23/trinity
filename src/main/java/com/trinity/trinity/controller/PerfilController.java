@@ -1,7 +1,7 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.exception.RegraNegocioException;
-import com.trinity.trinity.service.UsuarioService;
+import com.trinity.trinity.biblia.UsuarioService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
