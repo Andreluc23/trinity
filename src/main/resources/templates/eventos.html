@@ -26,7 +26,6 @@
 
         <div>
             <h1 class="mb-1">Eventos</h1>
-
             <p class="text-muted mb-0">
                 Programação de eventos da igreja.
             </p>
@@ -35,13 +34,14 @@
         <a th:href="@{/eventos/novo}"
            th:if="${podeGerenciar}"
            class="btn btn-dark text-nowrap">
-
             <i class="bi bi-calendar-plus me-2"></i>
             Novo evento
-
         </a>
 
     </div>
+
+    <div th:if="${sucesso}" class="alert alert-success" role="alert" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="alert alert-danger" role="alert" th:text="${erro}"></div>
 
     <div class="card shadow-sm border-0">
 
@@ -49,7 +49,7 @@
 
             <div class="table-responsive">
 
-                <table class="table align-middle text-nowrap">
+                <table class="table align-middle text-nowrap mb-0">
 
                     <thead>
                     <tr>
@@ -57,7 +57,8 @@
                         <th>Data</th>
                         <th>Horário</th>
                         <th>Local</th>
-                        <th>Status</th>
+                        <th th:if="${podeGerenciar}">Status</th>
+                        <th>Presença</th>
                         <th th:if="${podeGerenciar}">Ações</th>
                     </tr>
                     </thead>
@@ -74,16 +75,54 @@
 
                         <td th:text="${evento.local}"></td>
 
-                        <td>
-                            <span th:if="${evento.ativo}"
-                                  class="badge text-bg-success">
-                                Ativo
-                            </span>
+                        <td th:if="${podeGerenciar}">
+                            <span th:if="${evento.ativo}" class="badge text-bg-success">Ativo</span>
+                            <span th:unless="${evento.ativo}" class="badge text-bg-secondary">Cancelado</span>
+                        </td>
 
-                            <span th:unless="${evento.ativo}"
-                                  class="badge text-bg-secondary">
-                                Cancelado
-                            </span>
+                        <!-- Presença -->
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+
+                                <th:block th:if="${evento.ativo and !evento.data.isBefore(hoje)}"
+                                          th:with="minha=${minhasRespostas[evento.id]}">
+
+                                    <form th:action="@{/eventos/{id}/presenca(id=${evento.id})}" method="post">
+                                        <input type="hidden" name="resposta" value="VOU">
+                                        <button type="submit"
+                                                class="btn btn-sm"
+                                                th:classappend="${minha != null and minha.name() == 'VOU'} ? 'btn-success' : 'btn-outline-success'">
+                                            <i class="bi bi-check-lg me-1"></i>Vou
+                                        </button>
+                                    </form>
+
+                                    <form th:action="@{/eventos/{id}/presenca(id=${evento.id})}" method="post">
+                                        <input type="hidden" name="resposta" value="NAO_VOU">
+                                        <button type="submit"
+                                                class="btn btn-sm"
+                                                th:classappend="${minha != null and minha.name() == 'NAO_VOU'} ? 'btn-danger' : 'btn-outline-danger'">
+                                            <i class="bi bi-x-lg me-1"></i>Não vou
+                                        </button>
+                                    </form>
+
+                                </th:block>
+
+                                <span th:unless="${evento.ativo and !evento.data.isBefore(hoje)}"
+                                      class="text-muted">—</span>
+
+                                <!-- Placar, só para quem gerencia -->
+                                <a th:if="${podeGerenciar}"
+                                   th:with="contagem=${contagens[evento.id]},
+                                        vao=${contagem != null ? contagem.vao : 0},
+                                        naoVao=${contagem != null ? contagem.naoVao : 0}"
+                                   th:href="@{/eventos/{id}/presencas(id=${evento.id})}"
+                                   class="placar"
+                                   th:title="${vao + ' vão · ' + naoVao + ' não vão'}">
+                                    <span class="placar-sim"><i class="bi bi-check-lg me-1"></i><span th:text="${vao}">0</span></span>
+                                    <span class="placar-nao"><i class="bi bi-x-lg me-1"></i><span th:text="${naoVao}">0</span></span>
+                                </a>
+
+                            </div>
                         </td>
 
                         <td th:if="${podeGerenciar}">
@@ -91,39 +130,28 @@
 
                                 <a th:href="@{/eventos/editar/{id}(id=${evento.id})}"
                                    class="btn btn-sm btn-outline-primary">
-
                                     <i class="bi bi-pencil me-1"></i>
                                     Editar
-
                                 </a>
 
                                 <form th:if="${evento.ativo}"
                                       th:action="@{/eventos/cancelar/{id}(id=${evento.id})}"
                                       method="post">
-
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger"
                                             data-confirmar="Deseja realmente cancelar este evento?">
-
                                         <i class="bi bi-x-circle me-1"></i>
                                         Cancelar
-
                                     </button>
-
                                 </form>
 
                                 <form th:unless="${evento.ativo}"
                                       th:action="@{/eventos/ativar/{id}(id=${evento.id})}"
                                       method="post">
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-success">
-
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
                                         <i class="bi bi-check-circle me-1"></i>
                                         Ativar
-
                                     </button>
-
                                 </form>
 
                             </div>
@@ -132,11 +160,9 @@
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(eventos)}">
-                        <td th:colspan="${podeGerenciar} ? 6 : 5"
+                        <td th:colspan="${podeGerenciar} ? 7 : 5"
                             class="text-center text-muted py-4">
-
-                            Nenhum evento cadastrado.
-
+                            Nenhum evento disponível.
                         </td>
                     </tr>
 

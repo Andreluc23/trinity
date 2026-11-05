@@ -47,6 +47,8 @@ public class SecurityConfig {
 
                         // Avisos e eventos: todos visualizam, só quem tem permissão gerencia
                         .requestMatchers(HttpMethod.GET, "/avisos", "/eventos").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/eventos/*/presenca").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/avisos/*/leitura").authenticated()
                         .requestMatchers("/avisos/**").hasAnyAuthority(ADMIN, "GERENCIAR_AVISOS")
                         .requestMatchers("/eventos/**").hasAnyAuthority(ADMIN, "GERENCIAR_EVENTOS")
 
