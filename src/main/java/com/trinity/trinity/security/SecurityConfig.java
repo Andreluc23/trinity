@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
 
                         // Somente o administrador
-                        .requestMatchers("/usuarios/**", "/h2-console/**").hasAuthority(ADMIN)
+                        .requestMatchers("/usuarios/**").hasAuthority(ADMIN)
                         .requestMatchers(HttpMethod.POST, "/membros/desativar/**").hasAuthority(ADMIN)
 
                         // Membros
@@ -81,10 +81,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(new CookieCsrfTokenRepository())
                         .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
-                        .ignoringRequestMatchers("/h2-console/**")
                 )
-
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
                 .formLogin(form -> form
                         .loginPage("/login")

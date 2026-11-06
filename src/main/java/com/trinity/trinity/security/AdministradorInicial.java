@@ -44,6 +44,12 @@ public class AdministradorInicial implements CommandLineRunner {
             return;
         }
 
+        if (email == null || email.isBlank() || senha == null || senha.isBlank()) {
+            log.warn("Nenhum administrador existe e TRINITY_ADMIN_EMAIL/TRINITY_ADMIN_SENHA não foram definidos: "
+                    + "o administrador inicial não foi criado.");
+            return;
+        }
+
         Membro membro = membroRepository.findByEmailIgnoreCase(email)
                 .orElseGet(this::criarMembro);
         membro.setAtivo(true);

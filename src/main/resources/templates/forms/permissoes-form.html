@@ -63,6 +63,20 @@
                           method="post"
                           th:object="${usuario}">
 
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="admin"
+                                   th:field="*{admin}">
+                            <label class="form-check-label fw-semibold" for="admin">
+                                Administrador (acesso total)
+                            </label>
+                            <div class="form-text">
+                                Pode gerenciar usuários e permissões e desativar membros.
+                                Concede também todas as permissões abaixo.
+                            </div>
+                        </div>
+
                         <h5 class="mb-3">Permissões administrativas</h5>
 
                         <div class="row g-3">

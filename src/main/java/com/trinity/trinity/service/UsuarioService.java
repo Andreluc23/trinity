@@ -82,6 +82,32 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    public void definirAdmin(Long membroId, boolean admin, String emailLogado) {
+        Usuario usuario = buscarPorMembro(membroId);
+
+        if (usuario.isAdmin() == admin) {
+            return;
+        }
+
+        if (!admin) {
+            String emailUsuario = usuario.getMembro().getEmail();
+
+            if (emailUsuario != null && emailUsuario.equalsIgnoreCase(emailLogado)) {
+                throw new RegraNegocioException("Você não pode remover o seu próprio acesso de administrador.");
+            }
+
+            boolean ultimoAdminAtivo = usuario.isAtivo()
+                    && usuarioRepository.countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue() <= 1;
+
+            if (ultimoAdminAtivo) {
+                throw new RegraNegocioException("Não é possível remover o único administrador ativo do sistema.");
+            }
+        }
+
+        usuario.setAdmin(admin);
+        usuarioRepository.save(usuario);
+    }
+
     public void desativar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(false);

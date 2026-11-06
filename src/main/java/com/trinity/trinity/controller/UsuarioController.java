@@ -5,6 +5,7 @@ import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.service.MembroService;
 import com.trinity.trinity.service.UsuarioService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -78,7 +79,16 @@ public class UsuarioController {
     @PostMapping("/permissoes/{id}")
     public String salvarPermissoes(
             @PathVariable("id") Long id,
-            @ModelAttribute Usuario formulario) {
+            @ModelAttribute Usuario formulario,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            usuarioService.definirAdmin(id, formulario.isAdmin(), authentication.getName());
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+            return "redirect:/usuarios/permissoes/" + id;
+        }
 
         Usuario usuario = usuarioService.buscarPorMembro(id);
 
