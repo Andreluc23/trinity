@@ -1,6 +1,7 @@
 package com.trinity.trinity.service;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
+import com.trinity.trinity.exception.RegraNegocioException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -22,12 +25,24 @@ import java.util.Map;
 public class BibliaService {
 
     private static final String ARQUIVO = "biblia/biblia-livre.tsv";
+    private static final int TAMANHO_MINIMO_BUSCA = 3;
+    private static final int LIMITE_RESULTADOS = 100;
 
     private final List<LivroBiblia> livros;
+    private final List<VersiculoIndexado> indice;
+
+    /**
+     * Versículo acompanhado do texto já normalizado (sem acentos, minúsculo), para a busca.
+     */
+    private record VersiculoIndexado(VersiculoBiblico versiculo, String textoNormalizado) {
+    }
 
     public BibliaService() {
         this.livros = carregar();
+        this.indice = indexar(livros);
     }
+
+    // ---------- Consulta ----------
 
     public List<LivroBiblia> listarLivros() {
         return livros;
@@ -48,6 +63,53 @@ public class BibliaService {
         }
         return livro.capitulos().get(capitulo - 1);
     }
+
+    // ---------- Navegação entre capítulos ----------
+
+    public ReferenciaBiblica capituloAnterior(int numeroLivro, int capitulo) {
+        if (capitulo > 1) {
+            return new ReferenciaBiblica(buscarLivro(numeroLivro), capitulo - 1);
+        }
+        if (numeroLivro > 1) {
+            LivroBiblia anterior = buscarLivro(numeroLivro - 1);
+            return new ReferenciaBiblica(anterior, anterior.quantidadeCapitulos());
+        }
+        return null;
+    }
+
+    public ReferenciaBiblica proximoCapitulo(int numeroLivro, int capitulo) {
+        LivroBiblia livro = buscarLivro(numeroLivro);
+
+        if (capitulo < livro.quantidadeCapitulos()) {
+            return new ReferenciaBiblica(livro, capitulo + 1);
+        }
+        if (numeroLivro < livros.size()) {
+            return new ReferenciaBiblica(buscarLivro(numeroLivro + 1), 1);
+        }
+        return null;
+    }
+
+    // ---------- Busca ----------
+
+    public ResultadoBuscaBiblia buscar(String termo) {
+        String procurado = normalizar(termo == null ? "" : termo.trim());
+
+        if (procurado.length() < TAMANHO_MINIMO_BUSCA) {
+            throw new RegraNegocioException(
+                    "Digite pelo menos " + TAMANHO_MINIMO_BUSCA + " letras para buscar.");
+        }
+
+        List<VersiculoBiblico> encontrados = indice.stream()
+                .filter(item -> item.textoNormalizado().contains(procurado))
+                .map(VersiculoIndexado::versiculo)
+                .toList();
+
+        return new ResultadoBuscaBiblia(
+                encontrados.stream().limit(LIMITE_RESULTADOS).toList(),
+                encontrados.size());
+    }
+
+    // ---------- Carregamento ----------
 
     private List<LivroBiblia> carregar() {
         Map<Integer, LivroBiblia> livrosLidos = new LinkedHashMap<>();
@@ -80,26 +142,29 @@ public class BibliaService {
 
         return List.copyOf(livrosLidos.values());
     }
-    public ReferenciaBiblica capituloAnterior(int numeroLivro, int capitulo) {
-        if (capitulo > 1) {
-            return new ReferenciaBiblica(buscarLivro(numeroLivro), capitulo - 1);
+
+    private List<VersiculoIndexado> indexar(List<LivroBiblia> livros) {
+        List<VersiculoIndexado> itens = new ArrayList<>();
+
+        for (LivroBiblia livro : livros) {
+            for (int c = 0; c < livro.quantidadeCapitulos(); c++) {
+                List<String> versiculos = livro.capitulos().get(c);
+
+                for (int v = 0; v < versiculos.size(); v++) {
+                    String texto = versiculos.get(v);
+                    itens.add(new VersiculoIndexado(
+                            new VersiculoBiblico(livro, c + 1, v + 1, texto),
+                            normalizar(texto)));
+                }
+            }
         }
-        if (numeroLivro > 1) {
-            LivroBiblia anterior = buscarLivro(numeroLivro - 1);
-            return new ReferenciaBiblica(anterior, anterior.quantidadeCapitulos());
-        }
-        return null;
+
+        return List.copyOf(itens);
     }
 
-    public ReferenciaBiblica proximoCapitulo(int numeroLivro, int capitulo) {
-        LivroBiblia livro = buscarLivro(numeroLivro);
-
-        if (capitulo < livro.quantidadeCapitulos()) {
-            return new ReferenciaBiblica(livro, capitulo + 1);
-        }
-        if (numeroLivro < livros.size()) {
-            return new ReferenciaBiblica(buscarLivro(numeroLivro + 1), 1);
-        }
-        return null;
+    private static String normalizar(String texto) {
+        return Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT);
     }
 }

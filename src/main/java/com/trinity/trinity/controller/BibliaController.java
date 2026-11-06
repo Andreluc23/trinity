@@ -1,5 +1,6 @@
 package com.trinity.trinity.controller;
 
+import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.service.BibliaService;
 import com.trinity.trinity.service.LivroBiblia;
 import org.springframework.stereotype.Controller;
@@ -7,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -45,5 +47,17 @@ public class BibliaController {
         model.addAttribute("anterior", bibliaService.capituloAnterior(livro, capitulo));
         model.addAttribute("proximo", bibliaService.proximoCapitulo(livro, capitulo));
         return "biblia-capitulo";
+    }
+    @GetMapping("/busca")
+    public String busca(@RequestParam(name = "termo", required = false) String termo, Model model) {
+        model.addAttribute("termo", termo);
+
+        try {
+            model.addAttribute("resultado", bibliaService.buscar(termo));
+        } catch (RegraNegocioException e) {
+            model.addAttribute("erro", e.getMessage());
+        }
+
+        return "biblia-busca";
     }
 }
