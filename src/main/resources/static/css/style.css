@@ -188,16 +188,120 @@ section {
     filter: brightness(0.94);
 }
 /* ---------- Bíblia ---------- */
-.texto-biblico {
-    font-size: 1.1rem;
-    line-height: 1.7;
+.categoria-biblica {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 0.6rem;
 }
 
-.versiculo {
+.livro-biblico {
+    font-size: 0.95rem;
+}
+
+/* Livro aberto */
+.livro-aberto {
+    position: relative;
+    perspective: 2500px;
+    background: #fdfaf3;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 2.5rem 2rem;
+    overflow: hidden;
+}
+
+/* Lombada no meio, só com duas folhas */
+.livro-aberto.duas-paginas::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 64px;
+    transform: translateX(-50%);
+    background: linear-gradient(to right,
+            transparent,
+            rgba(0, 0, 0, 0.07) 40%,
+            rgba(0, 0, 0, 0.16) 50%,
+            rgba(0, 0, 0, 0.07) 60%,
+            transparent);
+    pointer-events: none;
+}
+
+.livro-visor {
+    overflow: hidden;
+}
+
+.livro-texto {
+    height: min(65vh, 560px);
+    column-fill: auto;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: #2b2b2b;
+}
+
+.livro-texto .versiculo {
+    margin-bottom: 0.6rem;
+    break-inside: avoid-column;
     scroll-margin-top: 1rem;
 }
 
 .versiculo:target {
     background: #fff3cd;
     border-radius: 0.25rem;
+}
+
+/* Virada de página */
+.livro-visor {
+    position: relative;
+}
+
+.camada-virada {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    perspective: 2200px;
+}
+
+.pagina-recorte {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #fdfaf3;
+}
+
+.folha-virando {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.folha-virando .face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #fdfaf3;
+    backface-visibility: hidden;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.12);
+}
+
+.folha-virando .face .pagina-recorte {
+    left: 0;
+}
+
+.folha-virando .face.verso {
+    transform: rotateY(180deg);
+}
+
+.folha-virando .sombra {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
 }

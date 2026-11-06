@@ -1,13 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html><!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -29,46 +20,48 @@
 
 <div th:replace="~{fragments/navbar :: navbar('biblia')}"></div>
 
-<main class="container py-4 py-md-5" style="max-width: 800px;">
+<main class="container py-4 py-md-5" style="max-width: 1200px;">
 
     <a th:href="@{/biblia/{l}(l=${livro.numero})}" class="text-decoration-none small">
         <i class="bi bi-arrow-left me-1"></i>
         <span th:text="${'Capítulos de ' + livro.nome}">Capítulos de João</span>
     </a>
 
-    <h2 class="mt-2 mb-4" th:text="${livro.nome + ' ' + capitulo}">João 3</h2>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-3 p-md-4 texto-biblico">
-
-            <p th:each="texto, status : ${versiculos}"
-               th:id="${'v' + status.count}"
-               class="versiculo mb-2">
-                <sup class="text-muted fw-semibold me-1" th:text="${status.count}">1</sup>
-                <span th:text="${texto}">Texto do versículo</span>
-            </p>
-
-        </div>
+    <div class="d-flex justify-content-between align-items-end mt-2 mb-3">
+        <h2 class="mb-0" th:text="${livro.nome + ' ' + capitulo}">João 3</h2>
+        <span id="indicadorPagina" class="text-muted small"></span>
     </div>
 
-    <!-- Navegação entre capítulos -->
-    <div class="d-flex justify-content-between mt-3">
+    <!-- Livro aberto -->
+    <div id="livro"
+         class="livro-aberto"
+         th:data-anterior="${anterior != null} ? @{/biblia/{l}/{c}(l=${anterior.livro.numero}, c=${anterior.capitulo})} : ''"
+         th:data-nome-anterior="${anterior != null} ? ${anterior.livro.nome + ' ' + anterior.capitulo} : ''"
+         th:data-proximo="${proximo != null} ? @{/biblia/{l}/{c}(l=${proximo.livro.numero}, c=${proximo.capitulo})} : ''"
+         th:data-nome-proximo="${proximo != null} ? ${proximo.livro.nome + ' ' + proximo.capitulo} : ''">
 
-        <a th:if="${anterior != null}"
-           th:href="@{/biblia/{l}/{c}(l=${anterior.livro.numero}, c=${anterior.capitulo})}"
-           class="btn btn-outline-dark">
-            <i class="bi bi-chevron-left me-1"></i>
-            <span th:text="${anterior.livro.nome + ' ' + anterior.capitulo}">João 2</span>
-        </a>
-        <span th:unless="${anterior != null}"></span>
+        <div id="visor" class="livro-visor">
+            <div id="texto" class="livro-texto">
+                <p th:each="texto, status : ${versiculos}"
+                   th:id="${'v' + status.count}"
+                   class="versiculo">
+                    <sup class="text-muted fw-semibold me-1" th:text="${status.count}">1</sup>
+                    <span th:text="${texto}">Texto do versículo</span>
+                </p>
+            </div>
+        </div>
 
-        <a th:if="${proximo != null}"
-           th:href="@{/biblia/{l}/{c}(l=${proximo.livro.numero}, c=${proximo.capitulo})}"
-           class="btn btn-outline-dark">
-            <span th:text="${proximo.livro.nome + ' ' + proximo.capitulo}">João 4</span>
-            <i class="bi bi-chevron-right ms-1"></i>
-        </a>
+    </div>
 
+    <!-- Navegação -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <button type="button" id="botaoAnterior" class="btn btn-outline-dark">
+            <i class="bi bi-chevron-left me-1"></i><span>Voltar</span>
+        </button>
+
+        <button type="button" id="botaoProximo" class="btn btn-outline-dark">
+            <span>Avançar</span><i class="bi bi-chevron-right ms-1"></i>
+        </button>
     </div>
 
     <th:block th:replace="~{biblia :: credito}"></th:block>
@@ -76,6 +69,276 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    (() => {
+        const ESPACO_ENTRE_FOLHAS = 64;   // largura da lombada, em pixels
+        const DURACAO_GIRO = 900;         // em milissegundos
+        const LARGURA_DUAS_FOLHAS = 992;  // a partir desta largura de tela, duas folhas
+        const MOVIMENTO_NATURAL = 'cubic-bezier(0.45, 0.05, 0.35, 1)';
+
+        const livro = document.getElementById('livro');
+        const visor = document.getElementById('visor');
+        const texto = document.getElementById('texto');
+        const indicador = document.getElementById('indicadorPagina');
+        const botaoAnterior = document.getElementById('botaoAnterior');
+        const botaoProximo = document.getElementById('botaoProximo');
+        const semAnimacao = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        let folhasPorVez = 1;
+        let larguraFolha = 0;
+        let deslocamento = 0;   // quantos pixels o texto anda a cada virada
+        let totalPaginas = 1;
+        let totalViradas = 1;
+        let atual = 0;
+        let virando = false;
+
+        // ---------- Montagem das folhas ----------
+
+        function montarFolhas() {
+            folhasPorVez = window.innerWidth >= LARGURA_DUAS_FOLHAS ? 2 : 1;
+            livro.classList.toggle('duas-paginas', folhasPorVez === 2);
+
+            texto.style.columnCount = folhasPorVez;
+            texto.style.columnGap = ESPACO_ENTRE_FOLHAS + 'px';
+
+            const larguraVisor = visor.clientWidth;
+            larguraFolha = (larguraVisor - ESPACO_ENTRE_FOLHAS * (folhasPorVez - 1)) / folhasPorVez;
+            deslocamento = larguraVisor + ESPACO_ENTRE_FOLHAS;
+
+            const fimDoTexto = texto.lastElementChild.getBoundingClientRect().right
+                - texto.getBoundingClientRect().left;
+
+            totalPaginas = Math.max(1, Math.ceil((fimDoTexto + ESPACO_ENTRE_FOLHAS) / (larguraFolha + ESPACO_ENTRE_FOLHAS)));
+            totalViradas = Math.ceil(totalPaginas / folhasPorVez);
+
+            mostrar(Math.min(atual, totalViradas - 1));
+        }
+
+        function mostrar(indice) {
+            atual = indice;
+            visor.scrollLeft = 0;
+            texto.style.transform = `translateX(${-atual * deslocamento}px)`;
+            atualizarControles();
+        }
+
+        function atualizarControles() {
+            const primeira = atual * folhasPorVez + 1;
+            const ultima = Math.min(primeira + folhasPorVez - 1, totalPaginas);
+
+            indicador.textContent = primeira === ultima
+                ? `Página ${primeira} de ${totalPaginas}`
+                : `Páginas ${primeira}–${ultima} de ${totalPaginas}`;
+
+            const noInicio = atual === 0;
+            const noFim = atual === totalViradas - 1;
+
+            botaoAnterior.querySelector('span').textContent =
+                noInicio && livro.dataset.nomeAnterior ? livro.dataset.nomeAnterior : 'Voltar';
+            botaoProximo.querySelector('span').textContent =
+                noFim && livro.dataset.nomeProximo ? livro.dataset.nomeProximo : 'Avançar';
+
+            botaoAnterior.disabled = noInicio && !livro.dataset.anterior;
+            botaoProximo.disabled = noFim && !livro.dataset.proximo;
+        }
+
+        // ---------- Peças da animação ----------
+
+        // Cópia do texto mostrando só uma página (as páginas são contadas a partir de 0)
+        function recortarPagina(indicePagina) {
+            const recorte = document.createElement('div');
+            recorte.className = 'pagina-recorte';
+            recorte.style.width = larguraFolha + 'px';
+
+            const copia = texto.cloneNode(true);
+            copia.removeAttribute('id');
+            copia.querySelectorAll('[id]').forEach(elemento => elemento.removeAttribute('id'));
+            copia.style.width = visor.clientWidth + 'px';
+            copia.style.transform = `translateX(${-indicePagina * (larguraFolha + ESPACO_ENTRE_FOLHAS)}px)`;
+
+            recorte.appendChild(copia);
+            return recorte;
+        }
+
+        // coluna 0 = folha da esquerda, coluna 1 = folha da direita
+        function posicionar(elemento, coluna) {
+            elemento.style.left = coluna * (larguraFolha + ESPACO_ENTRE_FOLHAS) + 'px';
+        }
+
+        function criarFace(classe, indicePagina) {
+            const face = document.createElement('div');
+            face.className = 'face ' + classe;
+
+            if (indicePagina !== null) {
+                face.appendChild(recortarPagina(indicePagina));
+            }
+
+            const sombra = document.createElement('div');
+            sombra.className = 'sombra';
+            face.appendChild(sombra);
+
+            return face;
+        }
+
+        // ---------- A virada ----------
+
+        function animarVirada(direcao, destino) {
+            const primeiraAtual = atual * folhasPorVez;
+            const primeiraDestino = destino * folhasPorVez;
+            const camada = document.createElement('div');
+            camada.className = 'camada-virada';
+
+            // 1. Páginas paradas por baixo da folha que vira
+            const paradas = folhasPorVez === 2
+                ? (direcao > 0 ? [primeiraAtual, primeiraDestino + 1] : [primeiraDestino, primeiraAtual + 1])
+                : [direcao > 0 ? primeiraDestino : primeiraAtual];
+
+            paradas.forEach((pagina, coluna) => {
+                const recorte = recortarPagina(pagina);
+                posicionar(recorte, coluna);
+                camada.appendChild(recorte);
+            });
+
+            // 2. A folha que gira: o que vai na frente, no verso, onde fica o eixo e o ângulo
+            let frente, verso, eixo, anguloInicial, anguloFinal;
+            const folha = document.createElement('div');
+            folha.className = 'folha-virando';
+            folha.style.width = larguraFolha + 'px';
+
+            if (folhasPorVez === 2 && direcao > 0) {
+                // A folha da direita vira para a esquerda, girando pela lombada
+                posicionar(folha, 1);
+                frente = primeiraAtual + 1;
+                verso = primeiraDestino;
+                eixo = `${-ESPACO_ENTRE_FOLHAS / 2}px 50%`;
+                anguloInicial = 0;
+                anguloFinal = -180;
+            } else if (folhasPorVez === 2) {
+                // A folha da esquerda volta para a direita
+                posicionar(folha, 0);
+                frente = primeiraAtual;
+                verso = primeiraDestino + 1;
+                eixo = `${larguraFolha + ESPACO_ENTRE_FOLHAS / 2}px 50%`;
+                anguloInicial = 0;
+                anguloFinal = 180;
+            } else if (direcao > 0) {
+                // Uma folha só: a atual levanta pela borda esquerda e sai
+                posicionar(folha, 0);
+                frente = primeiraAtual;
+                verso = null;
+                eixo = '0 50%';
+                anguloInicial = 0;
+                anguloFinal = -180;
+            } else {
+                // Uma folha só: a anterior volta pela borda esquerda e pousa
+                posicionar(folha, 0);
+                frente = primeiraDestino;
+                verso = null;
+                eixo = '0 50%';
+                anguloInicial = -180;
+                anguloFinal = 0;
+            }
+
+            folha.style.transformOrigin = eixo;
+
+            const faceFrente = criarFace('frente', frente);
+            const faceVerso = criarFace('verso', verso);
+            folha.append(faceFrente, faceVerso);
+            camada.appendChild(folha);
+            visor.appendChild(camada);
+
+            // 3. Movimento e luz: a face que se afasta escurece, a que chega clareia
+            const opcoes = { duration: DURACAO_GIRO, easing: MOVIMENTO_NATURAL, fill: 'forwards' };
+            const faceQueSai = anguloInicial === 0 ? faceFrente : faceVerso;
+            const faceQueChega = anguloInicial === 0 ? faceVerso : faceFrente;
+
+            faceQueSai.querySelector('.sombra').animate([{ opacity: 0 }, { opacity: 0.6 }], opcoes);
+            faceQueChega.querySelector('.sombra').animate([{ opacity: 0.6 }, { opacity: 0 }], opcoes);
+
+            const giro = folha.animate(
+                [{ transform: `rotateY(${anguloInicial}deg)` }, { transform: `rotateY(${anguloFinal}deg)` }],
+                opcoes);
+
+            return giro.finished.then(() => {
+                mostrar(destino);
+                camada.remove();
+            });
+        }
+
+        // direcao: +1 avança, -1 volta
+        function virar(direcao) {
+            if (virando) {
+                return;
+            }
+
+            const destino = atual + direcao;
+
+            if (destino < 0) {
+                if (livro.dataset.anterior) {
+                    window.location.href = livro.dataset.anterior + '#fim';
+                }
+                return;
+            }
+
+            if (destino >= totalViradas) {
+                if (livro.dataset.proximo) {
+                    window.location.href = livro.dataset.proximo;
+                }
+                return;
+            }
+
+            if (semAnimacao) {
+                mostrar(destino);
+                return;
+            }
+
+            virando = true;
+            animarVirada(direcao, destino).finally(() => virando = false);
+        }
+
+        // Em qual virada está um versículo (para abrir o link #v16 na folha certa)
+        function viradaDoVersiculo(elemento) {
+            const posicao = elemento.getBoundingClientRect().left - texto.getBoundingClientRect().left;
+            return Math.floor(posicao / deslocamento);
+        }
+
+        // ---------- Controles ----------
+
+        botaoAnterior.addEventListener('click', () => virar(-1));
+        botaoProximo.addEventListener('click', () => virar(1));
+
+        document.addEventListener('keydown', evento => {
+            if (evento.key === 'ArrowRight') virar(1);
+            if (evento.key === 'ArrowLeft') virar(-1);
+        });
+
+        let inicioToque = null;
+        livro.addEventListener('touchstart', evento => inicioToque = evento.touches[0].clientX, { passive: true });
+        livro.addEventListener('touchend', evento => {
+            if (inicioToque === null) return;
+            const distancia = evento.changedTouches[0].clientX - inicioToque;
+            if (Math.abs(distancia) > 50) virar(distancia < 0 ? 1 : -1);
+            inicioToque = null;
+        });
+
+        let espera;
+        window.addEventListener('resize', () => {
+            clearTimeout(espera);
+            espera = setTimeout(montarFolhas, 150);
+        });
+
+        // ---------- Início ----------
+
+        montarFolhas();
+
+        if (window.location.hash === '#fim') {
+            mostrar(totalViradas - 1);
+        } else if (/^#v\d+$/.test(window.location.hash)) {
+            const alvo = document.querySelector(window.location.hash);
+            if (alvo) mostrar(viradaDoVersiculo(alvo));
+        }
+    })();
+</script>
 
 </body>
 </html>

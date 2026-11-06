@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/biblia")
@@ -24,11 +27,15 @@ public class BibliaController {
 
     @GetMapping
     public String livros(Model model) {
-        List<LivroBiblia> livros = bibliaService.listarLivros();
-
-        model.addAttribute("antigoTestamento", livros.stream().filter(l -> l.testamento().equals("AT")).toList());
-        model.addAttribute("novoTestamento", livros.stream().filter(l -> l.testamento().equals("NT")).toList());
+        model.addAttribute("antigoTestamento", agruparPorCategoria("AT"));
+        model.addAttribute("novoTestamento", agruparPorCategoria("NT"));
         return "biblia";
+    }
+
+    private Map<String, List<LivroBiblia>> agruparPorCategoria(String testamento) {
+        return bibliaService.listarLivros().stream()
+                .filter(livro -> livro.testamento().equals(testamento))
+                .collect(Collectors.groupingBy(LivroBiblia::categoria, LinkedHashMap::new, Collectors.toList()));
     }
 
     @GetMapping("/{livro}")

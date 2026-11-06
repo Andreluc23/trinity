@@ -26,6 +26,7 @@
         <h2 class="mb-1">Bíblia Sagrada</h2>
         <p class="text-muted mb-0">Escolha um livro para começar a leitura.</p>
     </div>
+
     <form th:fragment="busca(termo)"
           th:action="@{/biblia/busca}"
           method="get"
@@ -47,30 +48,46 @@
 
     <div class="row g-4">
 
+        <!-- Antigo Testamento -->
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h5 class="mb-3">Antigo Testamento</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a th:each="livro : ${antigoTestamento}"
-                           th:href="@{/biblia/{n}(n=${livro.numero})}"
-                           th:text="${livro.nome}"
-                           class="btn btn-sm btn-outline-dark">Gênesis</a>
-                    </div>
+                <div class="card-body p-3 p-md-4">
+
+                    <h4 class="mb-3">Antigo Testamento</h4>
+
+                    <section th:each="grupo : ${antigoTestamento}" class="mb-4">
+                        <h6 class="categoria-biblica" th:text="${grupo.key}">Pentateuco</h6>
+                        <div class="row row-cols-2 row-cols-sm-3 g-2">
+                            <div class="col" th:each="livro : ${grupo.value}">
+                                <a th:href="@{/biblia/{n}(n=${livro.numero})}"
+                                   th:text="${livro.nome}"
+                                   class="btn btn-outline-dark w-100 py-2 livro-biblico">Gênesis</a>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
             </div>
         </div>
 
+        <!-- Novo Testamento -->
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h5 class="mb-3">Novo Testamento</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a th:each="livro : ${novoTestamento}"
-                           th:href="@{/biblia/{n}(n=${livro.numero})}"
-                           th:text="${livro.nome}"
-                           class="btn btn-sm btn-outline-dark">Mateus</a>
-                    </div>
+                <div class="card-body p-3 p-md-4">
+
+                    <h4 class="mb-3">Novo Testamento</h4>
+
+                    <section th:each="grupo : ${novoTestamento}" class="mb-4">
+                        <h6 class="categoria-biblica" th:text="${grupo.key}">Evangelhos</h6>
+                        <div class="row row-cols-2 row-cols-sm-3 g-2">
+                            <div class="col" th:each="livro : ${grupo.value}">
+                                <a th:href="@{/biblia/{n}(n=${livro.numero})}"
+                                   th:text="${livro.nome}"
+                                   class="btn btn-outline-dark w-100 py-2 livro-biblico">Mateus</a>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
             </div>
         </div>
