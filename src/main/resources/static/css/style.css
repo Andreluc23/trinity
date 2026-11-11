@@ -5,6 +5,27 @@ body {
    background: radial-gradient(circle,rgba(200, 227, 226, 1) 37%, rgba(148, 187, 233, 1) 100%);
     color: #000000;
 }
+/* ---------- Padrão visual das telas internas ---------- */
+
+/* Título da página: o mesmo tamanho, seja <h1> ou <h2> */
+h1,
+h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* Tabelas: o mesmo tamanho de texto e o mesmo cabeçalho em todas as listas */
+.table {
+    font-size: 0.95rem;
+}
+
+.table > thead > tr > th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
 /* Navbar */
 
@@ -304,4 +325,22 @@ section {
     background: rgba(0, 0, 0, 0.35);
     opacity: 0;
     pointer-events: none;
+}
+/* Modais: mesma largura e mesmo visual em todo o sistema */
+.modal,
+.modal-sm,
+.modal-lg,
+.modal-xl {
+    --bs-modal-width: 560px;
+}
+
+.modal-content {
+    border: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
 }

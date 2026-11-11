@@ -143,7 +143,7 @@
     <div th:if="${podeGerenciar}"
          class="modal fade" id="modalFuncoes" tabindex="-1"
          aria-labelledby="tituloFuncoes" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
 
                 <div class="modal-header">
@@ -152,8 +152,6 @@
                 </div>
 
                 <div class="modal-body">
-
-                    <div th:if="${sucessoFuncao}" class="alert alert-success" role="alert" th:text="${sucessoFuncao}"></div>
                     <div th:if="${erroFuncao}" class="alert alert-danger" role="alert" th:text="${erroFuncao}"></div>
 
                     <!-- Cadastro rápido -->

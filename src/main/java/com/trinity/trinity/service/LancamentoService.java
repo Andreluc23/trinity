@@ -7,6 +7,7 @@ import com.trinity.trinity.repository.LancamentoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -125,9 +126,10 @@ public class LancamentoService {
 
         return lancamentoRepository.save(lancamento);
     }
+
     public BigDecimal saldoGeral() {
-        return lancamentoRepository.somarTudo(TipoLancamento.ENTRADA)
-                .subtract(lancamentoRepository.somarTudo(TipoLancamento.SAIDA));
+        return emCentavos(lancamentoRepository.somarTudo(TipoLancamento.ENTRADA)
+                .subtract(lancamentoRepository.somarTudo(TipoLancamento.SAIDA)));
     }
 
     public List<ResumoMensal> resumoUltimosMeses(int quantidade) {
@@ -142,5 +144,11 @@ public class LancamentoService {
         }
 
         return resumo;
+    }
+    /**
+     * O SQLite guarda decimais como ponto flutuante: arredonda para centavos.
+     */
+    private static BigDecimal emCentavos(BigDecimal valor) {
+        return valor.setScale(2, RoundingMode.HALF_UP);
     }
 }

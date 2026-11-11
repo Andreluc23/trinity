@@ -18,7 +18,7 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar('avisos')}"></div>
 
-<div class="container py-5"
+<div class="container py-4 py-md-5"
      th:with="podeGerenciar=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_AVISOS'')')}">
 
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
@@ -42,7 +42,7 @@
     <div th:if="${erro}" class="alert alert-danger" role="alert" th:text="${erro}"></div>
 
     <div class="card shadow-sm border-0">
-        <div class="card-body">
+        <div class="card-body p-0">
 
             <div class="table-responsive">
 

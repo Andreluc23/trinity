@@ -149,7 +149,35 @@
             </div>
 
     </div>
+        <!-- Aviso de sucesso no canto inferior esquerdo, para todas as telas -->
+        <div th:if="${sucesso != null or sucessoCategoria != null or sucessoFuncao != null}"
+             class="toast-container position-fixed bottom-0 end-0 p-3 aviso-sistema">
 
+            <div class="toast align-items-center text-bg-success border-0"
+                 role="status"
+                 aria-live="polite"
+                 aria-atomic="true"
+                 data-bs-delay="4000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <span th:text="${sucesso ?: (sucessoCategoria ?: sucessoFuncao)}">Salvo com sucesso.</span>
+                    </div>
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"
+                            aria-label="Fechar"></button>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.querySelectorAll('.aviso-sistema .toast')
+                        .forEach(aviso => bootstrap.Toast.getOrCreateInstance(aviso).show());
+                });
+            </script>
+
+        </div>
 </nav>
 
 </body>

@@ -59,8 +59,6 @@
 
     </div>
 
-    <div th:if="${sucesso}" class="alert alert-success" role="alert" th:text="${sucesso}"></div>
-
     <!-- Navegação entre meses -->
     <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
 
@@ -208,7 +206,7 @@
 
 <!-- Modal de categorias -->
 <div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="tituloCategorias" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -217,8 +215,6 @@
             </div>
 
             <div class="modal-body">
-
-                <div th:if="${sucessoCategoria}" class="alert alert-success" role="alert" th:text="${sucessoCategoria}"></div>
                 <div th:if="${erroCategoria}" class="alert alert-danger" role="alert" th:text="${erroCategoria}"></div>
 
                 <form th:action="@{/financeiro/categorias}"
