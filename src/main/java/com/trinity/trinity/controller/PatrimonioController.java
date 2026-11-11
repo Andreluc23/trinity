@@ -58,4 +58,10 @@ public class PatrimonioController {
         redirectAttributes.addFlashAttribute("sucesso", "Patrimônio ativado.");
         return REDIRECT_LISTA;
     }
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        patrimonioService.excluir(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Patrimônio excluído.");
+        return REDIRECT_LISTA;
+    }
 }

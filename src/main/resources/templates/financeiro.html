@@ -43,6 +43,7 @@
                 <i class="bi bi-heart me-1"></i>
                 Contribuir
             </a>
+
             <a th:href="@{/financeiro/contribuicoes}" class="btn btn-outline-dark text-nowrap">
                 <i class="bi bi-inbox me-1"></i>
                 Contribuições
@@ -180,6 +181,18 @@
                                         title="Inativar"
                                         data-confirmar="Inativar este lançamento? Ele deixará de compor os totais.">
                                     <i class="bi bi-x-circle"></i>
+                                </button>
+                            </form>
+
+                            <form th:if="${lancamento.origem.name() != 'PIX'}"
+                                  th:action="@{/financeiro/lancamentos/excluir/{id}(id=${lancamento.id})}"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        title="Excluir"
+                                        data-confirmar="Excluir este lançamento? Ele deixa de existir e não aparece mais em nenhum relatório.">
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </form>
 

@@ -66,6 +66,16 @@ public class LancamentoService {
         lancamento.setAtivo(false);
         lancamentoRepository.save(lancamento);
     }
+    public void excluir(Long id) {
+        Lancamento lancamento = buscarPorId(id);
+
+        if (lancamento.getOrigem() == OrigemLancamento.PIX) {
+            throw new RegraNegocioException(
+                    "Lançamentos de PIX estão ligados a uma contribuição e não podem ser excluídos. Use Inativar.");
+        }
+
+        lancamentoRepository.delete(lancamento);
+    }
 
     /**
      * Origem e status nunca vêm do formulário: num lançamento novo são definidos aqui,

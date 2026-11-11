@@ -65,6 +65,19 @@ public class LancamentoController {
         redirectAttributes.addFlashAttribute("sucesso", "Lançamento inativado.");
         return voltarParaOMes(lancamento.getData());
     }
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        Lancamento lancamento = lancamentoService.buscarPorId(id);
+
+        try {
+            lancamentoService.excluir(id);
+            redirectAttributes.addFlashAttribute("sucesso", "Lançamento excluído.");
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("falha", e.getMessage());
+        }
+
+        return voltarParaOMes(lancamento.getData());
+    }
 
     private String exibirFormulario(Lancamento lancamento, Model model) {
         model.addAttribute("lancamento", lancamento);

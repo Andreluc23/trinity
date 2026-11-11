@@ -148,7 +148,7 @@
                               class="d-inline">
 
                             <button type="submit"
-                                    class="btn btn-sm btn-outline-danger">
+                                    class="btn btn-sm btn-outline-danger " data-confirmar="Deseja desativar este item?">
 
                                 Desativar
 
@@ -168,6 +168,16 @@
 
                             </button>
 
+                        </form>
+                        <form th:action="@{/patrimonios/excluir/{id}(id=${patrimonio.id})}"
+                              method="post"
+                              class="d-inline">
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    title="Excluir"
+                                    data-confirmar="Excluir este item do patrimônio? Esta ação não pode ser desfeita.">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </form>
 
                     </td>
@@ -198,6 +208,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 </body>
 </html>

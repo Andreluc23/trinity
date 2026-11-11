@@ -152,11 +152,13 @@
             </div>
 
     </div>
-        <!-- Aviso de sucesso no canto inferior esquerdo, para todas as telas -->
-        <div th:if="${sucesso != null or sucessoCategoria != null or sucessoFuncao != null}"
+        <!-- Avisos no canto inferior direito, para todas as telas -->
+        <div th:if="${sucesso != null or sucessoCategoria != null or sucessoFuncao != null or falha != null}"
              class="toast-container position-fixed bottom-0 end-0 p-3 aviso-sistema">
 
-            <div class="toast align-items-center text-bg-success border-0"
+            <!-- Sucesso -->
+            <div th:if="${sucesso != null or sucessoCategoria != null or sucessoFuncao != null}"
+                 class="toast align-items-center text-bg-success border-0"
                  role="status"
                  aria-live="polite"
                  aria-atomic="true"
@@ -166,10 +168,25 @@
                         <i class="bi bi-check-circle me-2"></i>
                         <span th:text="${sucesso ?: (sucessoCategoria ?: sucessoFuncao)}">Salvo com sucesso.</span>
                     </div>
-                    <button type="button"
-                            class="btn-close btn-close-white me-2 m-auto"
-                            data-bs-dismiss="toast"
-                            aria-label="Fechar"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Fechar"></button>
+                </div>
+            </div>
+
+            <!-- Falha (ação recusada) -->
+            <div th:if="${falha != null}"
+                 class="toast align-items-center text-bg-danger border-0"
+                 role="alert"
+                 aria-live="assertive"
+                 aria-atomic="true"
+                 data-bs-delay="7000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <span th:text="${falha}">Não foi possível concluir a ação.</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Fechar"></button>
                 </div>
             </div>
 

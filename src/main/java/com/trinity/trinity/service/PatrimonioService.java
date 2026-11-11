@@ -53,5 +53,8 @@ public class PatrimonioService {
         patrimonio.setAtivo(true);
         patrimonioRepository.save(patrimonio);
     }
+    public void excluir(Long id) {
+        patrimonioRepository.delete(buscarPorId(id));
+    }
 
 }
