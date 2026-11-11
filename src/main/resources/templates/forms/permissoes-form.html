@@ -221,7 +221,27 @@
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    // Ao marcar "Administrador", marca e trava todas as permissões
+    (() => {
+        const campoAdmin = document.getElementById('admin');
+        const permissoes = campoAdmin.form.querySelectorAll('input[type="checkbox"]:not(#admin)');
+
+        function aplicar() {
+            permissoes.forEach(permissao => {
+                if (campoAdmin.checked) {
+                    permissao.checked = true;
+                }
+                permissao.disabled = campoAdmin.checked;
+            });
+        }
+
+        campoAdmin.addEventListener('change', aplicar);
+        aplicar();
+    })();
+</script>
+
+
 <th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 </body>
 </html>

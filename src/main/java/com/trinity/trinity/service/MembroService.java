@@ -59,6 +59,12 @@ public class MembroService {
                 );
             }
         }
+        membro.getEndereco().normalizar();
+
+        String cep = membro.getEndereco().getCep();
+        if (cep != null && cep.length() != 8) {
+            throw new RegraNegocioException("CEP inválido.");
+        }
 
         if (cpfDuplicado) {
             throw new RegraNegocioException("CPF já cadastrado.");

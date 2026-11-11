@@ -58,20 +58,23 @@ public class EventoController {
     }
 
     @PostMapping("/eventos")
-    public String salvarEvento(Evento evento) {
+    public String salvarEvento(Evento evento, RedirectAttributes redirectAttributes) {
         eventoService.salvar(evento);
+        redirectAttributes.addFlashAttribute("sucesso", "Evento salvo com sucesso.");
         return "redirect:/eventos";
     }
 
     @PostMapping("/eventos/cancelar/{id}")
-    public String cancelarEvento(@PathVariable("id") Long id) {
+    public String cancelarEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         eventoService.cancelar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Evento cancelado.");
         return "redirect:/eventos";
     }
 
     @PostMapping("/eventos/ativar/{id}")
-    public String ativarEvento(@PathVariable("id") Long id) {
+    public String ativarEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         eventoService.ativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Evento reativado.");
         return "redirect:/eventos";
     }
 

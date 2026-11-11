@@ -96,18 +96,16 @@ public class EscalaController {
                 .toList();
     }
     @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable("id") Long id) {
-
+    public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         escalaService.desativar(id);
-
+        redirectAttributes.addFlashAttribute("sucesso", "Escala desativada.");
         return "redirect:/escalas";
     }
 
     @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable("id") Long id) {
-
+    public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         escalaService.ativar(id);
-
+        redirectAttributes.addFlashAttribute("sucesso", "Escala ativada.");
         return "redirect:/escalas";
     }
     @PostMapping("/{escalaId}/integrantes")

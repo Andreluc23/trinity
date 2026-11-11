@@ -55,20 +55,23 @@ public class AvisoController {
     }
 
     @PostMapping("/avisos")
-    public String salvarAviso(Aviso aviso) {
+    public String salvarAviso(Aviso aviso, RedirectAttributes redirectAttributes) {
         avisoService.salvar(aviso);
+        redirectAttributes.addFlashAttribute("sucesso", "Aviso salvo com sucesso.");
         return "redirect:/avisos";
     }
 
     @PostMapping("/avisos/desativar/{id}")
-    public String desativarAviso(@PathVariable("id") Long id) {
+    public String desativarAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         avisoService.desativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Aviso desativado.");
         return "redirect:/avisos";
     }
 
     @PostMapping("/avisos/ativar/{id}")
-    public String ativarAviso(@PathVariable("id") Long id) {
+    public String ativarAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         avisoService.ativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Aviso ativado.");
         return "redirect:/avisos";
     }
 

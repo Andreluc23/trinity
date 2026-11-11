@@ -46,19 +46,18 @@ public class UsuarioController {
     }
 
     @PostMapping("/criar-acesso/{id}")
-    public String criarAcesso(
-            @PathVariable("id") Long id,
-            @RequestParam("senhaProvisoria") String senhaProvisoria,
-            Model model) {
-
+    public String criarAcesso(@PathVariable("id") Long id,
+                              @RequestParam("senhaProvisoria") String senhaProvisoria,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
         try {
             usuarioService.criarAcesso(id, senhaProvisoria);
+            redirectAttributes.addFlashAttribute("sucesso",
+                    "Acesso criado. Informe a senha provisória ao membro.");
             return "redirect:/membros";
-
         } catch (RegraNegocioException e) {
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("membro", membroService.buscarPorId(id));
-
             return "forms/criar-acesso-form";
         }
     }
@@ -77,12 +76,10 @@ public class UsuarioController {
     }
 
     @PostMapping("/permissoes/{id}")
-    public String salvarPermissoes(
-            @PathVariable("id") Long id,
-            @ModelAttribute Usuario formulario,
-            Authentication authentication,
-            RedirectAttributes redirectAttributes) {
-
+    public String salvarPermissoes(@PathVariable("id") Long id,
+                                   @ModelAttribute Usuario formulario,
+                                   Authentication authentication,
+                                   RedirectAttributes redirectAttributes) {
         try {
             usuarioService.definirAdmin(id, formulario.isAdmin(), authentication.getName());
         } catch (RegraNegocioException e) {
@@ -100,8 +97,13 @@ public class UsuarioController {
         usuario.setGerenciarPatrimonio(formulario.isGerenciarPatrimonio());
         usuario.setGerenciarFinanceiro(formulario.isGerenciarFinanceiro());
 
+        if (usuario.isAdmin()) {
+            usuario.concederTodasAsPermissoes();
+        }
+
         usuarioService.salvar(usuario);
 
+        redirectAttributes.addFlashAttribute("sucesso", "Permissões atualizadas.");
         return "redirect:/membros";
     }
     @PostMapping("/redefinir-senha/{id}")

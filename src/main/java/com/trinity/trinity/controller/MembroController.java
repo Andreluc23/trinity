@@ -68,6 +68,7 @@ public class MembroController {
                                   RedirectAttributes redirectAttributes) {
         try {
             membroService.desativar(id);
+            redirectAttributes.addFlashAttribute("sucesso", "Membro desativado.");
         } catch (RegraNegocioException e) {
             redirectAttributes.addFlashAttribute("erro", e.getMessage());
         }
@@ -75,23 +76,21 @@ public class MembroController {
     }
 
     @PostMapping("/membros/ativar/{id}")
-    public String ativarMembro(@PathVariable("id") Long id) {
+    public String ativarMembro(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         membroService.ativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Membro ativado.");
         return "redirect:/membros";
     }
 
     @PostMapping("/membros")
-    public String salvarMembro(Membro membro, Model model) {
-
+    public String salvarMembro(Membro membro, Model model, RedirectAttributes redirectAttributes) {
         try {
             membroService.salvar(membro);
+            redirectAttributes.addFlashAttribute("sucesso", "Membro salvo com sucesso.");
             return "redirect:/membros";
-
         } catch (RegraNegocioException e) {
-
             model.addAttribute("erro", e.getMessage());
             model.addAttribute("membro", membro);
-
             return "forms/membro-form";
         }
     }

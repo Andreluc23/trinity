@@ -182,7 +182,7 @@
     <div class="row g-3">
 
         <!-- Avisos recentes -->
-        <div class="col-12 col-lg-6">
+        <div th:class="${verMembros or verFinanceiro} ? 'col-12 col-lg-6' : 'col-12'">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
 
@@ -277,7 +277,7 @@
         </div>
 
         <!-- Próximos eventos -->
-        <div class="col-12 col-lg-6">
+        <div th:class="${verMembros or verFinanceiro} ? 'col-12 col-lg-6' : 'col-12'">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
 

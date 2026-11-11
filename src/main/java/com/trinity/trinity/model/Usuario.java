@@ -46,6 +46,15 @@ public class Usuario {
 
     public Usuario() {
     }
+    public void concederTodasAsPermissoes() {
+        this.gerenciarMembros = true;
+        this.gerenciarAvisos = true;
+        this.gerenciarEventos = true;
+        this.acessoEscalas = true;
+        this.gerenciarEscalas = true;
+        this.gerenciarPatrimonio = true;
+        this.gerenciarFinanceiro = true;
+    }
 
     public Long getId() {
         return id;

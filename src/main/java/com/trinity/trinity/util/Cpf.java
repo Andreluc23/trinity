@@ -44,4 +44,16 @@ public final class Cpf {
         int resto = (soma * 10) % 11;
         return resto == 10 ? 0 : resto;
     }
+    /**
+     * Oculta o início e os dígitos verificadores: 529.982.247-25 vira ***.982.247-**.
+     */
+    public static String mascarar(String cpf) {
+        String d = somenteDigitos(cpf);
+
+        if (d.length() != 11) {
+            return "***";
+        }
+
+        return "***." + d.substring(3, 6) + "." + d.substring(6, 9) + "-**";
+    }
 }

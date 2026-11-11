@@ -28,7 +28,8 @@ public class Membro {
     @Column(unique = true)
     private String email;
 
-    private String endereco;
+    @Embedded
+    private Endereco endereco = new Endereco();
 
     @Column(nullable = false)
     private boolean ativo = true;
@@ -63,7 +64,9 @@ public class Membro {
     public String getCpfFormatado() {
         return Cpf.formatar(cpf);
     }
-
+    public String getCpfMascarado() {
+        return Cpf.mascarar(cpf);
+    }
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
@@ -84,11 +87,14 @@ public class Membro {
         this.email = email;
     }
 
-    public String getEndereco() {
+    public Endereco getEndereco() {
+        if (endereco == null) {
+            endereco = new Endereco();
+        }
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 

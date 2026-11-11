@@ -113,7 +113,7 @@
 
                 <dt class="col-sm-4">Endereço</dt>
                 <dd class="col-sm-8 mb-0"
-                    th:text="${membro.endereco != null and !membro.endereco.isBlank()} ? ${membro.endereco} : 'Não informado'"></dd>
+                    th:text="${membro.endereco.completo != null} ? ${membro.endereco.completo} : 'Não informado'"></dd>
 
             </dl>
 

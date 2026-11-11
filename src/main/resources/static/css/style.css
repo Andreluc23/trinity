@@ -344,3 +344,8 @@ section {
     font-size: 1.1rem;
     font-weight: 600;
 }
+/* Card sem margem interna (com tabela): mantém os cantos arredondados */
+.card > .card-body.p-0 {
+    border-radius: inherit;
+    overflow: hidden;
+}
