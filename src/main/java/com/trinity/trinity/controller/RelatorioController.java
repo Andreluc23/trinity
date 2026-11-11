@@ -1,6 +1,7 @@
 package com.trinity.trinity.controller;
 
 import com.trinity.trinity.exception.RegraNegocioException;
+import com.trinity.trinity.model.Patrimonio;
 import com.trinity.trinity.model.TipoLancamento;
 import com.trinity.trinity.service.*;
 import org.springframework.stereotype.Controller;
@@ -66,5 +67,35 @@ public class RelatorioController {
     public String membros(@ModelAttribute("filtro") FiltroRelatorioMembros filtro, Model model) {
         model.addAttribute("relatorio", relatorioService.gerarMembros(filtro));
         return "relatorio-membros";
+    }
+    @GetMapping("/patrimonio")
+    public String patrimonio(@ModelAttribute("filtro") FiltroRelatorioPatrimonio filtro, Model model) {
+        model.addAttribute("relatorio", relatorioService.gerarPatrimonio(filtro));
+        model.addAttribute("categorias", relatorioService.opcoesDePatrimonio(Patrimonio::getCategoria));
+        model.addAttribute("localizacoes", relatorioService.opcoesDePatrimonio(Patrimonio::getLocalizacao));
+        model.addAttribute("filtrosAplicados", descreverFiltrosPatrimonio(filtro));
+        return "relatorio-patrimonio";
+    }
+
+    private List<String> descreverFiltrosPatrimonio(FiltroRelatorioPatrimonio filtro) {
+        List<String> descricoes = new ArrayList<>();
+
+        if (filtro.ativo() != null) {
+            descricoes.add("Situação: " + (filtro.ativo() ? "Ativos" : "Inativos"));
+        }
+        if (filtro.categoria() != null && !filtro.categoria().isBlank()) {
+            descricoes.add("Categoria: " + filtro.categoria());
+        }
+        if (filtro.estado() != null && !filtro.estado().isBlank()) {
+            descricoes.add("Estado: " + filtro.estado());
+        }
+        if (filtro.localizacao() != null && !filtro.localizacao().isBlank()) {
+            descricoes.add("Localização: " + filtro.localizacao());
+        }
+        if (filtro.nome() != null && !filtro.nome().isBlank()) {
+            descricoes.add("Nome contém: " + filtro.nome().trim());
+        }
+
+        return descricoes;
     }
 }

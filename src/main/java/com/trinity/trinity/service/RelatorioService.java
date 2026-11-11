@@ -3,10 +3,12 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Lancamento;
 import com.trinity.trinity.model.Membro;
+import com.trinity.trinity.model.Patrimonio;
 import com.trinity.trinity.model.TipoLancamento;
 import com.trinity.trinity.repository.LancamentoRepository;
 import com.trinity.trinity.repository.LancamentoSpecifications;
 import com.trinity.trinity.repository.MembroRepository;
+import com.trinity.trinity.repository.PatrimonioRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,17 +28,24 @@ public class RelatorioService {
     private static final Sort MAIS_RECENTES_PRIMEIRO =
             Sort.by(Sort.Direction.DESC, "data").and(Sort.by(Sort.Direction.DESC, "id"));
 
+    private static final String ESTADO_BOM = "Bom";
+
     private final LancamentoRepository lancamentoRepository;
     private final MembroRepository membroRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PatrimonioRepository patrimonioRepository;
 
     public RelatorioService(LancamentoRepository lancamentoRepository,
                             MembroRepository membroRepository,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            PatrimonioRepository patrimonioRepository) {
         this.lancamentoRepository = lancamentoRepository;
         this.membroRepository = membroRepository;
         this.usuarioRepository = usuarioRepository;
+        this.patrimonioRepository = patrimonioRepository;
     }
+
+    // ---------- Financeiro ----------
 
     public RelatorioFinanceiro gerarFinanceiro(FiltroRelatorioFinanceiro filtro) {
         LocalDate inicio = filtro.inicio() != null ? filtro.inicio() : YearMonth.now().atDay(1);
@@ -60,6 +71,9 @@ public class RelatorioService {
                 .map(Lancamento::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    // ---------- Membros ----------
+
     public RelatorioMembros gerarMembros(FiltroRelatorioMembros filtro) {
         List<Membro> todos = membroRepository.findAllByOrderByNomeCompletoAsc();
 
@@ -80,5 +94,42 @@ public class RelatorioService {
         long ativos = todos.stream().filter(Membro::isAtivo).count();
 
         return new RelatorioMembros(linhas, todos.size(), ativos, todos.size() - ativos, membrosComAcesso.size());
+    }
+
+    // ---------- Patrimônio ----------
+
+    public RelatorioPatrimonio gerarPatrimonio(FiltroRelatorioPatrimonio filtro) {
+        String nomeBuscado = filtro.nome() == null ? "" : filtro.nome().trim().toLowerCase();
+
+        List<Patrimonio> itens = patrimonioRepository.findAll().stream()
+                .filter(p -> filtro.ativo() == null || p.isAtivo() == filtro.ativo())
+                .filter(p -> vazio(filtro.categoria()) || filtro.categoria().equalsIgnoreCase(p.getCategoria()))
+                .filter(p -> vazio(filtro.estado()) || filtro.estado().equals(p.getEstadoConservacao()))
+                .filter(p -> vazio(filtro.localizacao()) || filtro.localizacao().equalsIgnoreCase(p.getLocalizacao()))
+                .filter(p -> p.getNome().toLowerCase().contains(nomeBuscado))
+                .sorted(Comparator.comparing(Patrimonio::getCategoria, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(Patrimonio::getNome, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        long totalUnidades = itens.stream().mapToLong(Patrimonio::getQuantidade).sum();
+        long emBomEstado = itens.stream().filter(p -> ESTADO_BOM.equals(p.getEstadoConservacao())).count();
+
+        return new RelatorioPatrimonio(itens, totalUnidades, emBomEstado, itens.size() - emBomEstado);
+    }
+
+    /**
+     * Valores distintos de um campo, em ordem alfabética, para as opções dos filtros.
+     */
+    public List<String> opcoesDePatrimonio(Function<Patrimonio, String> campo) {
+        return patrimonioRepository.findAll().stream()
+                .map(campo)
+                .filter(valor -> !vazio(valor))
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
+    }
+
+    private static boolean vazio(String texto) {
+        return texto == null || texto.isBlank();
     }
 }

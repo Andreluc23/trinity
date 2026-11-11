@@ -94,6 +94,9 @@
                         <li sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'GERENCIAR_MEMBROS')">
                             <a class="dropdown-item" th:href="@{/relatorios/membros}">Membros</a>
                         </li>
+                        <li sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'GERENCIAR_PATRIMONIO')">
+                            <a class="dropdown-item" th:href="@{/relatorios/patrimonio}">Patrimônio</a>
+                        </li>
                     </ul>
                 </li>
 
