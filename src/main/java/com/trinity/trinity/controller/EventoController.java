@@ -100,4 +100,10 @@ public class EventoController {
         model.addAttribute("presencas", presencaService.listarDoEvento(id));
         return "evento-presencas";
     }
+    @PostMapping("/eventos/excluir/{id}")
+    public String excluirEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        eventoService.excluir(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Evento excluído.");
+        return "redirect:/eventos";
+    }
 }

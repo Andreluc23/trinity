@@ -119,6 +119,18 @@
                                     Ativar
                                 </button>
                             </form>
+
+                            <form th:if="${podeGerenciar}"
+                                  th:action="@{/escalas/excluir/{id}(id=${escala.id})}"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        title="Excluir"
+                                        data-confirmar="Excluir esta escala? Os integrantes escalados também serão removidos.">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </td>
 
                     </tr>
@@ -240,6 +252,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
 
 <!-- Reabre o modal depois de salvar, ativar ou desativar uma função -->
 <script th:if="${abrirFuncoes}">

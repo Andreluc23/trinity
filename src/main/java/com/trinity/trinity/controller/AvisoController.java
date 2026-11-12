@@ -96,4 +96,10 @@ public class AvisoController {
         model.addAttribute("naoLeram", leituraService.listarQuemNaoLeu(id));
         return "aviso-leituras";
     }
+    @PostMapping("/avisos/excluir/{id}")
+    public String excluirAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        avisoService.excluir(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Aviso excluído.");
+        return "redirect:/avisos";
+    }
 }

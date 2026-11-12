@@ -155,4 +155,10 @@ public class EscalaController {
 
         return "redirect:/escalas/" + escalaId;
     }
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        escalaService.excluir(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Escala excluída.");
+        return "redirect:/escalas";
+    }
 }

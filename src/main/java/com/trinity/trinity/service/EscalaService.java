@@ -73,6 +73,12 @@ public class EscalaService {
         alterarStatus(id, true);
     }
 
+    @Transactional
+    public void excluir(Long id) {
+        Escala escala = buscarPorId(id);
+        escalaItemRepository.deleteByEscalaId(id);
+        escalaRepository.delete(escala);
+    }
     private void alterarStatus(Long id, boolean ativo) {
         Escala escala = buscarPorId(id);
         escala.setAtivo(ativo);

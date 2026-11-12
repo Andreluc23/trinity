@@ -3,6 +3,8 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Evento;
 import com.trinity.trinity.repository.EventoRepository;
+import com.trinity.trinity.repository.PresencaEventoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,9 +14,11 @@ import java.util.List;
 public class EventoService {
 
     private final EventoRepository eventoRepository;
+    private final PresencaEventoRepository presencaRepository;
 
-    public EventoService(EventoRepository eventoRepository) {
+    public EventoService(EventoRepository eventoRepository, PresencaEventoRepository presencaRepository) {
         this.eventoRepository = eventoRepository;
+        this.presencaRepository = presencaRepository;
     }
 
     public List<Evento> listarTodos() {
@@ -43,6 +47,12 @@ public class EventoService {
         Evento evento = buscarPorId(id);
         evento.setAtivo(true);
         eventoRepository.save(evento);
+    }
+    @Transactional
+    public void excluir(Long id) {
+        Evento evento = buscarPorId(id);
+        presencaRepository.deleteByEventoId(id);
+        eventoRepository.delete(evento);
     }
     public List<Evento> listarProximos() {
         return eventoRepository

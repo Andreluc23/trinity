@@ -152,6 +152,15 @@
                                     </button>
                                 </form>
 
+                                <form th:action="@{/eventos/excluir/{id}(id=${evento.id})}" method="post">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            title="Excluir"
+                                            data-confirmar="Excluir este evento? As respostas de presença também serão apagadas.">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+
                             </div>
                         </td>
 

@@ -3,6 +3,8 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Aviso;
 import com.trinity.trinity.repository.AvisoRepository;
+import com.trinity.trinity.repository.LeituraAvisoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.List;
 public class AvisoService {
 
     private final AvisoRepository avisoRepository;
+    private final LeituraAvisoRepository leituraRepository;
 
-    public AvisoService(AvisoRepository avisoRepository) {
+    public AvisoService(AvisoRepository avisoRepository, LeituraAvisoRepository leituraRepository) {
         this.avisoRepository = avisoRepository;
+        this.leituraRepository = leituraRepository;
     }
 
     public List<Aviso> listarTodos() {
@@ -47,5 +51,11 @@ public class AvisoService {
         Aviso aviso = buscarPorId(id);
         aviso.setAtivo(true);
         avisoRepository.save(aviso);
+    }
+    @Transactional
+    public void excluir(Long id) {
+        Aviso aviso = buscarPorId(id);
+        leituraRepository.deleteByAvisoId(id);
+        avisoRepository.delete(aviso);
     }
 }

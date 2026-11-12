@@ -132,6 +132,14 @@
                                         Ativar
                                     </button>
                                 </form>
+                                <form th:action="@{/avisos/excluir/{id}(id=${aviso.id})}" method="post">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            title="Excluir"
+                                            data-confirmar="Excluir este aviso? As confirmações de leitura também serão apagadas.">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
 
                             </div>
                         </td>
