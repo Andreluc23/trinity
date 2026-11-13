@@ -119,6 +119,16 @@
                                     Ativar
                                 </button>
                             </form>
+                            <form th:action="@{/funcoes-musicais/excluir/{id}(id=${funcao.id})}"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        title="Excluir"
+                                        data-confirmar="Excluir esta função? Só é possível se ela nunca foi usada em escalas.">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
 
                             <form th:if="${podeGerenciar}"
                                   th:action="@{/escalas/excluir/{id}(id=${escala.id})}"

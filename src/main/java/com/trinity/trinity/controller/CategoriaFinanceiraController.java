@@ -61,8 +61,20 @@ public class CategoriaFinanceiraController {
         return voltarComModalAberto(redirectAttributes);
     }
 
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            categoriaService.excluir(id);
+            redirectAttributes.addFlashAttribute("sucessoCategoria", "Categoria excluída.");
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("erroCategoria", e.getMessage());
+        }
+        return voltarComModalAberto(redirectAttributes);
+    }
+
     private String voltarComModalAberto(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("abrirCategorias", true);
         return "redirect:/financeiro";
     }
+
 }

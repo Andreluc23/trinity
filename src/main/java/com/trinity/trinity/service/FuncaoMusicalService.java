@@ -3,6 +3,7 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.FuncaoMusical;
+import com.trinity.trinity.repository.EscalaItemRepository;
 import com.trinity.trinity.repository.FuncaoMusicalRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,12 @@ import java.util.List;
 public class FuncaoMusicalService {
 
     private final FuncaoMusicalRepository funcaoMusicalRepository;
+    private final EscalaItemRepository escalaItemRepository;
 
-    public FuncaoMusicalService(FuncaoMusicalRepository funcaoMusicalRepository) {
+    public FuncaoMusicalService(FuncaoMusicalRepository funcaoMusicalRepository,
+                                EscalaItemRepository escalaItemRepository) {
         this.funcaoMusicalRepository = funcaoMusicalRepository;
+        this.escalaItemRepository = escalaItemRepository;
     }
 
     public List<FuncaoMusical> listarTodas() {
@@ -57,6 +61,16 @@ public class FuncaoMusicalService {
         alterarStatus(id, true);
     }
 
+    public void excluir(Long id) {
+        FuncaoMusical funcao = buscarPorId(id);
+
+        if (escalaItemRepository.existsByFuncaoMusicalId(id)) {
+            throw new RegraNegocioException(
+                    "A função \"" + funcao.getNome() + "\" já foi usada em escalas. Use Desativar.");
+        }
+
+        funcaoMusicalRepository.delete(funcao);
+    }
     private void alterarStatus(Long id, boolean ativo) {
         FuncaoMusical funcao = buscarPorId(id);
         funcao.setAtivo(ativo);

@@ -324,6 +324,17 @@
                                     </button>
                                 </form>
 
+                                <form th:action="@{/financeiro/categorias/excluir/{id}(id=${categoria.id})}"
+                                      method="post"
+                                      class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            title="Excluir"
+                                            data-confirmar="Excluir esta categoria? Só é possível se ela nunca foi usada.">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+
                             </td>
 
                         </tr>

@@ -5,6 +5,8 @@ import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.CategoriaFinanceira;
 import com.trinity.trinity.model.TipoLancamento;
 import com.trinity.trinity.repository.CategoriaFinanceiraRepository;
+import com.trinity.trinity.repository.ContribuicaoRepository;
+import com.trinity.trinity.repository.LancamentoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,14 @@ import java.util.List;
 public class CategoriaFinanceiraService {
 
     private final CategoriaFinanceiraRepository categoriaRepository;
+    private final LancamentoRepository lancamentoRepository;
+    private final ContribuicaoRepository contribuicaoRepository;
 
-    public CategoriaFinanceiraService(CategoriaFinanceiraRepository categoriaRepository) {
+    public CategoriaFinanceiraService(CategoriaFinanceiraRepository categoriaRepository, LancamentoRepository lancamentoRepository,
+                                      ContribuicaoRepository contribuicaoRepository) {
         this.categoriaRepository = categoriaRepository;
+        this.lancamentoRepository = lancamentoRepository;
+        this.contribuicaoRepository = contribuicaoRepository;
     }
 
     public List<CategoriaFinanceira> listarTodas() {
@@ -61,6 +68,16 @@ public class CategoriaFinanceiraService {
         alterarStatus(id, true);
     }
 
+    public void excluir(Long id) {
+        CategoriaFinanceira categoria = buscarPorId(id);
+
+        if (lancamentoRepository.existsByCategoriaId(id) || contribuicaoRepository.existsByCategoriaId(id)) {
+            throw new RegraNegocioException(
+                    "A categoria \"" + categoria.getNome() + "\" já foi usada em lançamentos ou contribuições. Use Desativar.");
+        }
+
+        categoriaRepository.delete(categoria);
+    }
     private void alterarStatus(Long id, boolean ativo) {
         CategoriaFinanceira categoria = buscarPorId(id);
         categoria.setAtivo(ativo);

@@ -3,7 +3,10 @@ package com.trinity.trinity.controller;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Escala;
 import com.trinity.trinity.model.FuncaoMusical;
-import com.trinity.trinity.service.*;
+import com.trinity.trinity.service.EscalaService;
+import com.trinity.trinity.service.FuncaoMusicalService;
+import com.trinity.trinity.service.IntegranteEscala;
+import com.trinity.trinity.service.MembroService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +20,13 @@ import java.util.stream.IntStream;
 public class EscalaController {
 
     private final EscalaService escalaService;
-    private final EscalaItemService escalaItemService;
     private final MembroService membroService;
     private final FuncaoMusicalService funcaoMusicalService;
 
-    public EscalaController(
-            EscalaService escalaService,
-            EscalaItemService escalaItemService,
-            MembroService membroService,
-            FuncaoMusicalService funcaoMusicalService) {
-
+    public EscalaController(EscalaService escalaService,
+                            MembroService membroService,
+                            FuncaoMusicalService funcaoMusicalService) {
         this.escalaService = escalaService;
-        this.escalaItemService = escalaItemService;
         this.membroService = membroService;
         this.funcaoMusicalService = funcaoMusicalService;
     }
@@ -39,6 +37,13 @@ public class EscalaController {
         model.addAttribute("funcoes", funcaoMusicalService.listarTodas());
         model.addAttribute("novaFuncao", new FuncaoMusical());
         return "escalas";
+    }
+
+    @GetMapping("/{id}")
+    public String detalhes(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("escala", escalaService.buscarPorId(id));
+        model.addAttribute("itens", escalaService.listarIntegrantes(id));
+        return "escala-detalhes";
     }
 
     @GetMapping("/nova")
@@ -74,6 +79,27 @@ public class EscalaController {
         }
     }
 
+    @PostMapping("/desativar/{id}")
+    public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        escalaService.desativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Escala desativada.");
+        return "redirect:/escalas";
+    }
+
+    @PostMapping("/ativar/{id}")
+    public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        escalaService.ativar(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Escala ativada.");
+        return "redirect:/escalas";
+    }
+
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        escalaService.excluir(id);
+        redirectAttributes.addFlashAttribute("sucesso", "Escala excluída.");
+        return "redirect:/escalas";
+    }
+
     private String exibirFormulario(Escala escala, List<IntegranteEscala> integrantes, Model model) {
         model.addAttribute("escala", escala);
         model.addAttribute("integrantes", integrantes);
@@ -94,71 +120,5 @@ public class EscalaController {
         return IntStream.range(0, Math.min(membroIds.size(), funcaoIds.size()))
                 .mapToObj(i -> new IntegranteEscala(membroIds.get(i), funcaoIds.get(i)))
                 .toList();
-    }
-    @PostMapping("/desativar/{id}")
-    public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        escalaService.desativar(id);
-        redirectAttributes.addFlashAttribute("sucesso", "Escala desativada.");
-        return "redirect:/escalas";
-    }
-
-    @PostMapping("/ativar/{id}")
-    public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        escalaService.ativar(id);
-        redirectAttributes.addFlashAttribute("sucesso", "Escala ativada.");
-        return "redirect:/escalas";
-    }
-    @PostMapping("/{escalaId}/integrantes")
-    public String adicionarIntegrante(
-            @PathVariable("escalaId") Long escalaId,
-            @RequestParam("membroId") Long membroId,
-            @RequestParam("funcaoId") Long funcaoId) {
-
-        var escala = escalaService.buscarPorId(escalaId);
-        var membro = membroService.buscarPorId(membroId);
-        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
-
-        escalaItemService.salvar(escala, membro, funcao);
-
-        return "redirect:/escalas/" + escalaId;
-    }
-    @PostMapping("/{escalaId}/integrantes/remover/{itemId}")
-    public String removerIntegrante(
-            @PathVariable("escalaId") Long escalaId,
-            @PathVariable("itemId") Long itemId) {
-
-        escalaItemService.remover(itemId);
-
-        return "redirect:/escalas/" + escalaId;
-    }
-    @GetMapping("/{id}")
-    public String detalhes(@PathVariable("id") Long id, Model model) {
-
-        model.addAttribute("escala", escalaService.buscarPorId(id));
-        model.addAttribute("itens", escalaItemService.listarPorEscala(id));
-        model.addAttribute("membros", membroService.listarTodos());
-        model.addAttribute("funcoes", funcaoMusicalService.listarTodas());
-
-        return "escala-detalhes";
-    }
-    @PostMapping("/{escalaId}/integrantes/editar/{itemId}")
-    public String editarIntegrante(
-            @PathVariable("escalaId") Long escalaId,
-            @PathVariable("itemId") Long itemId,
-            @RequestParam("membroId") Long membroId,
-            @RequestParam("funcaoId") Long funcaoId) {
-
-        var membro = membroService.buscarPorId(membroId);
-        var funcao = funcaoMusicalService.buscarPorId(funcaoId);
-
-        escalaItemService.atualizar(itemId, membro, funcao);
-
-        return "redirect:/escalas/" + escalaId;
-    }
-    @PostMapping("/excluir/{id}")
-    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        escalaService.excluir(id);
-        redirectAttributes.addFlashAttribute("sucesso", "Escala excluída.");
-        return "redirect:/escalas";
     }
 }

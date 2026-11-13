@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface EscalaItemRepository extends JpaRepository<EscalaItem, Long> {
 
-    List<EscalaItem> findByEscalaId(Long escalaId);
-
     List<EscalaItem> findByEscalaIdOrderByFuncaoMusicalNomeAsc(Long escalaId);
 
     void deleteByEscalaId(Long escalaId);
+
+    boolean existsByFuncaoMusicalId(Long funcaoMusicalId);
 }

@@ -14,5 +14,6 @@ public interface ContribuicaoRepository extends JpaRepository<Contribuicao, Long
     List<Contribuicao> findByStatusInOrderByCriadaEmAsc(Collection<StatusContribuicao> status);
 
     long countByStatus(StatusContribuicao status);
+    boolean existsByCategoriaId(Long categoriaId);
 
 }

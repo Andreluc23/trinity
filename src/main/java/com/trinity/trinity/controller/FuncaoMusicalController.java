@@ -57,6 +57,16 @@ public class FuncaoMusicalController {
         funcaoMusicalService.ativar(id);
         return voltarComModalAberto(redirectAttributes);
     }
+    @PostMapping("/excluir/{id}")
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            funcaoMusicalService.excluir(id);
+            redirectAttributes.addFlashAttribute("sucessoFuncao", "Função excluída.");
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("erroFuncao", e.getMessage());
+        }
+        return voltarComModalAberto(redirectAttributes);
+    }
 
     private String voltarComModalAberto(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("abrirFuncoes", true);

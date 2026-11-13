@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface EscalaRepository extends JpaRepository<Escala, Long> {
     List<Escala> findAllByOrderByDataDescHorarioDesc();
+
 }

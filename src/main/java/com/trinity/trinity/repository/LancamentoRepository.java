@@ -14,6 +14,7 @@ import java.util.List;
 public interface LancamentoRepository extends JpaRepository<Lancamento, Long>, JpaSpecificationExecutor<Lancamento> {
 
     List<Lancamento> findByAtivoTrueAndDataBetweenOrderByDataDescIdDesc(LocalDate inicio, LocalDate fim);
+    boolean existsByCategoriaId(Long categoriaId);
 
     @Query("""
             select coalesce(sum(l.valor), 0)
