@@ -11,10 +11,13 @@ import com.trinity.trinity.repository.EscalaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 public class EscalaService {
@@ -34,8 +37,24 @@ public class EscalaService {
         this.funcaoMusicalService = funcaoMusicalService;
     }
 
+    /**
+     * Próximas escalas primeiro (da mais próxima para a mais distante),
+     * depois as que já passaram (da mais recente para a mais antiga).
+     */
     public List<Escala> listarTodas() {
-        return escalaRepository.findAllByOrderByDataDescHorarioDesc();
+        LocalDate hoje = LocalDate.now();
+        List<Escala> todas = escalaRepository.findAllByOrderByDataAscHorarioAsc();
+
+        List<Escala> proximas = todas.stream()
+                .filter(escala -> !escala.getData().isBefore(hoje))
+                .toList();
+
+        List<Escala> passadas = new ArrayList<>(todas.stream()
+                .filter(escala -> escala.getData().isBefore(hoje))
+                .toList());
+        Collections.reverse(passadas);
+
+        return Stream.concat(proximas.stream(), passadas.stream()).toList();
     }
 
     public Escala buscarPorId(Long id) {
@@ -79,6 +98,7 @@ public class EscalaService {
         escalaItemRepository.deleteByEscalaId(id);
         escalaRepository.delete(escala);
     }
+
     private void alterarStatus(Long id, boolean ativo) {
         Escala escala = buscarPorId(id);
         escala.setAtivo(ativo);

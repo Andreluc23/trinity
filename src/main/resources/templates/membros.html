@@ -158,6 +158,16 @@
 
                                 </form>
 
+                                <!-- Excluir -->
+                                <form sec:authorize="hasRole('ADMIN')"
+                                      th:action="@{/membros/excluir/{id}(id=${membro.id})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir"
+                                            data-confirmar="Excluir este membro? A conta de acesso, as presenças, as leituras e as participações em escalas dele também serão apagadas. Membros com lançamentos não podem ser excluídos.">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+
                                 <!-- Criar acesso -->
                                 <a th:if="${!acessos.contains(membro.id) and membro.ativo}"
                                    sec:authorize="hasRole('ADMIN')"

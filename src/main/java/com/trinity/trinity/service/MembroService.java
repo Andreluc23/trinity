@@ -3,26 +3,54 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.exception.RegraNegocioException;
 import com.trinity.trinity.model.Membro;
+import com.trinity.trinity.model.Usuario;
+import com.trinity.trinity.repository.ContribuicaoRepository;
+import com.trinity.trinity.repository.EscalaItemRepository;
+import com.trinity.trinity.repository.LancamentoRepository;
+import com.trinity.trinity.repository.LeituraAvisoRepository;
 import com.trinity.trinity.repository.MembroRepository;
+import com.trinity.trinity.repository.PresencaEventoRepository;
+import com.trinity.trinity.repository.RefreshTokenRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
 import com.trinity.trinity.util.Cpf;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MembroService {
 
     private final MembroRepository membroRepository;
     private final UsuarioRepository usuarioRepository;
+    private final LancamentoRepository lancamentoRepository;
+    private final ContribuicaoRepository contribuicaoRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final PresencaEventoRepository presencaEventoRepository;
+    private final LeituraAvisoRepository leituraAvisoRepository;
+    private final EscalaItemRepository escalaItemRepository;
 
-    public MembroService(MembroRepository membroRepository, UsuarioRepository usuarioRepository) {
+    public MembroService(MembroRepository membroRepository,
+                         UsuarioRepository usuarioRepository,
+                         LancamentoRepository lancamentoRepository,
+                         ContribuicaoRepository contribuicaoRepository,
+                         RefreshTokenRepository refreshTokenRepository,
+                         PresencaEventoRepository presencaEventoRepository,
+                         LeituraAvisoRepository leituraAvisoRepository,
+                         EscalaItemRepository escalaItemRepository) {
         this.membroRepository = membroRepository;
         this.usuarioRepository = usuarioRepository;
+        this.lancamentoRepository = lancamentoRepository;
+        this.contribuicaoRepository = contribuicaoRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.presencaEventoRepository = presencaEventoRepository;
+        this.leituraAvisoRepository = leituraAvisoRepository;
+        this.escalaItemRepository = escalaItemRepository;
     }
 
     public List<Membro> listarTodos() {
@@ -113,6 +141,46 @@ public class MembroService {
         return ehAdministrador
                 && usuarioRepository.countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue() <= 1;
     }
+
+    /**
+     * Exclui o membro e tudo que depende dele. Membros com histórico financeiro
+     * não são excluídos (devem ser desativados). Tudo ou nada, numa única transação.
+     */
+    @Transactional
+    public void excluir(Long id, String emailUsuarioLogado) {
+        Membro membro = buscarPorId(id);
+
+        if (lancamentoRepository.existsByMembroId(id) || contribuicaoRepository.existsByMembroId(id)) {
+            throw new RegraNegocioException(membro.getNomeCompleto()
+                    + " possui lançamentos ou contribuições registrados e não pode ser excluído. Use Desativar.");
+        }
+
+        Optional<Usuario> conta = usuarioRepository.findByMembroId(id);
+
+        if (conta.isPresent()) {
+            String emailMembro = membro.getEmail();
+
+            if (emailMembro != null && emailMembro.equalsIgnoreCase(emailUsuarioLogado)) {
+                throw new RegraNegocioException("Você não pode excluir o seu próprio cadastro.");
+            }
+
+            if (conta.get().isAdmin()) {
+                throw new RegraNegocioException("Remova o acesso de administrador antes de excluir este membro.");
+            }
+        }
+
+        conta.ifPresent(usuario -> {
+            refreshTokenRepository.deleteByUsuarioId(usuario.getId());
+            usuarioRepository.delete(usuario);
+        });
+
+        presencaEventoRepository.deleteByMembroId(id);
+        leituraAvisoRepository.deleteByMembroId(id);
+        escalaItemRepository.deleteByMembroId(id);
+
+        membroRepository.delete(membro);
+    }
+
     public void ativar(Long id) {
 
         Membro membro = buscarPorId(id);

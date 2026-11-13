@@ -6,6 +6,7 @@ import com.trinity.trinity.model.Membro;
 import com.trinity.trinity.model.Usuario;
 import com.trinity.trinity.service.MembroService;
 import com.trinity.trinity.service.UsuarioService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +72,19 @@ public class MembroController {
             redirectAttributes.addFlashAttribute("sucesso", "Membro desativado.");
         } catch (RegraNegocioException e) {
             redirectAttributes.addFlashAttribute("erro", e.getMessage());
+        }
+        return "redirect:/membros";
+    }
+
+    @PostMapping("/membros/excluir/{id}")
+    public String excluirMembro(@PathVariable("id") Long id,
+                                Authentication authentication,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            membroService.excluir(id, authentication.getName());
+            redirectAttributes.addFlashAttribute("sucesso", "Membro excluído.");
+        } catch (RegraNegocioException e) {
+            redirectAttributes.addFlashAttribute("falha", e.getMessage());
         }
         return "redirect:/membros";
     }

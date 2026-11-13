@@ -16,6 +16,8 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long>, J
     List<Lancamento> findByAtivoTrueAndDataBetweenOrderByDataDescIdDesc(LocalDate inicio, LocalDate fim);
     boolean existsByCategoriaId(Long categoriaId);
 
+    boolean existsByMembroId(Long membroId);
+
     @Query("""
             select coalesce(sum(l.valor), 0)
             from Lancamento l

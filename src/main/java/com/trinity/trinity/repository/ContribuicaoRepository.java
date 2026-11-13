@@ -16,4 +16,6 @@ public interface ContribuicaoRepository extends JpaRepository<Contribuicao, Long
     long countByStatus(StatusContribuicao status);
     boolean existsByCategoriaId(Long categoriaId);
 
+    boolean existsByMembroId(Long membroId);
+
 }

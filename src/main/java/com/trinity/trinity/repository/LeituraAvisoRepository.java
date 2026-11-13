@@ -16,4 +16,6 @@ public interface LeituraAvisoRepository extends JpaRepository<LeituraAviso, Long
 
     List<LeituraAviso> findByAvisoIdOrderByLidoEmAsc(Long avisoId);
     void deleteByAvisoId(Long avisoId);
+
+    void deleteByMembroId(Long membroId);
 }

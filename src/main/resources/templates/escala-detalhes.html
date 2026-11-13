@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -21,39 +20,24 @@
 
 <div th:replace="~{fragments/navbar :: navbar('escalas')}"></div>
 
-<main class="container py-4 py-md-5"
+<main class="container py-4 py-md-5" style="max-width: 900px;"
       th:with="podeGerenciar=${#authorization.expression('hasAnyAuthority(''ROLE_ADMIN'', ''GERENCIAR_ESCALAS'')')}">
 
     <!-- Dados da escala -->
     <div class="card shadow-sm border-0 mb-4">
-
         <div class="card-body p-3 p-md-4">
 
-            <div class="d-flex flex-column flex-md-row
-                        justify-content-between align-items-md-start
-                        gap-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
 
                 <div>
-
-                    <h2 class="mb-2"
-                        th:text="${escala.titulo}">
-                        Culto de Domingo
-                    </h2>
+                    <h2 class="mb-2" th:text="${escala.titulo}">Culto de Domingo</h2>
 
                     <div class="text-muted mb-2">
-
                         <i class="bi bi-calendar3 me-1"></i>
-
-                        <span th:text="${#temporals.format(escala.data, 'dd/MM/yyyy')}">
-                            20/09/2026
-                        </span>
-
+                        <span th:text="${#temporals.format(escala.data, 'dd/MM/yyyy')}">20/09/2026</span>
                         <span class="mx-1">às</span>
-
-                        <span th:text="${#temporals.format(escala.horario, 'HH:mm')}">
-                            19:00
-                        </span>
-
+                        <span th:text="${#temporals.format(escala.horario, 'HH:mm')}">19:00</span>
+                        <span th:unless="${escala.ativo}" class="badge text-bg-secondary ms-2">Inativa</span>
                     </div>
 
                     <p th:if="${escala.observacao != null && !escala.observacao.isBlank()}"
@@ -61,285 +45,69 @@
                        class="mb-0">
                         Observação
                     </p>
-
                 </div>
 
                 <a th:if="${podeGerenciar}"
                    th:href="@{/escalas/editar/{id}(id=${escala.id})}"
                    class="btn btn-outline-primary text-nowrap">
-
                     <i class="bi bi-pencil me-1"></i>
                     Editar escala
-
                 </a>
 
             </div>
 
         </div>
-
     </div>
 
-
-    <!-- Integrantes -->
+    <!-- Integrantes (somente visualização: para alterar, use "Editar escala") -->
     <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
 
-        <div class="card-body p-3 p-md-4">
+            <h5 class="px-3 px-md-4 pt-3 pt-md-4 mb-3">Integrantes</h5>
 
-            <div class="mb-4">
-
-                <h5 class="mb-1">
-                    Integrantes
-                </h5>
-
-                <p class="text-muted mb-0"
-                   th:text="${podeGerenciar} ? 'Adicione os membros e suas funções nesta escala.' : 'Membros escalados e suas funções.'">
-                    Adicione os membros e suas funções nesta escala.
-                </p>
-
-            </div>
-
-
-            <!-- Adicionar integrante -->
-            <form th:if="${podeGerenciar}"
-                  th:action="@{/escalas/{id}/integrantes(id=${escala.id})}"
-                  method="post"
-                  class="row g-3 align-items-end mb-4">
-
-                <div class="col-12 col-md-5">
-
-                    <label class="form-label">
-                        Membro
-                    </label>
-
-                    <select class="form-select"
-                            name="membroId"
-                            required>
-
-                        <option value="">
-                            Selecione um membro
-                        </option>
-
-                        <option th:each="membro : ${membros}"
-                                th:value="${membro.id}"
-                                th:text="${membro.nomeCompleto}">
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-12 col-md-5">
-
-                    <label class="form-label">
-                        Função / Instrumento
-                    </label>
-
-                    <select class="form-select"
-                            name="funcaoId"
-                            required>
-
-                        <option value="">
-                            Selecione uma função
-                        </option>
-
-                        <option th:each="funcao : ${funcoes}"
-                                th:value="${funcao.id}"
-                                th:text="${funcao.nome}">
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-12 col-md-2">
-
-                    <button type="submit"
-                            class="btn btn-success w-100">
-
-                        <i class="bi bi-plus-lg me-1"></i>
-                        Adicionar
-
-                    </button>
-
-                </div>
-
-            </form>
-
-
-            <!-- Lista -->
             <div class="table-responsive">
+                <table class="table align-middle mb-0">
 
-                <table class="table align-middle mb-0 sem-zebra">
-
-                    <thead class="table-light">
-
+                    <thead>
                     <tr>
-                        <th>Membro</th>
                         <th>Função / Instrumento</th>
-                        <th th:if="${podeGerenciar}" class="text-end">Ação</th>
+                        <th>Membro</th>
                     </tr>
-
                     </thead>
 
                     <tbody>
 
-                    <th:block th:each="item : ${itens}">
-
-                        <tr>
-
-                            <td th:text="${item.membro.nomeCompleto}">
-                                João
-                            </td>
-
-                            <td th:text="${item.funcaoMusical.nome}">
-                                Violão
-                            </td>
-
-                            <td th:if="${podeGerenciar}" class="text-end text-nowrap">
-
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-primary"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#editarItem' + ${item.id}"
-                                        th:aria-controls="'editarItem' + ${item.id}">
-
-                                    <i class="bi bi-pencil me-1"></i>
-                                    Editar
-
-                                </button>
-
-                                <form th:action="@{/escalas/{escalaId}/integrantes/remover/{itemId}(
-                                        escalaId=${escala.id},
-                                        itemId=${item.id}
-                                    )}"
-                                      method="post"
-                                      class="d-inline">
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            data-confirmar="Deseja realmente remover este integrante da escala?">
-
-                                        <i class="bi bi-trash me-1"></i>
-                                        Remover
-
-                                    </button>
-
-                                </form>
-
-                            </td>
-
-                        </tr>
-
-                        <!-- Edição do integrante -->
-                        <tr th:if="${podeGerenciar}"
-                            th:id="'editarItem' + ${item.id}"
-                            class="collapse">
-
-                            <td colspan="3">
-
-                                <form th:action="@{/escalas/{escalaId}/integrantes/editar/{itemId}(
-                                        escalaId=${escala.id},
-                                        itemId=${item.id}
-                                    )}"
-                                      method="post"
-                                      class="row g-3 align-items-end py-2">
-
-                                    <div class="col-12 col-md-5">
-
-                                        <label class="form-label">
-                                            Membro
-                                        </label>
-
-                                        <select class="form-select"
-                                                name="membroId"
-                                                required>
-
-                                            <option th:each="membro : ${membros}"
-                                                    th:value="${membro.id}"
-                                                    th:text="${membro.nomeCompleto}"
-                                                    th:selected="${membro.id == item.membro.id}">
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-                                    <div class="col-12 col-md-5">
-
-                                        <label class="form-label">
-                                            Função / Instrumento
-                                        </label>
-
-                                        <select class="form-select"
-                                                name="funcaoId"
-                                                required>
-
-                                            <option th:each="funcao : ${funcoes}"
-                                                    th:value="${funcao.id}"
-                                                    th:text="${funcao.nome}"
-                                                    th:selected="${funcao.id == item.funcaoMusical.id}">
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-                                    <div class="col-12 col-md-2">
-
-                                        <button type="submit"
-                                                class="btn btn-primary w-100">
-
-                                            <i class="bi bi-check-lg me-1"></i>
-                                            Salvar
-
-                                        </button>
-
-                                    </div>
-
-                                </form>
-
-                            </td>
-
-                        </tr>
-
-                    </th:block>
+                    <tr th:each="item : ${itens}">
+                        <td th:text="${item.funcaoMusical.nome}">Violão</td>
+                        <td th:text="${item.membro.nomeCompleto}">João</td>
+                    </tr>
 
                     <tr th:if="${#lists.isEmpty(itens)}">
-
-                        <td th:colspan="${podeGerenciar} ? 3 : 2"
-                            class="text-center text-muted py-4">
-
-                            Nenhum integrante adicionado nesta escala.
-
+                        <td colspan="2" class="text-center text-muted py-4">
+                            Nenhum integrante nesta escala.
+                            <a th:if="${podeGerenciar}"
+                               th:href="@{/escalas/editar/{id}(id=${escala.id})}">Adicionar integrantes</a>
                         </td>
-
                     </tr>
 
                     </tbody>
 
                 </table>
-
             </div>
 
         </div>
-
     </div>
 
     <div class="mt-3">
-
-        <a th:href="@{/escalas}"
-           class="btn btn-outline-secondary">
-
+        <a th:href="@{/escalas}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i>
             Voltar para escalas
-
         </a>
-
     </div>
 
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<th:block th:replace="~{fragments/confirmacao :: modal}"></th:block>
+
 </body>
 </html>

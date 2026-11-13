@@ -14,4 +14,6 @@ public interface EscalaItemRepository extends JpaRepository<EscalaItem, Long> {
     void deleteByEscalaId(Long escalaId);
 
     boolean existsByFuncaoMusicalId(Long funcaoMusicalId);
+
+    void deleteByMembroId(Long membroId);
 }

@@ -41,6 +41,7 @@ public class SecurityConfig {
                         // Somente o administrador
                         .requestMatchers("/usuarios/**").hasAuthority(ADMIN)
                         .requestMatchers(HttpMethod.POST, "/membros/desativar/**").hasAuthority(ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/membros/excluir/**").hasAuthority(ADMIN)
 
                         // Membros
                         .requestMatchers("/membros/**").hasAnyAuthority(ADMIN, "GERENCIAR_MEMBROS")

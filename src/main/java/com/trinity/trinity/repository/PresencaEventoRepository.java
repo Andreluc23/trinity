@@ -17,4 +17,6 @@ public interface PresencaEventoRepository extends JpaRepository<PresencaEvento, 
 
     List<PresencaEvento> findByEventoIdOrderByMembroNomeCompletoAsc(Long eventoId);
     void deleteByEventoId(Long eventoId);
+
+    void deleteByMembroId(Long membroId);
 }
