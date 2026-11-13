@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -72,6 +73,17 @@ public class MembroService {
 
         if (emailDuplicado) {
             throw new RegraNegocioException("E-mail já cadastrado.");
+        }
+        if (membro.getDataNascimento() == null) {
+            throw new RegraNegocioException("Informe a data de nascimento.");
+        }
+
+        if (membro.getDataNascimento().isAfter(LocalDate.now())) {
+            throw new RegraNegocioException("A data de nascimento não pode ser no futuro.");
+        }
+
+        if (membro.getDataNascimento().getYear() < 1900) {
+            throw new RegraNegocioException("Confira a data de nascimento: o ano informado é muito antigo.");
         }
 
         return membroRepository.save(membro);

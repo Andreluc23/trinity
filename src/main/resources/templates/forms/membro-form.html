@@ -67,6 +67,8 @@
                                class="form-control"
                                name="dataNascimento"
                                th:value="${membro.dataNascimento != null ? #temporals.format(membro.dataNascimento, 'yyyy-MM-dd') : ''}"
+                               th:max="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+                               min="1900-01-01"
                                required>
                     </div>
 

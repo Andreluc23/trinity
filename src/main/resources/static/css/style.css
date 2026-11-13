@@ -349,3 +349,25 @@ section {
     border-radius: inherit;
     overflow: hidden;
 }
+/* Campos de formulário: fundo cinza e borda mais escura, para se destacarem do card branco */
+.form-control,
+.form-select {
+    background-color: #f1f3f5;
+    border: 1px solid #adb5bd;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #fff;
+    border-color: #495057;
+    box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.15);
+}
+
+.form-control::placeholder {
+    color: #868e96;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #343a40;
+}
