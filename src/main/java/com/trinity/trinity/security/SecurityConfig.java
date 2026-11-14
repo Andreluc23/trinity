@@ -36,7 +36,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/img/**", "/favicon.ico").permitAll()
 
                         // Somente o administrador
                         .requestMatchers("/usuarios/**").hasAuthority(ADMIN)

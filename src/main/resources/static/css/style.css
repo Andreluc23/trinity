@@ -1,10 +1,196 @@
+/* Fontes: Lora (títulos, tom mais clássico) e Inter (textos, legível em qualquer tamanho) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap");
+
+/* ---------- Identidade visual do Trinity ----------
+   As cores ficam aqui, num lugar só. Para mudar uma cor no sistema inteiro,
+   basta alterar a variável. As variáveis --bs-* fazem o Bootstrap usar a paleta. */
+:root {
+    --trinity-marinho: #183153;        /* navbar, cabeçalhos e identidade */
+    --trinity-azul: #315E87;           /* navegação e detalhes */
+    --trinity-dourado: #D5B474;        /* botões principais e destaques */
+    --trinity-dourado-escuro: #A98132; /* hover, bordas e textos de destaque */
+    --trinity-fundo: #F8F6F2;          /* fundo das páginas */
+    --trinity-branco: #FFFFFF;         /* cards, tabelas e formulários */
+    --trinity-texto: #1E293B;          /* títulos, números e conteúdos */
+    --trinity-texto-suave: #64748B;    /* textos de apoio */
+    --trinity-borda: #E7E2D8;          /* bordas discretas, no tom do fundo */
+
+    --trinity-fonte-titulo: "Lora", Georgia, "Times New Roman", serif;
+    --trinity-fonte-texto: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --bs-body-bg: var(--trinity-fundo);
+    --bs-body-color: var(--trinity-texto);
+    --bs-body-font-family: var(--trinity-fonte-texto);
+    --bs-secondary-color: var(--trinity-texto-suave);
+    --bs-border-color: var(--trinity-borda);
+    --bs-primary: #315E87;
+    --bs-primary-rgb: 49, 94, 135;
+    --bs-link-color: #315E87;
+    --bs-link-color-rgb: 49, 94, 135;
+    --bs-link-hover-color: #183153;
+    --bs-link-hover-color-rgb: 24, 49, 83;
+    --bs-code-color: var(--trinity-azul);
+}
 
 body {
-    /*background-color: rgb(161 143 213);*/
-    /*background-color:#b4c5e4;*/
-    background: #c8e3e2;
-    background: radial-gradient(circle, rgba(200, 227, 226, 1) 37%, rgba(148, 187, 233, 1) 100%);
-    color: #000000;
+    background: var(--trinity-fundo);
+    color: var(--trinity-texto);
+    font-family: var(--trinity-fonte-texto);
+}
+
+/* ---------- Menu das telas internas ---------- */
+
+.navbar.bg-dark {
+    background-color: var(--trinity-marinho) !important;
+    border-bottom: 3px solid var(--trinity-dourado);
+}
+
+.navbar.bg-dark .navbar-brand {
+    font-family: var(--trinity-fonte-titulo);
+    color: var(--trinity-dourado);
+}
+
+.navbar.bg-dark .nav-link {
+    border-radius: 0.5rem;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.navbar.bg-dark .nav-link:hover {
+    background-color: rgba(213, 180, 116, 0.15);
+    color: var(--trinity-dourado) !important;
+}
+
+/* Página atual: hoje marcada com opacity-50; passa a ficar em dourado */
+.navbar.bg-dark .nav-link.opacity-50 {
+    opacity: 1 !important;
+    background-color: rgba(213, 180, 116, 0.18);
+    color: var(--trinity-dourado) !important;
+}
+
+/* ---------- Botões ---------- */
+
+/* Ação principal (Novo, Salvar, Buscar, Filtrar): dourado */
+.btn-dark {
+    --bs-btn-color: var(--trinity-marinho);
+    --bs-btn-bg: var(--trinity-dourado);
+    --bs-btn-border-color: var(--trinity-dourado);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--trinity-dourado-escuro);
+    --bs-btn-hover-border-color: var(--trinity-dourado-escuro);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #8E6B27;
+    --bs-btn-active-border-color: #8E6B27;
+    --bs-btn-disabled-color: var(--trinity-marinho);
+    --bs-btn-disabled-bg: var(--trinity-dourado);
+    --bs-btn-disabled-border-color: var(--trinity-dourado);
+    font-weight: 600;
+}
+
+/* Ação secundária (Categorias, Funções, Contribuir): contorno azul-marinho */
+.btn-outline-dark {
+    --bs-btn-color: var(--trinity-marinho);
+    --bs-btn-border-color: var(--trinity-marinho);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--trinity-marinho);
+    --bs-btn-hover-border-color: var(--trinity-marinho);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #10233D;
+    --bs-btn-active-border-color: #10233D;
+}
+
+/* Editar e ações de navegação: azul secundário */
+.btn-primary {
+    --bs-btn-bg: var(--trinity-azul);
+    --bs-btn-border-color: var(--trinity-azul);
+    --bs-btn-hover-bg: var(--trinity-marinho);
+    --bs-btn-hover-border-color: var(--trinity-marinho);
+    --bs-btn-active-bg: #10233D;
+    --bs-btn-active-border-color: #10233D;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--trinity-azul);
+    --bs-btn-border-color: var(--trinity-azul);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--trinity-azul);
+    --bs-btn-hover-border-color: var(--trinity-azul);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--trinity-marinho);
+    --bs-btn-active-border-color: var(--trinity-marinho);
+}
+
+/* Cancelar, Limpar, Voltar: neutro */
+.btn-outline-secondary {
+    --bs-btn-color: #475569;
+    --bs-btn-border-color: #CBD5E1;
+    --bs-btn-hover-color: var(--trinity-texto);
+    --bs-btn-hover-bg: #F1F5F9;
+    --bs-btn-hover-border-color: #94A3B8;
+    --bs-btn-active-color: var(--trinity-texto);
+    --bs-btn-active-bg: #E2E8F0;
+    --bs-btn-active-border-color: #94A3B8;
+}
+
+/* ---------- Cards, paginação e menu suspenso ---------- */
+
+.card {
+    border: 1px solid var(--trinity-borda) !important;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(24, 49, 83, 0.06) !important;
+}
+
+.pagination {
+    --bs-pagination-color: var(--trinity-azul);
+    --bs-pagination-hover-color: var(--trinity-marinho);
+    --bs-pagination-active-bg: var(--trinity-marinho);
+    --bs-pagination-active-border-color: var(--trinity-marinho);
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--trinity-azul);
+}
+
+/* ---------- Selos de status e códigos ----------
+   Estilo suave: fundo claro e texto escuro do mesmo tom.
+   O ".badge" na frente garante que só os selos mudem, e não os avisos do canto. */
+
+.badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 999px;
+}
+
+.badge.text-bg-success {
+    background-color: #DCEFE4 !important;
+    color: #1E6B45 !important;
+}
+
+.badge.text-bg-danger {
+    background-color: #F6DEDC !important;
+    color: #9B2C2C !important;
+}
+
+.badge.text-bg-warning {
+    background-color: #F4E9D2 !important;
+    color: #7A5A15 !important;
+}
+
+.badge.text-bg-info {
+    background-color: #DCE7F3 !important;
+    color: var(--trinity-marinho) !important;
+}
+
+.badge.text-bg-secondary {
+    background-color: #E9ECEF !important;
+    color: #495057 !important;
+}
+
+/* Identificadores (TRINITY...): azul, com um fundo leve para destacar */
+code {
+    background-color: #EEF2F7;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.3rem;
+    font-size: 0.85em;
 }
 
 /* ---------- Padrão visual das telas internas ---------- */
@@ -16,14 +202,20 @@ h2 {
     font-weight: 700;
 }
 
+h1, h2, h3, h4, h5,
+.modal-title {
+    font-family: var(--trinity-fonte-titulo);
+    color: var(--trinity-marinho);
+}
+
 /* Tabelas: o mesmo tamanho de texto e o mesmo cabeçalho em todas as listas */
 .table {
     font-size: 0.95rem;
 }
 
 .table > thead > tr > th {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: #F1ECE2;
+    color: var(--trinity-marinho);
     font-size: 0.85rem;
     font-weight: 600;
     white-space: nowrap;
@@ -45,8 +237,8 @@ h2 {
 .form-control:focus,
 .form-select:focus {
     background-color: #fff;
-    border-color: #495057;
-    box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.15);
+    border-color: var(--trinity-azul);
+    box-shadow: 0 0 0 0.2rem rgba(49, 94, 135, 0.2);
 }
 
 .form-control::placeholder {
@@ -55,7 +247,7 @@ h2 {
 
 .form-label {
     font-weight: 600;
-    color: #343a40;
+    color: var(--trinity-texto);
 }
 
 /* Modais: mesma largura e mesmo visual em todo o sistema */

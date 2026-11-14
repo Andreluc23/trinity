@@ -10,7 +10,10 @@
 
     <div class="container-fluid">
 
-        <a class="navbar-brand fw-semibold" th:href="@{/dashboard}">Trinity</a>
+        <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/dashboard}">
+            <svg th:replace="~{fragments/logo :: logo(30)}"></svg>
+            <span>Trinity</span>
+        </a>
 
         <button class="navbar-toggler"
                 type="button"
