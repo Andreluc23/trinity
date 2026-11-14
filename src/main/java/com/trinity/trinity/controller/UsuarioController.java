@@ -48,7 +48,6 @@ public class UsuarioController {
     @PostMapping("/criar-acesso/{id}")
     public String criarAcesso(@PathVariable("id") Long id,
                               @RequestParam("senhaProvisoria") String senhaProvisoria,
-                              Model model,
                               RedirectAttributes redirectAttributes) {
         try {
             usuarioService.criarAcesso(id, senhaProvisoria);
@@ -56,9 +55,8 @@ public class UsuarioController {
                     "Acesso criado. Informe a senha provisória ao membro.");
             return "redirect:/membros";
         } catch (RegraNegocioException e) {
-            model.addAttribute("erro", e.getMessage());
-            model.addAttribute("membro", membroService.buscarPorId(id));
-            return "forms/criar-acesso-form";
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+            return "redirect:/usuarios/criar-acesso/" + id;
         }
     }
 

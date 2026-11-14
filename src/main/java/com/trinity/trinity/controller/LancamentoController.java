@@ -34,27 +34,36 @@ public class LancamentoController {
 
     @GetMapping("/novo")
     public String novo(Model model) {
-        Lancamento lancamento = new Lancamento();
-        lancamento.setData(LocalDate.now());
-        return exibirFormulario(lancamento, model);
+        if (!model.containsAttribute("lancamento")) {
+            Lancamento lancamento = new Lancamento();
+            lancamento.setData(LocalDate.now());
+            model.addAttribute("lancamento", lancamento);
+        }
+        return exibirFormulario(model);
     }
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
-        return exibirFormulario(lancamentoService.buscarPorId(id), model);
+        if (!model.containsAttribute("lancamento")) {
+            model.addAttribute("lancamento", lancamentoService.buscarPorId(id));
+        }
+        return exibirFormulario(model);
     }
 
     @PostMapping
     public String salvar(@ModelAttribute("lancamento") Lancamento lancamento,
-                         Model model,
                          RedirectAttributes redirectAttributes) {
         try {
             lancamentoService.salvar(lancamento);
             redirectAttributes.addFlashAttribute("sucesso", "Lançamento salvo com sucesso.");
             return voltarParaOMes(lancamento.getData());
         } catch (RegraNegocioException e) {
-            model.addAttribute("erro", e.getMessage());
-            return exibirFormulario(lancamento, model);
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+            redirectAttributes.addFlashAttribute("lancamento", lancamento);
+
+            return lancamento.getId() == null
+                    ? "redirect:/financeiro/lancamentos/novo"
+                    : "redirect:/financeiro/lancamentos/editar/" + lancamento.getId();
         }
     }
 
@@ -79,8 +88,7 @@ public class LancamentoController {
         return voltarParaOMes(lancamento.getData());
     }
 
-    private String exibirFormulario(Lancamento lancamento, Model model) {
-        model.addAttribute("lancamento", lancamento);
+    private String exibirFormulario(Model model) {
         model.addAttribute("categoriasEntrada", categoriaService.listarAtivasPorTipo(TipoLancamento.ENTRADA));
         model.addAttribute("categoriasSaida", categoriaService.listarAtivasPorTipo(TipoLancamento.SAIDA));
         model.addAttribute("membros", membroService.listarAtivos());

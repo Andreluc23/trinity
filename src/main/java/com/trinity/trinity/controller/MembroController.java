@@ -54,13 +54,17 @@ public class MembroController {
 
     @GetMapping("/membros/novo")
     public String novoMembro(Model model) {
-        model.addAttribute("membro", new Membro());
+        if (!model.containsAttribute("membro")) {
+            model.addAttribute("membro", new Membro());
+        }
         return "forms/membro-form";
     }
 
     @GetMapping("/membros/editar/{id}")
     public String editarMembro(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("membro", membroService.buscarPorId(id));
+        if (!model.containsAttribute("membro")) {
+            model.addAttribute("membro", membroService.buscarPorId(id));
+        }
         return "forms/membro-form";
     }
 
@@ -97,15 +101,18 @@ public class MembroController {
     }
 
     @PostMapping("/membros")
-    public String salvarMembro(Membro membro, Model model, RedirectAttributes redirectAttributes) {
+    public String salvarMembro(Membro membro, RedirectAttributes redirectAttributes) {
         try {
             membroService.salvar(membro);
             redirectAttributes.addFlashAttribute("sucesso", "Membro salvo com sucesso.");
             return "redirect:/membros";
         } catch (RegraNegocioException e) {
-            model.addAttribute("erro", e.getMessage());
-            model.addAttribute("membro", membro);
-            return "forms/membro-form";
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+            redirectAttributes.addFlashAttribute("membro", membro);
+
+            return membro.getId() == null
+                    ? "redirect:/membros/novo"
+                    : "redirect:/membros/editar/" + membro.getId();
         }
     }
 }

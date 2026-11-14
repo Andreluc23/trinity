@@ -19,6 +19,7 @@ public class Membro {
     @Column(nullable = false)
     private LocalDate dataNascimento;
 
+    /** Guardado só com números (ex.: 52998224725). */
     @Column(nullable = false, unique = true)
     private String cpf;
 
@@ -61,15 +62,28 @@ public class Membro {
         this.dataNascimento = dataNascimento;
     }
 
-    public String getCpfFormatado() {
-        return Cpf.formatar(cpf);
+    // ---------- CPF ----------
+
+    /** Valor real, só com números: usado nas regras e nas buscas. */
+    public String getCpf() {
+        return cpf;
     }
-    public String getCpfMascarado() {
-        return Cpf.mascarar(cpf);
-    }
+
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+    /** Para exibir: 529.982.247-25 (formulário de edição e perfil). */
+    public String getCpfFormatado() {
+        return Cpf.formatar(cpf);
+    }
+
+    /** Para exibir parcialmente oculto: ***.982.247-** (lista de membros). */
+    public String getCpfMascarado() {
+        return Cpf.mascarar(cpf);
+    }
+
+    // ---------- Contato e endereço ----------
 
     public String getTelefone() {
         return telefone;
@@ -87,6 +101,10 @@ public class Membro {
         this.email = email;
     }
 
+    /**
+     * Quando todas as colunas do endereço estão vazias, o Hibernate devolve null:
+     * aqui sempre volta um endereço (vazio, se for o caso), para o formulário não quebrar.
+     */
     public Endereco getEndereco() {
         if (endereco == null) {
             endereco = new Endereco();

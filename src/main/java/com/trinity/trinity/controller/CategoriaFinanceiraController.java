@@ -28,21 +28,23 @@ public class CategoriaFinanceiraController {
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("categoria", categoriaService.buscarPorId(id));
+        if (!model.containsAttribute("categoria")) {
+            model.addAttribute("categoria", categoriaService.buscarPorId(id));
+        }
         return FORMULARIO;
     }
 
     @PostMapping
     public String salvar(@ModelAttribute("categoria") CategoriaFinanceira categoria,
-                         Model model,
                          RedirectAttributes redirectAttributes) {
         try {
             categoriaService.salvar(categoria);
             redirectAttributes.addFlashAttribute("sucessoCategoria", "Categoria salva com sucesso.");
         } catch (RegraNegocioException e) {
             if (categoria.getId() != null) {
-                model.addAttribute("erro", e.getMessage());
-                return FORMULARIO;
+                redirectAttributes.addFlashAttribute("erro", e.getMessage());
+                redirectAttributes.addFlashAttribute("categoria", categoria);
+                return "redirect:/financeiro/categorias/editar/" + categoria.getId();
             }
             redirectAttributes.addFlashAttribute("erroCategoria", e.getMessage());
         }

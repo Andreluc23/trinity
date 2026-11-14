@@ -48,23 +48,32 @@ public class EscalaController {
 
     @GetMapping("/nova")
     public String nova(Model model) {
-        return exibirFormulario(new Escala(), List.of(), model);
+        // Se voltou de um erro, a escala e os integrantes já vieram pelo redirecionamento
+        if (!model.containsAttribute("escala")) {
+            model.addAttribute("escala", new Escala());
+            model.addAttribute("integrantes", List.of());
+        }
+        return exibirFormulario(model);
     }
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
-        List<IntegranteEscala> integrantes = escalaService.listarIntegrantes(id).stream()
-                .map(item -> new IntegranteEscala(item.getMembro().getId(), item.getFuncaoMusical().getId()))
-                .toList();
+        // Se voltou de um erro, mantém o que o usuário digitou em vez de buscar no banco
+        if (!model.containsAttribute("escala")) {
+            List<IntegranteEscala> integrantes = escalaService.listarIntegrantes(id).stream()
+                    .map(item -> new IntegranteEscala(item.getMembro().getId(), item.getFuncaoMusical().getId()))
+                    .toList();
 
-        return exibirFormulario(escalaService.buscarPorId(id), integrantes, model);
+            model.addAttribute("escala", escalaService.buscarPorId(id));
+            model.addAttribute("integrantes", integrantes);
+        }
+        return exibirFormulario(model);
     }
 
     @PostMapping
     public String salvar(@ModelAttribute("escala") Escala escala,
                          @RequestParam(name = "membroIds", required = false) List<Long> membroIds,
                          @RequestParam(name = "funcaoIds", required = false) List<Long> funcaoIds,
-                         Model model,
                          RedirectAttributes redirectAttributes) {
 
         List<IntegranteEscala> integrantes = combinar(membroIds, funcaoIds);
@@ -74,8 +83,14 @@ public class EscalaController {
             redirectAttributes.addFlashAttribute("sucesso", "Escala salva com sucesso.");
             return "redirect:/escalas/" + escalaSalva.getId();
         } catch (RegraNegocioException e) {
-            model.addAttribute("erro", e.getMessage());
-            return exibirFormulario(escala, integrantes, model);
+            // Volta ao formulário por redirecionamento, levando o que foi digitado e o erro
+            redirectAttributes.addFlashAttribute("erro", e.getMessage());
+            redirectAttributes.addFlashAttribute("escala", escala);
+            redirectAttributes.addFlashAttribute("integrantes", integrantes);
+
+            return escala.getId() == null
+                    ? "redirect:/escalas/nova"
+                    : "redirect:/escalas/editar/" + escala.getId();
         }
     }
 
@@ -100,9 +115,7 @@ public class EscalaController {
         return "redirect:/escalas";
     }
 
-    private String exibirFormulario(Escala escala, List<IntegranteEscala> integrantes, Model model) {
-        model.addAttribute("escala", escala);
-        model.addAttribute("integrantes", integrantes);
+    private String exibirFormulario(Model model) {
         model.addAttribute("membros", membroService.listarAtivos());
         model.addAttribute("funcoes", funcaoMusicalService.listarAtivas());
         return "forms/escala-form";

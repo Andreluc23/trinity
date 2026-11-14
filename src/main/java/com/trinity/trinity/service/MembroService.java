@@ -13,11 +13,11 @@ import com.trinity.trinity.repository.PresencaEventoRepository;
 import com.trinity.trinity.repository.RefreshTokenRepository;
 import com.trinity.trinity.repository.UsuarioRepository;
 import com.trinity.trinity.util.Cpf;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +25,8 @@ import java.util.Optional;
 
 @Service
 public class MembroService {
+
+    private static final int MEMBROS_POR_PAGINA = 5;
 
     private final MembroRepository membroRepository;
     private final UsuarioRepository usuarioRepository;
@@ -53,73 +55,115 @@ public class MembroService {
         this.escalaItemRepository = escalaItemRepository;
     }
 
+    // ---------- Consultas ----------
+
+    public Membro buscarPorId(Long id) {
+        return membroRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado"));
+    }
+
     public List<Membro> listarTodos() {
         return membroRepository.findAll();
     }
 
+    public List<Membro> listarTodosPorNome() {
+        return membroRepository.findAllByOrderByNomeCompletoAsc();
+    }
+
+    public List<Membro> listarAtivos() {
+        return membroRepository.findByAtivoTrueOrderByNomeCompletoAsc();
+    }
+
+    public Page<Membro> buscar(String termo, int pagina) {
+        Pageable pageable = PageRequest.of(pagina, MEMBROS_POR_PAGINA);
+
+        if (termo == null || termo.isBlank()) {
+            return membroRepository.findAll(pageable);
+        }
+
+        // A busca por CPF funciona com ou sem pontuação, porque o CPF é guardado só com números
+        String digitos = Cpf.somenteDigitos(termo);
+        String termoCpf = digitos.isEmpty() ? termo : digitos;
+
+        return membroRepository
+                .findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
+                        termo,
+                        termoCpf,
+                        termo,
+                        pageable
+                );
+    }
+
+    public long contarTodos() {
+        return membroRepository.count();
+    }
+
+    public long contarAtivos() {
+        return membroRepository.countByAtivo(true);
+    }
+
+    public long contarInativos() {
+        return membroRepository.countByAtivo(false);
+    }
+
+    // ---------- Cadastro ----------
+
     public Membro salvar(Membro membro) {
 
-        boolean cpfDuplicado;
-        boolean emailDuplicado = false;
-        if (!Cpf.isValido(membro.getCpfFormatado())) {
+        // 1. Valida e padroniza os dados
+        if (!Cpf.isValido(membro.getCpf())) {
             throw new RegraNegocioException("CPF inválido.");
         }
+        membro.setCpf(Cpf.somenteDigitos(membro.getCpf()));
 
-        membro.setCpf(Cpf.somenteDigitos(membro.getCpfFormatado()));
-        if (membro.getId() == null) {
-            // Novo membro
-            cpfDuplicado = membroRepository.existsByCpf(membro.getCpfFormatado());
-
-            if (membro.getEmail() != null && !membro.getEmail().isBlank()) {
-                emailDuplicado = membroRepository.existsByEmail(membro.getEmail());
-            }
-
-        } else {
-            // Edição
-            cpfDuplicado = membroRepository.existsByCpfAndIdNot(
-                    membro.getCpfFormatado(),
-                    membro.getId()
-            );
-
-            if (membro.getEmail() != null && !membro.getEmail().isBlank()) {
-                emailDuplicado = membroRepository.existsByEmailAndIdNot(
-                        membro.getEmail(),
-                        membro.getId()
-                );
-            }
+        if (membro.getDataNascimento() == null) {
+            throw new RegraNegocioException("Informe a data de nascimento.");
         }
-        membro.getEndereco().normalizar();
+        if (membro.getDataNascimento().isAfter(LocalDate.now())) {
+            throw new RegraNegocioException("A data de nascimento não pode ser no futuro.");
+        }
+        if (membro.getDataNascimento().getYear() < 1900) {
+            throw new RegraNegocioException("Confira a data de nascimento: o ano informado é muito antigo.");
+        }
 
+        membro.getEndereco().normalizar();
         String cep = membro.getEndereco().getCep();
         if (cep != null && cep.length() != 8) {
             throw new RegraNegocioException("CEP inválido.");
         }
 
+        // 2. Verifica duplicidades (o CPF já está só com números, como no banco)
+        boolean novo = membro.getId() == null;
+        String cpf = membro.getCpf();
+        String email = membro.getEmail();
+        boolean temEmail = email != null && !email.isBlank();
+
+        boolean cpfDuplicado = novo
+                ? membroRepository.existsByCpf(cpf)
+                : membroRepository.existsByCpfAndIdNot(cpf, membro.getId());
+
         if (cpfDuplicado) {
             throw new RegraNegocioException("CPF já cadastrado.");
         }
 
+        boolean emailDuplicado = temEmail && (novo
+                ? membroRepository.existsByEmail(email)
+                : membroRepository.existsByEmailAndIdNot(email, membro.getId()));
+
         if (emailDuplicado) {
             throw new RegraNegocioException("E-mail já cadastrado.");
         }
-        if (membro.getDataNascimento() == null) {
-            throw new RegraNegocioException("Informe a data de nascimento.");
-        }
 
-        if (membro.getDataNascimento().isAfter(LocalDate.now())) {
-            throw new RegraNegocioException("A data de nascimento não pode ser no futuro.");
-        }
-
-        if (membro.getDataNascimento().getYear() < 1900) {
-            throw new RegraNegocioException("Confira a data de nascimento: o ano informado é muito antigo.");
-        }
-
+        // 3. Grava
         return membroRepository.save(membro);
     }
 
-    public Membro buscarPorId(Long id) {
-        return membroRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado"));
+    // ---------- Situação ----------
+
+    public void ativar(Long id) {
+        Membro membro = buscarPorId(id);
+        membro.setAtivo(true);
+        membroRepository.save(membro);
     }
 
     public void desativar(Long id) {
@@ -131,15 +175,6 @@ public class MembroService {
 
         membro.setAtivo(false);
         membroRepository.save(membro);
-    }
-
-    private boolean ehUnicoAdministradorAtivo(Membro membro) {
-        boolean ehAdministrador = usuarioRepository.findByMembroId(membro.getId())
-                .filter(usuario -> usuario.isAdmin() && usuario.isAtivo())
-                .isPresent();
-
-        return ehAdministrador
-                && usuarioRepository.countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue() <= 1;
     }
 
     /**
@@ -169,6 +204,7 @@ public class MembroService {
             }
         }
 
+        // Exclui das "pontas" para o centro: o banco recusaria apagar o membro antes
         conta.ifPresent(usuario -> {
             refreshTokenRepository.deleteByUsuarioId(usuario.getId());
             usuarioRepository.delete(usuario);
@@ -181,52 +217,14 @@ public class MembroService {
         membroRepository.delete(membro);
     }
 
-    public void ativar(Long id) {
+    // ---------- Apoio ----------
 
-        Membro membro = buscarPorId(id);
+    private boolean ehUnicoAdministradorAtivo(Membro membro) {
+        boolean ehAdministrador = usuarioRepository.findByMembroId(membro.getId())
+                .filter(usuario -> usuario.isAdmin() && usuario.isAtivo())
+                .isPresent();
 
-        membro.setAtivo(true);
-
-        membroRepository.save(membro);
-    }
-
-    public long contarTodos() {
-        return membroRepository.count();
-    }
-
-    public long contarAtivos() {
-        return membroRepository.countByAtivo(true);
-    }
-
-    public long contarInativos() {
-        return membroRepository.countByAtivo(false);
-    }
-
-    public Page<Membro> buscar(String termo, int pagina) {
-
-        Pageable pageable = PageRequest.of(pagina, 5);
-
-        if (termo == null || termo.isBlank()) {
-            return membroRepository.findAll(pageable);
-        }
-
-        String digitos = Cpf.somenteDigitos(termo);
-        String termoCpf = digitos.isEmpty() ? termo : digitos;
-
-        return membroRepository
-                .findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
-                        termo,
-                        termoCpf,
-                        termo,
-                        pageable
-                );
-    }
-
-    public List<Membro> listarAtivos() {
-        return membroRepository.findByAtivoTrueOrderByNomeCompletoAsc();
-    }
-
-    public List<Membro> listarTodosPorNome() {
-        return membroRepository.findAllByOrderByNomeCompletoAsc();
+        return ehAdministrador
+                && usuarioRepository.countByAdminTrueAndAtivoTrueAndMembro_AtivoTrue() <= 1;
     }
 }
