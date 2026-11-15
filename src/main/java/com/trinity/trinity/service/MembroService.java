@@ -125,6 +125,10 @@ public class MembroService {
         if (membro.getDataNascimento().getYear() < 1900) {
             throw new RegraNegocioException("Confira a data de nascimento: o ano informado é muito antigo.");
         }
+        if (!Membro.telefoneValido(membro.getTelefone())) {
+            throw new RegraNegocioException("Telefone inválido: informe o DDD e o número.");
+        }
+        membro.setTelefone(Membro.telefoneSomenteDigitos(membro.getTelefone()));
 
         membro.getEndereco().normalizar();
         String cep = membro.getEndereco().getCep();

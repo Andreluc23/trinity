@@ -89,9 +89,15 @@
                     <div class="col-12 col-md-6">
                         <label class="form-label">Telefone</label>
 
-                        <input type="text"
+                        <input type="tel"
+                               id="telefone"
+                               name="telefone"
                                class="form-control"
-                               th:field="*{telefone}"
+                               th:value="${membro.telefoneFormatado}"
+                               maxlength="15"
+                               placeholder="(00) 00000-0000"
+                               inputmode="numeric"
+                               autocomplete="tel"
                                required>
                     </div>
 
@@ -177,7 +183,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     // Ao informar um CEP válido, busca o endereço no ViaCEP e preenche os campos
@@ -241,8 +246,27 @@
         campoCep.addEventListener('blur', buscarCep);
     })();
 </script>
+<script>
+    // Formata o telefone enquanto a pessoa digita: (44) 99709-3407 ou (44) 3622-1234
+    (() => {
+        const campoTelefone = document.getElementById('telefone');
 
-</body>
-</html>
+        function formatarTelefone(valor) {
+            const d = valor.replace(/\D/g, '').slice(0, 11);
+
+            if (d.length === 0) return '';
+            if (d.length <= 2) return '(' + d;
+            if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+            if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+            return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+        }
+
+        campoTelefone.addEventListener('input', () => {
+            campoTelefone.value = formatarTelefone(campoTelefone.value);
+        });
+    })();
+</script>
+
+
 </body>
 </html>

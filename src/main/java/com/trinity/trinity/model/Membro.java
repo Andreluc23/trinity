@@ -83,7 +83,7 @@ public class Membro {
         return Cpf.mascarar(cpf);
     }
 
-    // ---------- Contato e endereço ----------
+    // ---------- Telefone ----------
 
     public String getTelefone() {
         return telefone;
@@ -92,6 +92,36 @@ public class Membro {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+
+    /** Para exibir: (44) 99709-3407 ou (44) 3622-1234. */
+    public String getTelefoneFormatado() {
+        return formatarTelefone(telefone);
+    }
+
+    public static String formatarTelefone(String telefone) {
+        if (telefone == null) return "";
+        String d = telefone.replaceAll("\\D", "");
+
+        if (d.length() == 11) {
+            return "(" + d.substring(0, 2) + ") " + d.substring(2, 7) + "-" + d.substring(7);
+        }
+        if (d.length() == 10) {
+            return "(" + d.substring(0, 2) + ") " + d.substring(2, 6) + "-" + d.substring(6);
+        }
+        return telefone;
+    }
+
+    public static boolean telefoneValido(String telefone) {
+        if (telefone == null) return false;
+        int tamanho = telefone.replaceAll("\\D", "").length();
+        return tamanho == 10 || tamanho == 11;
+    }
+
+    public static String telefoneSomenteDigitos(String telefone) {
+        return telefone == null ? "" : telefone.replaceAll("\\D", "");
+    }
+
+    // ---------- Contato e endereço ----------
 
     public String getEmail() {
         return email;
