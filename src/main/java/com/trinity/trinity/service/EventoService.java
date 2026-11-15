@@ -5,28 +5,34 @@ import com.trinity.trinity.model.Evento;
 import com.trinity.trinity.repository.EventoRepository;
 import com.trinity.trinity.repository.PresencaEventoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+
+
 
 @Service
 public class EventoService {
 
     private final EventoRepository eventoRepository;
     private final PresencaEventoRepository presencaRepository;
+    private static final int ITENS_POR_PAGINA = 12;
 
     public EventoService(EventoRepository eventoRepository, PresencaEventoRepository presencaRepository) {
         this.eventoRepository = eventoRepository;
         this.presencaRepository = presencaRepository;
     }
 
-    public List<Evento> listarTodos() {
-        return eventoRepository.findAllByOrderByDataDescHorarioDesc();
+    public Page<Evento> listarTodos(int pagina) {
+        return eventoRepository.findAllByOrderByDataDescHorarioDesc(PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
-    public List<Evento> listarFuturos() {
-        return eventoRepository.findByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(LocalDate.now());
+    public Page<Evento> listarFuturos(int pagina) {
+        return eventoRepository.findByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(
+                LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
     public Evento salvar(Evento evento) {
         return eventoRepository.save(evento);

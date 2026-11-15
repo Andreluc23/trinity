@@ -5,6 +5,8 @@ import com.trinity.trinity.model.Aviso;
 import com.trinity.trinity.repository.AvisoRepository;
 import com.trinity.trinity.repository.LeituraAvisoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,18 +16,19 @@ public class AvisoService {
 
     private final AvisoRepository avisoRepository;
     private final LeituraAvisoRepository leituraRepository;
+    private static final int ITENS_POR_PAGINA = 12;
 
     public AvisoService(AvisoRepository avisoRepository, LeituraAvisoRepository leituraRepository) {
         this.avisoRepository = avisoRepository;
         this.leituraRepository = leituraRepository;
     }
 
-    public List<Aviso> listarTodos() {
-        return avisoRepository.findAllByOrderByDataPublicacaoDesc();
+    public Page<Aviso> listarTodos(int pagina) {
+        return avisoRepository.findAllByOrderByDataPublicacaoDesc(PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
-    public List<Aviso> listarAtivos() {
-        return avisoRepository.findByAtivoTrueOrderByDataPublicacaoDesc();
+    public Page<Aviso> listarAtivos(int pagina) {
+        return avisoRepository.findByAtivoTrueOrderByDataPublicacaoDesc(PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
     public List<Aviso> listarRecentes() {

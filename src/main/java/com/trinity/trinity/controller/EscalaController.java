@@ -7,6 +7,7 @@ import com.trinity.trinity.service.EscalaService;
 import com.trinity.trinity.service.FuncaoMusicalService;
 import com.trinity.trinity.service.IntegranteEscala;
 import com.trinity.trinity.service.MembroService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,16 @@ public class EscalaController {
     }
 
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("escalas", escalaService.listarTodas());
+    public String listar(@RequestParam(name = "pagina", defaultValue = "0") int pagina, Model model) {
+        Page<Escala> paginaEscalas = escalaService.listarTodas(pagina);
+
+        model.addAttribute("escalas", paginaEscalas.getContent());
+        model.addAttribute("paginaAtual", pagina);
+        model.addAttribute("totalPaginas", paginaEscalas.getTotalPages());
         model.addAttribute("funcoes", funcaoMusicalService.listarTodas());
         model.addAttribute("novaFuncao", new FuncaoMusical());
         return "escalas";
     }
-
     @GetMapping("/{id}")
     public String detalhes(@PathVariable("id") Long id, Model model) {
         model.addAttribute("escala", escalaService.buscarPorId(id));

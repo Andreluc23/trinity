@@ -6,6 +6,7 @@ import com.trinity.trinity.model.RespostaPresenca;
 import com.trinity.trinity.security.Permissoes;
 import com.trinity.trinity.service.EventoService;
 import com.trinity.trinity.service.PresencaService;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,11 +31,16 @@ public class EventoController {
     }
 
     @GetMapping("/eventos")
-    public String listarEventos(Authentication authentication, Model model) {
+    public String listarEventos(@RequestParam(name = "pagina", defaultValue = "0") int pagina,
+                                Authentication authentication,
+                                Model model) {
         boolean podeGerenciar = Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_EVENTOS");
-        List<Evento> eventos = podeGerenciar ? eventoService.listarTodos() : eventoService.listarFuturos();
+        Page<Evento> paginaEventos = podeGerenciar ? eventoService.listarTodos(pagina) : eventoService.listarFuturos(pagina);
+        List<Evento> eventos = paginaEventos.getContent();
 
         model.addAttribute("eventos", eventos);
+        model.addAttribute("paginaAtual", pagina);
+        model.addAttribute("totalPaginas", paginaEventos.getTotalPages());
         model.addAttribute("minhasRespostas", presencaService.respostasDoMembro(authentication.getName()));
         model.addAttribute("hoje", LocalDate.now());
 

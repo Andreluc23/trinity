@@ -3,8 +3,12 @@ package com.trinity.trinity.service;
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
 import com.trinity.trinity.model.Patrimonio;
 import com.trinity.trinity.repository.PatrimonioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -19,18 +23,18 @@ public class PatrimonioService {
     public List<Patrimonio> listarTodos() {
         return patrimonioRepository.findAll();
     }
-    public List<Patrimonio> buscar(String termo) {
+    private static final int ITENS_POR_PAGINA = 12;
+
+    public Page<Patrimonio> buscar(String termo, int pagina) {
+        Pageable pageable = PageRequest.of(pagina, ITENS_POR_PAGINA, Sort.by("nome"));
 
         if (termo == null || termo.isBlank()) {
-            return patrimonioRepository.findAll();
+            return patrimonioRepository.findAll(pageable);
         }
 
         return patrimonioRepository
                 .findByNomeContainingIgnoreCaseOrCategoriaContainingIgnoreCaseOrLocalizacaoContainingIgnoreCase(
-                        termo,
-                        termo,
-                        termo
-                );
+                        termo, termo, termo, pageable);
     }
 
     public Patrimonio buscarPorId(Long id) {

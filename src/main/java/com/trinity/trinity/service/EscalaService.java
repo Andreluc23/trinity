@@ -10,14 +10,18 @@ import com.trinity.trinity.repository.EscalaItemRepository;
 import com.trinity.trinity.repository.EscalaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @Service
 public class EscalaService {
@@ -26,6 +30,7 @@ public class EscalaService {
     private final EscalaItemRepository escalaItemRepository;
     private final MembroService membroService;
     private final FuncaoMusicalService funcaoMusicalService;
+    private static final int ITENS_POR_PAGINA = 12;
 
     public EscalaService(EscalaRepository escalaRepository,
                          EscalaItemRepository escalaItemRepository,
@@ -41,20 +46,10 @@ public class EscalaService {
      * Próximas escalas primeiro (da mais próxima para a mais distante),
      * depois as que já passaram (da mais recente para a mais antiga).
      */
-    public List<Escala> listarTodas() {
-        LocalDate hoje = LocalDate.now();
-        List<Escala> todas = escalaRepository.findAllByOrderByDataAscHorarioAsc();
 
-        List<Escala> proximas = todas.stream()
-                .filter(escala -> !escala.getData().isBefore(hoje))
-                .toList();
 
-        List<Escala> passadas = new ArrayList<>(todas.stream()
-                .filter(escala -> escala.getData().isBefore(hoje))
-                .toList());
-        Collections.reverse(passadas);
-
-        return Stream.concat(proximas.stream(), passadas.stream()).toList();
+    public Page<Escala> listarTodas(int pagina) {
+        return escalaRepository.listarProximasPrimeiro(LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
     public Escala buscarPorId(Long id) {

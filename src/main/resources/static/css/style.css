@@ -302,10 +302,9 @@ h1, h2, h3, h4, h5,
 /* ---------- Página inicial pública ---------- */
 
 .hero {
-    min-height: 80vh;
     display: flex;
     align-items: center;
-    padding-top: 100px;
+    padding: 4rem 0 3rem;
 }
 
 .hero-tag {

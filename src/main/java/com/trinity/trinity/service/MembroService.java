@@ -26,7 +26,7 @@ import java.util.Optional;
 @Service
 public class MembroService {
 
-    private static final int MEMBROS_POR_PAGINA = 5;
+    private static final int MEMBROS_POR_PAGINA = 12;
 
     private final MembroRepository membroRepository;
     private final UsuarioRepository usuarioRepository;

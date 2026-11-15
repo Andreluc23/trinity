@@ -2,6 +2,7 @@ package com.trinity.trinity.controller;
 
 import com.trinity.trinity.model.Patrimonio;
 import com.trinity.trinity.service.PatrimonioService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,14 @@ public class PatrimonioController {
     }
 
     @GetMapping
-    public String listar(@RequestParam(name = "termo", required = false) String termo, Model model) {
-        model.addAttribute("patrimonios", patrimonioService.buscar(termo));
+    public String listar(@RequestParam(name = "termo", required = false) String termo,
+                         @RequestParam(name = "pagina", defaultValue = "0") int pagina,
+                         Model model) {
+        Page<Patrimonio> paginaPatrimonios = patrimonioService.buscar(termo, pagina);
+
+        model.addAttribute("patrimonios", paginaPatrimonios.getContent());
+        model.addAttribute("paginaAtual", pagina);
+        model.addAttribute("totalPaginas", paginaPatrimonios.getTotalPages());
         model.addAttribute("termo", termo);
         return "patrimonios";
     }
