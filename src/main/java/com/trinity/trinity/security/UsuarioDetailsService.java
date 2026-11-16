@@ -1,7 +1,8 @@
 package com.trinity.trinity.security;
 
-import com.trinity.trinity.model.Usuario;
-import com.trinity.trinity.repository.UsuarioRepository;
+
+import com.trinity.trinity.model.usuarios.Usuario;
+import com.trinity.trinity.repository.usuarios.UsuarioRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
