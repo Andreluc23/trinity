@@ -5,12 +5,15 @@ import com.trinity.trinity.service.AvisoService;
 import com.trinity.trinity.service.EventoService;
 import com.trinity.trinity.service.LancamentoService;
 import com.trinity.trinity.service.MembroService;
+import com.trinity.trinity.model.TipoLancamento;
 import com.trinity.trinity.service.ResumoMensal;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -56,12 +59,25 @@ public class HomeController {
             model.addAttribute("totalMembros", membroService.contarTodos());
             model.addAttribute("membrosAtivos", membroService.contarAtivos());
             model.addAttribute("membrosInativos", membroService.contarInativos());
+
+            long total = membroService.contarTodos();
+            long percentualAtivos = total == 0 ? 0 : Math.round(membroService.contarAtivos() * 100.0 / total);
+
+            model.addAttribute("comAcesso", membroService.contarComAcesso());
+            model.addAttribute("percentualAtivos", percentualAtivos);
+            model.addAttribute("percentualInativos", total == 0 ? 0 : 100 - percentualAtivos);
+            model.addAttribute("hoje", LocalDate.now());
+            model.addAttribute("aniversariantes", membroService.aniversariantesDoMes(YearMonth.now()));
         }
 
         if (Permissoes.possuiAlguma(authentication, "ROLE_ADMIN", "GERENCIAR_FINANCEIRO")) {
             List<ResumoMensal> resumo = lancamentoService.resumoUltimosMeses(MESES_NO_GRAFICO);
 
+            YearMonth mesAtual = YearMonth.now();
+
             model.addAttribute("saldoGeral", lancamentoService.saldoGeral());
+            model.addAttribute("saldoMes", lancamentoService.somarDoMes(TipoLancamento.ENTRADA, mesAtual)
+                    .subtract(lancamentoService.somarDoMes(TipoLancamento.SAIDA, mesAtual)));
             model.addAttribute("rotulosMeses", resumo.stream().map(r -> r.mes().format(ROTULO_MES)).toList());
             model.addAttribute("entradasMeses", resumo.stream().map(ResumoMensal::entradas).toList());
             model.addAttribute("saidasMeses", resumo.stream().map(ResumoMensal::saidas).toList());

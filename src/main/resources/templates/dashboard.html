@@ -52,6 +52,9 @@
                             <h3 class="mb-0" th:text="${totalMembros}">
                                 0
                             </h3>
+                            <small class="text-muted d-block mt-1">
+                                <span th:text="${comAcesso}">0</span> com acesso ao sistema
+                            </small>
                         </div>
 
                         <i class="bi bi-people fs-1 text-primary"></i>
@@ -76,6 +79,9 @@
                             <h3 class="mb-0" th:text="${membrosAtivos}">
                                 0
                             </h3>
+                            <small class="text-muted d-block mt-1">
+                                <span th:text="${percentualAtivos}">0</span>% do total
+                            </small>
                         </div>
 
                         <i class="bi bi-person-check fs-1 text-success"></i>
@@ -100,6 +106,9 @@
                             <h3 class="mb-0" th:text="${membrosInativos}">
                                 0
                             </h3>
+                            <small class="text-muted d-block mt-1">
+                                <span th:text="${percentualInativos}">0</span>% do total
+                            </small>
                         </div>
 
                         <i class="bi bi-person-x fs-1 text-danger"></i>
@@ -126,6 +135,9 @@
                                 th:text="${#numbers.formatCurrency(saldoGeral)}">
                                 R$ 0,00
                             </h3>
+                            <small class="text-muted d-block mt-1">
+                                Este mês: <span th:classappend="${saldoMes.signum() < 0} ? 'text-danger' : 'text-success'" th:text="${(saldoMes.signum() < 0 ? '- ' : '+ ') + #numbers.formatCurrency(saldoMes.abs())}">+ R$ 0,00</span>
+                            </small>
                         </div>
 
                         <i class="bi bi-wallet2 fs-1 text-warning"></i>
@@ -158,18 +170,42 @@
             </div>
         </div>
 
-        <!-- Situação dos membros -->
+        <!-- Aniversariantes do mês -->
         <div class="col-lg-4"
              th:if="${verMembros}">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body">
 
                     <h5 class="card-title mb-3">
-                        Situação dos membros
+                        <i class="bi bi-gift me-1"></i>
+                        Aniversariantes de
+                        <span th:text="${#temporals.format(hoje, 'MMMM')}">novembro</span>
                     </h5>
 
-                    <div style="height: 300px;">
-                        <canvas id="graficoMembros"></canvas>
+                    <div style="height: 300px; overflow-y: auto;">
+
+                        <div th:each="aniversariante : ${aniversariantes}"
+                             class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <div class="fw-semibold" th:text="${aniversariante.nomeCompleto}">Maria</div>
+                                <small class="text-muted"
+                                       th:text="${'completa ' + (hoje.year - aniversariante.dataNascimento.year) + ' anos'}">
+                                    completa 30 anos
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-semibold"
+                                      th:text="${#temporals.format(aniversariante.dataNascimento, 'dd/MM')}">15/11</span>
+                                <span th:if="${aniversariante.dataNascimento.dayOfMonth == hoje.dayOfMonth}"
+                                      class="badge text-bg-warning ms-1">Hoje</span>
+                            </div>
+                        </div>
+
+                        <p th:if="${#lists.isEmpty(aniversariantes)}"
+                           class="text-muted text-center mt-5">
+                            Nenhum aniversariante neste mês.
+                        </p>
+
                     </div>
 
                 </div>
@@ -414,21 +450,6 @@
                     { label: 'Entradas', data: /*[[${entradasMeses}]]*/ [], backgroundColor: '#198754' },
                     { label: 'Saídas', data: /*[[${saidasMeses}]]*/ [], backgroundColor: '#dc3545' }
                 ]
-            },
-            options: opcoes
-        });
-    }
-
-    const graficoMembros = document.getElementById('graficoMembros');
-    if (graficoMembros) {
-        new Chart(graficoMembros, {
-            type: 'pie',
-            data: {
-                labels: ['Ativos', 'Inativos'],
-                datasets: [{
-                    data: [ /*[[${membrosAtivos}]]*/ 0, /*[[${membrosInativos}]]*/ 0 ],
-                    backgroundColor: ['#198754', '#6c757d']
-                }]
             },
             options: opcoes
         });

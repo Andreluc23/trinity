@@ -158,7 +158,7 @@
 
                     <tr th:each="linha : ${relatorio.linhas}">
                         <td th:text="${linha.membro.nomeCompleto}">João</td>
-                        <td class="text-nowrap" th:text="${linha.membro.telefone}">(44) 99999-9999</td>
+                        <td class="text-nowrap" th:text="${linha.membro.telefoneFormatado}">(44) 99999-9999</td>
                         <td class="text-nowrap"
                             th:text="${#temporals.format(linha.membro.dataNascimento, 'dd/MM/yyyy')}">01/01/1990</td>
 

@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,20 +83,20 @@ public class MembroService {
             return membroRepository.findAll(pageable);
         }
 
-        // A busca por CPF funciona com ou sem pontuação, porque o CPF é guardado só com números
+        // CPF e telefone são guardados só com números: a busca funciona com ou sem pontuação
         String digitos = Cpf.somenteDigitos(termo);
-        String termoCpf = digitos.isEmpty() ? termo : digitos;
+        String termoNumerico = digitos.isEmpty() ? termo : digitos;
 
         return membroRepository
                 .findByNomeCompletoContainingIgnoreCaseOrCpfContainingOrTelefoneContaining(
                         termo,
-                        termoCpf,
-                        termo,
+                        termoNumerico,
+                        termoNumerico,
                         pageable
                 );
     }
 
-    public long contarTodos() {
+    public long contarTodos()    {
         return membroRepository.count();
     }
 
@@ -104,6 +106,17 @@ public class MembroService {
 
     public long contarInativos() {
         return membroRepository.countByAtivo(false);
+    }
+    public long contarComAcesso() {
+        return usuarioRepository.count();
+    }
+
+    /** Membros ativos que fazem aniversário no mês, em ordem de dia. */
+    public List<Membro> aniversariantesDoMes(YearMonth mes) {
+        return listarAtivos().stream()
+                .filter(membro -> membro.getDataNascimento().getMonth() == mes.getMonth())
+                .sorted(Comparator.comparingInt(membro -> membro.getDataNascimento().getDayOfMonth()))
+                .toList();
     }
 
     // ---------- Cadastro ----------
