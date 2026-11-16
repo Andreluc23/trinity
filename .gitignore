@@ -38,4 +38,4 @@ build/
 *.sqlite3
 
 ### Environment variables ###
-.envgi
+.env
