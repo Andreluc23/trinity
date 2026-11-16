@@ -1,9 +1,11 @@
 package com.trinity.trinity.security;
 
-import com.trinity.trinity.model.Membro;
-import com.trinity.trinity.model.Usuario;
-import com.trinity.trinity.repository.MembroRepository;
-import com.trinity.trinity.repository.UsuarioRepository;
+
+import com.trinity.trinity.model.membros.Membro;
+
+import com.trinity.trinity.model.usuarios.Usuario;
+import com.trinity.trinity.repository.membros.MembroRepository;
+import com.trinity.trinity.repository.usuarios.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

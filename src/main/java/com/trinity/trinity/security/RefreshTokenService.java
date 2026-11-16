@@ -1,10 +1,10 @@
 package com.trinity.trinity.security;
 
 import com.trinity.trinity.exception.RecursoNaoEncontradoException;
-import com.trinity.trinity.model.RefreshToken;
-import com.trinity.trinity.model.Usuario;
-import com.trinity.trinity.repository.RefreshTokenRepository;
-import com.trinity.trinity.repository.UsuarioRepository;
+import com.trinity.trinity.model.usuarios.RefreshToken;
+import com.trinity.trinity.model.usuarios.Usuario;
+import com.trinity.trinity.repository.usuarios.RefreshTokenRepository;
+import com.trinity.trinity.repository.usuarios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

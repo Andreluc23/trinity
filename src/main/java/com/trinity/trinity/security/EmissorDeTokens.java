@@ -1,6 +1,7 @@
 package com.trinity.trinity.security;
 
-import com.trinity.trinity.model.RefreshToken;
+
+import com.trinity.trinity.model.usuarios.RefreshToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;

@@ -1,0 +1,40 @@
+package com.trinity.trinity.repository.financeiro;
+
+
+import com.trinity.trinity.model.financeiro.Lancamento;
+import com.trinity.trinity.model.financeiro.TipoLancamento;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+public interface LancamentoRepository extends JpaRepository<Lancamento, Long>, JpaSpecificationExecutor<Lancamento> {
+
+    List<Lancamento> findByAtivoTrueAndDataBetweenOrderByDataDescIdDesc(LocalDate inicio, LocalDate fim);
+    boolean existsByCategoriaId(Long categoriaId);
+
+    boolean existsByMembroId(Long membroId);
+
+    @Query("""
+            select coalesce(sum(l.valor), 0)
+            from Lancamento l
+            where l.ativo = true
+              and l.tipo = :tipo
+              and l.data between :inicio and :fim
+            """)
+    BigDecimal somar(@Param("tipo") TipoLancamento tipo,
+                     @Param("inicio") LocalDate inicio,
+                     @Param("fim") LocalDate fim);
+
+    @Query("""
+        select coalesce(sum(l.valor), 0)
+        from Lancamento l
+        where l.ativo = true
+          and l.tipo = :tipo
+        """)
+    BigDecimal somarTudo(@Param("tipo") TipoLancamento tipo);
+}
