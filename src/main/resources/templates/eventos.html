@@ -184,17 +184,17 @@
                 <ul class="pagination justify-content-center mb-0">
 
                     <li class="page-item" th:classappend="${paginaAtual == 0} ? 'disabled'">
-                        <a class="page-link" th:href="@{/avisos(pagina=${paginaAtual - 1})}">Anterior</a>
+                        <a class="page-link" th:href="@{/eventos(pagina=${paginaAtual - 1})}">Anterior</a>
                     </li>
 
                     <li class="page-item"
                         th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}"
                         th:classappend="${i == paginaAtual} ? 'active'">
-                        <a class="page-link" th:href="@{/avisos(pagina=${i})}" th:text="${i + 1}">1</a>
+                        <a class="page-link" th:href="@{/eventos(pagina=${i})}" th:text="${i + 1}">1</a>
                     </li>
 
                     <li class="page-item" th:classappend="${paginaAtual + 1 >= totalPaginas} ? 'disabled'">
-                        <a class="page-link" th:href="@{/avisos(pagina=${paginaAtual + 1})}">Próxima</a>
+                        <a class="page-link" th:href="@{/eventos(pagina=${paginaAtual + 1})}">Próxima</a>
                     </li>
 
                 </ul>

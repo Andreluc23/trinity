@@ -27,7 +27,7 @@ public class EventoService {
     }
 
     public Page<Evento> listarTodos(int pagina) {
-        return eventoRepository.findAllByOrderByDataDescHorarioDesc(PageRequest.of(pagina, ITENS_POR_PAGINA));
+        return eventoRepository.listarProximosPrimeiro(LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
     public Page<Evento> listarFuturos(int pagina) {
