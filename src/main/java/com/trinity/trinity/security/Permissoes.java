@@ -10,6 +10,7 @@ public final class Permissoes {
     private Permissoes() {
     }
 
+    /** Informa se o usuário logado tem pelo menos uma das permissões informadas. */
     public static boolean possuiAlguma(Authentication authentication, String... permissoes) {
         if (authentication == null) {
             return false;

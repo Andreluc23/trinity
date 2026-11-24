@@ -28,6 +28,7 @@ public class FinanceiroController {
         this.lancamentoService = lancamentoService;
     }
 
+    /** Painel financeiro de um mês: lançamentos, total de entradas e saídas, saldo e categorias. */
     @GetMapping
     public String painel(@RequestParam(name = "mes", required = false) String mesInformado, Model model) {
         YearMonth mes = interpretarMes(mesInformado);
@@ -48,6 +49,7 @@ public class FinanceiroController {
         return "financeiro";
     }
 
+    /** Converte o mês informado (aaaa-mm); se vier vazio ou inválido, usa o mês atual. */
     private YearMonth interpretarMes(String mesInformado) {
         if (mesInformado == null || mesInformado.isBlank()) {
             return YearMonth.now();

@@ -12,6 +12,7 @@ public record RelatorioFinanceiro(
         BigDecimal entradas,
         BigDecimal saidas) {
 
+    /** Saldo do período: entradas menos saídas. */
     public BigDecimal saldo() {
         return entradas.subtract(saidas);
     }

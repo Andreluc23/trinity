@@ -40,16 +40,22 @@ public class HomeController {
         this.lancamentoService = lancamentoService;
     }
 
+    /** Exibe a página inicial pública do sistema. */
     @GetMapping("/")
     public String index() {
         return "index";
     }
 
+    /** Exibe a tela de login (a autenticação em si é feita pelo Spring Security). */
     @GetMapping("/login")
     public String login() {
         return "login";
     }
 
+    /**
+     * Monta o painel inicial: avisos e eventos para todos; dados de membros e financeiro só para quem tem
+     * permissão.
+     */
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
         model.addAttribute("avisosRecentes", avisoService.listarRecentes());

@@ -29,20 +29,24 @@ public class LancamentoService {
         this.membroService = membroService;
     }
 
+    /** Lançamentos ativos de um mês, do mais recente para o mais antigo. */
     public List<Lancamento> listarDoMes(YearMonth mes) {
         return lancamentoRepository.findByAtivoTrueAndDataBetweenOrderByDataDescIdDesc(
                 mes.atDay(1), mes.atEndOfMonth());
     }
 
+    /** Soma as entradas ou as saídas ativas de um mês. */
     public BigDecimal somarDoMes(TipoLancamento tipo, YearMonth mes) {
         return lancamentoRepository.somar(tipo, mes.atDay(1), mes.atEndOfMonth());
     }
 
+    /** Busca um lançamento; se não existir, lança erro de recurso não encontrado. */
     public Lancamento buscarPorId(Long id) {
         return lancamentoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Lançamento não encontrado"));
     }
 
+    /** Valida e grava o lançamento; o tipo vem da categoria e a origem é definida pelo sistema. */
     public Lancamento salvar(Lancamento lancamento) {
         validar(lancamento);
 
@@ -62,11 +66,13 @@ public class LancamentoService {
         return lancamentoRepository.save(lancamento);
     }
 
+    /** Inativa o lançamento, mantendo o registro mas tirando-o dos totais. */
     public void inativar(Long id) {
         Lancamento lancamento = buscarPorId(id);
         lancamento.setAtivo(false);
         lancamentoRepository.save(lancamento);
     }
+    /** Exclui o lançamento manual; os de PIX são recusados. */
     public void excluir(Long id) {
         Lancamento lancamento = buscarPorId(id);
 
@@ -104,6 +110,7 @@ public class LancamentoService {
         return membroService.buscarPorId(membro.getId());
     }
 
+    /** Confere descrição, valor positivo, data (não futura) e categoria. */
     private void validar(Lancamento lancamento) {
         if (lancamento.getDescricao() == null || lancamento.getDescricao().isBlank()) {
             throw new RegraNegocioException("Informe a descrição do lançamento.");
@@ -125,6 +132,7 @@ public class LancamentoService {
             throw new RegraNegocioException("Selecione a categoria.");
         }
     }
+    /** Cria o lançamento de entrada correspondente a uma contribuição PIX confirmada. */
     public Lancamento registrarEntradaPix(Contribuicao contribuicao) {
         Lancamento lancamento = new Lancamento();
         lancamento.setDescricao("Contribuição PIX " + contribuicao.getIdentificador());
@@ -138,11 +146,13 @@ public class LancamentoService {
         return lancamentoRepository.save(lancamento);
     }
 
+    /** Saldo de todo o histórico (entradas menos saídas), arredondado em centavos. */
     public BigDecimal saldoGeral() {
         return emCentavos(lancamentoRepository.somarTudo(TipoLancamento.ENTRADA)
                 .subtract(lancamentoRepository.somarTudo(TipoLancamento.SAIDA)));
     }
 
+    /** Entradas e saídas de cada um dos últimos meses, para o gráfico do dashboard. */
     public List<ResumoMensal> resumoUltimosMeses(int quantidade) {
         YearMonth atual = YearMonth.now();
         List<ResumoMensal> resumo = new ArrayList<>();

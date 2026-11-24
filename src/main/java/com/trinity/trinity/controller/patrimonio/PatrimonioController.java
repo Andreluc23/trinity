@@ -21,6 +21,7 @@ public class PatrimonioController {
         this.patrimonioService = patrimonioService;
     }
 
+    /** Lista os itens do patrimônio com busca por nome, categoria ou localização, e paginação. */
     @GetMapping
     public String listar(@RequestParam(name = "termo", required = false) String termo,
                          @RequestParam(name = "pagina", defaultValue = "0") int pagina,
@@ -34,18 +35,21 @@ public class PatrimonioController {
         return "patrimonios";
     }
 
+    /** Abre o formulário para cadastrar um item. */
     @GetMapping("/novo")
     public String novo(Model model) {
         model.addAttribute("patrimonio", new Patrimonio());
         return "forms/patrimonio-form";
     }
 
+    /** Abre o formulário preenchido para editar um item. */
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
         model.addAttribute("patrimonio", patrimonioService.buscarPorId(id));
         return "forms/patrimonio-form";
     }
 
+    /** Grava o item (novo ou editado) e volta para a lista. */
     @PostMapping
     public String salvar(Patrimonio patrimonio, RedirectAttributes redirectAttributes) {
         patrimonioService.salvar(patrimonio);
@@ -53,6 +57,7 @@ public class PatrimonioController {
         return REDIRECT_LISTA;
     }
 
+    /** Desativa o item. */
     @PostMapping("/desativar/{id}")
     public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         patrimonioService.desativar(id);
@@ -60,12 +65,14 @@ public class PatrimonioController {
         return REDIRECT_LISTA;
     }
 
+    /** Reativa o item. */
     @PostMapping("/ativar/{id}")
     public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         patrimonioService.ativar(id);
         redirectAttributes.addFlashAttribute("sucesso", "Patrimônio ativado.");
         return REDIRECT_LISTA;
     }
+    /** Exclui o item. */
     @PostMapping("/excluir/{id}")
     public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         patrimonioService.excluir(id);

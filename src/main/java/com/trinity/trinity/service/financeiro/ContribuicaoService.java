@@ -39,6 +39,7 @@ public class ContribuicaoService {
 
     // ---------- Ações do membro ----------
 
+    /** Cria uma contribuição do membro (valor positivo e categoria de entrada ativa), aguardando pagamento. */
     public Contribuicao gerar(String emailMembro, BigDecimal valor, Long categoriaId) {
         if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RegraNegocioException("O valor deve ser maior que zero.");
@@ -59,6 +60,7 @@ public class ContribuicaoService {
         return contribuicaoRepository.save(new Contribuicao(membro, categoria, valor));
     }
 
+    /** O membro avisa que pagou; só vale para a contribuição dele que está aguardando pagamento. */
     public void informarPagamento(Long id, String emailMembro) {
         Contribuicao contribuicao = buscarDoMembro(id, emailMembro);
 
@@ -70,6 +72,7 @@ public class ContribuicaoService {
         contribuicaoRepository.save(contribuicao);
     }
 
+    /** Contribuições do membro, da mais recente para a mais antiga. */
     public List<Contribuicao> listarDoMembro(String emailMembro) {
         Long membroId = usuarioService.buscarPorEmail(emailMembro).getMembro().getId();
         return contribuicaoRepository.findByMembroIdOrderByCriadaEmDesc(membroId);
@@ -92,14 +95,17 @@ public class ContribuicaoService {
 
     // ---------- Ações do admin ----------
 
+    /** Contribuições aguardando pagamento ou confirmação, da mais antiga para a mais recente. */
     public List<Contribuicao> listarPendentes() {
         return contribuicaoRepository.findByStatusInOrderByCriadaEmAsc(PENDENTES);
     }
 
+    /** Quantidade de contribuições que a tesouraria precisa confirmar. */
     public long contarAguardandoConfirmacao() {
         return contribuicaoRepository.countByStatus(StatusContribuicao.AGUARDANDO_CONFIRMACAO);
     }
 
+    /** Confirma a contribuição e cria o lançamento de entrada PIX, tudo na mesma transação. */
     @Transactional
     public void confirmar(Long id) {
         Contribuicao contribuicao = buscarPendente(id);
@@ -107,6 +113,7 @@ public class ContribuicaoService {
         contribuicaoRepository.save(contribuicao);
     }
 
+    /** Rejeita uma contribuição pendente. */
     public void rejeitar(Long id) {
         Contribuicao contribuicao = buscarPendente(id);
         contribuicao.rejeitar();
@@ -115,11 +122,13 @@ public class ContribuicaoService {
 
     // ---------- Apoio ----------
 
+    /** Busca uma contribuição; se não existir, lança erro de recurso não encontrado. */
     private Contribuicao buscarPorId(Long id) {
         return contribuicaoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Contribuição não encontrada"));
     }
 
+    /** Busca uma contribuição e garante que ainda está pendente. */
     private Contribuicao buscarPendente(Long id) {
         Contribuicao contribuicao = buscarPorId(id);
 

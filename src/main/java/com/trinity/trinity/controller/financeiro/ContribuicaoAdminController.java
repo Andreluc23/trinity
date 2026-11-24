@@ -19,12 +19,14 @@ public class ContribuicaoAdminController {
         this.contribuicaoService = contribuicaoService;
     }
 
+    /** Lista as contribuições pendentes (aguardando pagamento ou confirmação) para a tesouraria. */
     @GetMapping
     public String pendentes(Model model) {
         model.addAttribute("contribuicoes", contribuicaoService.listarPendentes());
         return "financeiro-contribuicoes";
     }
 
+    /** Confirma a contribuição e a lança como entrada no financeiro. */
     @PostMapping("/{id}/confirmar")
     public String confirmar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -37,6 +39,7 @@ public class ContribuicaoAdminController {
         return REDIRECT_LISTA;
     }
 
+    /** Rejeita a contribuição. */
     @PostMapping("/{id}/rejeitar")
     public String rejeitar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {

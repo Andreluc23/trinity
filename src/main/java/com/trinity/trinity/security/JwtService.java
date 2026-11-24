@@ -25,6 +25,7 @@ public class JwtService {
         this.validade = Duration.ofMinutes(validadeMinutos);
     }
 
+    /** Gera o JWT assinado com o e-mail do usuário e a validade configurada. */
     public String gerarToken(String email) {
         Instant agora = Instant.now();
 
@@ -36,6 +37,7 @@ public class JwtService {
                 .compact();
     }
 
+    /** Valida a assinatura e a validade do JWT e devolve o e-mail; se for inválido, devolve vazio. */
     public Optional<String> extrairEmail(String token) {
         try {
             String email = Jwts.parser()

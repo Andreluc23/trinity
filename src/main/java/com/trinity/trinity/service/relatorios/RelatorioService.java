@@ -46,6 +46,7 @@ public class RelatorioService {
 
     // ---------- Financeiro ----------
 
+    /** Monta o relatório financeiro; sem datas, usa o mês atual, e recusa período invertido. */
     public RelatorioFinanceiro gerarFinanceiro(FiltroRelatorioFinanceiro filtro) {
         LocalDate inicio = filtro.inicio() != null ? filtro.inicio() : YearMonth.now().atDay(1);
         LocalDate fim = filtro.fim() != null ? filtro.fim() : YearMonth.now().atEndOfMonth();
@@ -64,6 +65,7 @@ public class RelatorioService {
                 somar(lancamentos, TipoLancamento.SAIDA));
     }
 
+    /** Soma os valores dos lançamentos de um tipo. */
     private BigDecimal somar(List<Lancamento> lancamentos, TipoLancamento tipo) {
         return lancamentos.stream()
                 .filter(lancamento -> lancamento.getTipo() == tipo)
@@ -73,6 +75,7 @@ public class RelatorioService {
 
     // ---------- Membros ----------
 
+    /** Monta o relatório de membros aplicando os filtros de situação, acesso e nome, com os totais. */
     public RelatorioMembros gerarMembros(FiltroRelatorioMembros filtro) {
         List<Membro> todos = membroRepository.findAllByOrderByNomeCompletoAsc();
 
@@ -97,6 +100,7 @@ public class RelatorioService {
 
     // ---------- Patrimônio ----------
 
+    /** Monta o relatório de patrimônio aplicando os filtros, com total de unidades e itens em bom estado. */
     public RelatorioPatrimonio gerarPatrimonio(FiltroRelatorioPatrimonio filtro) {
         String nomeBuscado = filtro.nome() == null ? "" : filtro.nome().trim().toLowerCase();
 
@@ -128,6 +132,7 @@ public class RelatorioService {
                 .toList();
     }
 
+    /** Informa se o texto é nulo ou em branco. */
     private static boolean vazio(String texto) {
         return texto == null || texto.isBlank();
     }

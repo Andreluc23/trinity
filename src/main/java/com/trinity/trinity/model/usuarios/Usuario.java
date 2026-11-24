@@ -47,6 +47,7 @@ public class Usuario {
 
     public Usuario() {
     }
+    /** Liga todas as permissões do usuário (usado quando ele é administrador). */
     public void concederTodasAsPermissoes() {
         this.gerenciarMembros = true;
         this.gerenciarAvisos = true;

@@ -30,6 +30,7 @@ public class ContribuicaoController {
         this.pixService = pixService;
     }
 
+    /** Tela de contribuição do membro: formulário de valor e tipo, e o histórico das suas contribuições. */
     @GetMapping
     public String inicio(Authentication authentication, Model model) {
         model.addAttribute("categorias", categoriaService.listarAtivasPorTipo(TipoLancamento.ENTRADA));
@@ -37,6 +38,7 @@ public class ContribuicaoController {
         return "contribuicoes";
     }
 
+    /** Cria uma contribuição (aguardando pagamento) e leva o membro à tela do PIX. */
     @PostMapping
     public String gerar(Authentication authentication,
                         @RequestParam(name = "valor", required = false) BigDecimal valor,
@@ -51,6 +53,7 @@ public class ContribuicaoController {
         }
     }
 
+    /** Mostra o QR Code e o código "copia e cola" do PIX da contribuição, só para o dono dela. */
     @GetMapping("/{id}")
     public String exibirPix(@PathVariable("id") Long id, Authentication authentication, Model model) {
         Contribuicao contribuicao = contribuicaoService.buscarDoMembro(id, authentication.getName());
@@ -63,6 +66,7 @@ public class ContribuicaoController {
         return "contribuicao-pix";
     }
 
+    /** Registra que o membro informou ter pago, para a tesouraria confirmar. */
     @PostMapping("/{id}/paguei")
     public String informarPagamento(@PathVariable("id") Long id,
                                     Authentication authentication,

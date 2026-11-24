@@ -15,6 +15,7 @@ import java.io.IOException;
  */
 public class CsrfCookieFiltro extends OncePerRequestFilter {
 
+    /** Força a criação do token CSRF para o cookie XSRF-TOKEN ser gravado, e segue a cadeia de filtros. */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

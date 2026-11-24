@@ -43,6 +43,7 @@ public class Endereco {
         uf = uf == null ? null : vazioComoNulo(uf.toUpperCase(Locale.ROOT));
     }
 
+    /** CEP no formato 87501-000, para exibição. */
     public String getCepFormatado() {
         if (cep == null || cep.length() != 8) {
             return cep;
@@ -80,6 +81,7 @@ public class Endereco {
         return texto.isEmpty() ? null : texto;
     }
 
+    /** Devolve null quando o texto é nulo ou em branco; senão, o texto sem espaços nas pontas. */
     private static String vazioComoNulo(String texto) {
         return texto == null || texto.isBlank() ? null : texto.trim();
     }

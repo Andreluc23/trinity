@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface PatrimonioRepository extends JpaRepository<Patrimonio, Long> {
+    /** Busca paginada de itens por parte do nome, da categoria ou da localização. */
     Page<Patrimonio> findByNomeContainingIgnoreCaseOrCategoriaContainingIgnoreCaseOrLocalizacaoContainingIgnoreCase(
             String nome,
             String categoria,

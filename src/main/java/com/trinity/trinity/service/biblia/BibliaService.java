@@ -45,10 +45,12 @@ public class BibliaService {
 
     // ---------- Consulta ----------
 
+    /** Todos os livros da Bíblia, na ordem tradicional. */
     public List<LivroBiblia> listarLivros() {
         return livros;
     }
 
+    /** Busca um livro pelo número (1 a 66); se for inválido, lança erro de não encontrado. */
     public LivroBiblia buscarLivro(int numero) {
         if (numero < 1 || numero > livros.size()) {
             throw new RecursoNaoEncontradoException("Livro não encontrado");
@@ -56,6 +58,7 @@ public class BibliaService {
         return livros.get(numero - 1);
     }
 
+    /** Versículos de um capítulo; se o capítulo não existir, lança erro de não encontrado. */
     public List<String> buscarCapitulo(int numeroLivro, int capitulo) {
         LivroBiblia livro = buscarLivro(numeroLivro);
 
@@ -67,6 +70,7 @@ public class BibliaService {
 
     // ---------- Navegação entre capítulos ----------
 
+    /** Capítulo anterior (podendo ser do livro anterior); devolve null no início da Bíblia. */
     public ReferenciaBiblica capituloAnterior(int numeroLivro, int capitulo) {
         if (capitulo > 1) {
             return new ReferenciaBiblica(buscarLivro(numeroLivro), capitulo - 1);
@@ -78,6 +82,7 @@ public class BibliaService {
         return null;
     }
 
+    /** Próximo capítulo (podendo ser do livro seguinte); devolve null no fim da Bíblia. */
     public ReferenciaBiblica proximoCapitulo(int numeroLivro, int capitulo) {
         LivroBiblia livro = buscarLivro(numeroLivro);
 
@@ -92,6 +97,10 @@ public class BibliaService {
 
     // ---------- Busca ----------
 
+    /**
+     * Busca o termo, sem acentos e sem diferenciar maiúsculas, em todos os versículos; exige 3 letras e limita
+     * a 100 resultados.
+     */
     public ResultadoBuscaBiblia buscar(String termo) {
         String procurado = normalizar(termo == null ? "" : termo.trim());
 
@@ -112,6 +121,7 @@ public class BibliaService {
 
     // ---------- Carregamento ----------
 
+    /** Lê o arquivo de texto da Bíblia e monta a lista de livros, capítulos e versículos. */
     private List<LivroBiblia> carregar() {
         Map<Integer, LivroBiblia> livrosLidos = new LinkedHashMap<>();
 
@@ -144,6 +154,7 @@ public class BibliaService {
         return List.copyOf(livrosLidos.values());
     }
 
+    /** Guarda cada versículo junto com seu texto normalizado, para a busca ser rápida. */
     private List<VersiculoIndexado> indexar(List<LivroBiblia> livros) {
         List<VersiculoIndexado> itens = new ArrayList<>();
 
@@ -163,6 +174,7 @@ public class BibliaService {
         return List.copyOf(itens);
     }
 
+    /** Tira acentos e passa para minúsculas, para comparar textos sem diferenciar acentuação. */
     private static String normalizar(String texto) {
         return Normalizer.normalize(texto, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "")

@@ -22,11 +22,13 @@ public class SecurityConfig {
 
     private static final String ADMIN = "ROLE_ADMIN";
 
+    /** Define o BCrypt como criptografia das senhas. */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /** Configura a segurança: rotas e permissões, filtros de JWT e CSRF, login, logout e ausência de sessão. */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtService jwtService,

@@ -7,6 +7,7 @@ import java.util.List;
  */
 public record LivroBiblia(int numero, String nome, String testamento, List<List<String>> capitulos) {
 
+    /** Quantidade de capítulos do livro. */
     public int quantidadeCapitulos() {
         return capitulos.size();
     }

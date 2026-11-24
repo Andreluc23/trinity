@@ -98,6 +98,7 @@ public class Membro {
         return formatarTelefone(telefone);
     }
 
+    /** Formata os dígitos como (44) 99709-3407 (celular) ou (44) 3622-1234 (fixo). */
     public static String formatarTelefone(String telefone) {
         if (telefone == null) return "";
         String d = telefone.replaceAll("\\D", "");
@@ -111,12 +112,14 @@ public class Membro {
         return telefone;
     }
 
+    /** Confere se o telefone tem DDD mais número (10 ou 11 dígitos). */
     public static boolean telefoneValido(String telefone) {
         if (telefone == null) return false;
         int tamanho = telefone.replaceAll("\\D", "").length();
         return tamanho == 10 || tamanho == 11;
     }
 
+    /** Remove tudo que não é número do telefone, que é o formato guardado no banco. */
     public static String telefoneSomenteDigitos(String telefone) {
         return telefone == null ? "" : telefone.replaceAll("\\D", "");
     }

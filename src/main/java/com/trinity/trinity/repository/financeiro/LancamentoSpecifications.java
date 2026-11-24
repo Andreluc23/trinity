@@ -15,6 +15,10 @@ public final class LancamentoSpecifications {
     private LancamentoSpecifications() {
     }
 
+    /**
+     * Monta a consulta do relatório financeiro: só lançamentos ativos no período, com os filtros opcionais
+     * aplicados.
+     */
     public static Specification<Lancamento> filtrar(LocalDate inicio,
                                                     LocalDate fim,
                                                     TipoLancamento tipo,

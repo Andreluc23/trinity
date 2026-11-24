@@ -27,6 +27,7 @@ public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    /** A cada requisição, identifica o usuário pelo JWT (ou, se expirou, pelo refresh token) e o autentica. */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -42,11 +43,13 @@ public class JwtAutenticacaoFiltro extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /** Faz o filtro valer também no redirecionamento para as páginas de erro (por padrão ele não rodaria nelas). */
     @Override
     protected boolean shouldNotFilterErrorDispatch() {
         return false;
     }
 
+    /** Carrega o usuário e as permissões atuais do banco e o registra como autenticado nesta requisição. */
     private void autenticar(String email) {
         try {
             UserDetails usuario = userDetailsService.loadUserByUsername(email);

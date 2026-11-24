@@ -30,6 +30,7 @@ public class PresencaService {
         this.usuarioService = usuarioService;
     }
 
+    /** Registra a resposta do membro; só vale para evento ativo e que ainda não passou. */
     public void responder(Long eventoId, String emailMembro, RespostaPresenca resposta) {
         if (resposta == null) {
             throw new RegraNegocioException("Resposta inválida.");
@@ -80,6 +81,7 @@ public class PresencaService {
         return contagens;
     }
 
+    /** Respostas de um evento, em ordem alfabética do nome do membro. */
     public List<PresencaEvento> listarDoEvento(Long eventoId) {
         return presencaRepository.findByEventoIdOrderByMembroNomeCompletoAsc(eventoId);
     }

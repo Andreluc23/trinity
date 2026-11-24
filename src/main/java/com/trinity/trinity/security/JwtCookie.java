@@ -15,6 +15,7 @@ public final class JwtCookie {
     private JwtCookie() {
     }
 
+    /** Cria um cookie HttpOnly e SameSite=Lax; só é marcado como Secure quando a conexão é HTTPS. */
     public static Cookie criar(String nome, String valor, Duration validade, boolean seguro) {
         Cookie cookie = new Cookie(nome, valor);
         cookie.setHttpOnly(true);
@@ -25,6 +26,7 @@ public final class JwtCookie {
         return cookie;
     }
 
+    /** Lê o valor de um cookie da requisição, se existir. */
     public static Optional<String> ler(HttpServletRequest request, String nome) {
         if (request.getCookies() == null) {
             return Optional.empty();

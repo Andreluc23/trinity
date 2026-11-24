@@ -21,11 +21,13 @@ public class PatrimonioService {
         this.patrimonioRepository = patrimonioRepository;
     }
 
+    /** Todos os itens do patrimônio. */
     public List<Patrimonio> listarTodos() {
         return patrimonioRepository.findAll();
     }
     private static final int ITENS_POR_PAGINA = 12;
 
+    /** Busca paginada por nome, categoria ou localização, em ordem alfabética do nome. */
     public Page<Patrimonio> buscar(String termo, int pagina) {
         Pageable pageable = PageRequest.of(pagina, ITENS_POR_PAGINA, Sort.by("nome"));
 
@@ -38,26 +40,31 @@ public class PatrimonioService {
                         termo, termo, termo, pageable);
     }
 
+    /** Busca um item; se não existir, lança erro de recurso não encontrado. */
     public Patrimonio buscarPorId(Long id) {
         return patrimonioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Patrimônio não encontrado"));
     }
 
+    /** Grava um item novo ou editado. */
     public Patrimonio salvar(Patrimonio patrimonio) {
         return patrimonioRepository.save(patrimonio);
     }
 
+    /** Marca o item como inativo. */
     public void desativar(Long id) {
         Patrimonio patrimonio = buscarPorId(id);
         patrimonio.setAtivo(false);
         patrimonioRepository.save(patrimonio);
     }
 
+    /** Marca o item como ativo. */
     public void ativar(Long id) {
         Patrimonio patrimonio = buscarPorId(id);
         patrimonio.setAtivo(true);
         patrimonioRepository.save(patrimonio);
     }
+    /** Exclui o item. */
     public void excluir(Long id) {
         patrimonioRepository.delete(buscarPorId(id));
     }

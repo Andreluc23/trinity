@@ -33,6 +33,7 @@ public class RefreshToken {
         this.expiraEm = LocalDateTime.now().plus(validade);
     }
 
+    /** Informa se o refresh token já passou da validade. */
     public boolean isExpirado() {
         return LocalDateTime.now().isAfter(expiraEm);
     }

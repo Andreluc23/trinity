@@ -61,15 +61,18 @@ public class Contribuicao {
         return "TRINITY" + aleatorio.toUpperCase();
     }
 
+    /** Marca que o membro disse ter pago; passa para "aguardando confirmação". */
     public void informarPagamento() {
         this.status = StatusContribuicao.AGUARDANDO_CONFIRMACAO;
     }
 
+    /** Confirma a contribuição e a vincula ao lançamento de entrada gerado. */
     public void confirmar(Lancamento lancamento) {
         this.lancamento = lancamento;
         this.status = StatusContribuicao.CONFIRMADA;
     }
 
+    /** Marca a contribuição como rejeitada. */
     public void rejeitar() {
         this.status = StatusContribuicao.REJEITADA;
     }

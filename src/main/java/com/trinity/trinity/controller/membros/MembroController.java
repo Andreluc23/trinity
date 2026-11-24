@@ -28,6 +28,7 @@ public class MembroController {
         this.usuarioService = usuarioService;
     }
 
+    /** Lista os membros com busca e paginação, indicando quais têm acesso ao sistema. */
     @GetMapping("/membros")
     public String listarMembros(
             @RequestParam(name = "busca", required = false) String busca,
@@ -51,6 +52,7 @@ public class MembroController {
         return "membros";
     }
 
+    /** Abre o formulário de novo membro; se voltou de um erro, mantém o que foi digitado. */
     @GetMapping("/membros/novo")
     public String novoMembro(Model model) {
         if (!model.containsAttribute("membro")) {
@@ -59,6 +61,7 @@ public class MembroController {
         return "forms/membro-form";
     }
 
+    /** Abre o formulário de edição; se voltou de um erro, mantém o que foi digitado. */
     @GetMapping("/membros/editar/{id}")
     public String editarMembro(@PathVariable("id") Long id, Model model) {
         if (!model.containsAttribute("membro")) {
@@ -67,6 +70,7 @@ public class MembroController {
         return "forms/membro-form";
     }
 
+    /** Desativa o membro (o sistema impede desativar o único administrador). */
     @PostMapping("/membros/desativar/{id}")
     public String desativarMembro(@PathVariable("id") Long id,
                                   RedirectAttributes redirectAttributes) {
@@ -79,6 +83,7 @@ public class MembroController {
         return "redirect:/membros";
     }
 
+    /** Exclui o membro e o que depende dele; é recusado se houver histórico financeiro. */
     @PostMapping("/membros/excluir/{id}")
     public String excluirMembro(@PathVariable("id") Long id,
                                 Authentication authentication,
@@ -92,6 +97,7 @@ public class MembroController {
         return "redirect:/membros";
     }
 
+    /** Reativa o membro. */
     @PostMapping("/membros/ativar/{id}")
     public String ativarMembro(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         membroService.ativar(id);
@@ -99,6 +105,7 @@ public class MembroController {
         return "redirect:/membros";
     }
 
+    /** Grava o membro; em erro de regra, volta ao formulário com o que foi digitado. */
     @PostMapping("/membros")
     public String salvarMembro(Membro membro, RedirectAttributes redirectAttributes) {
         try {

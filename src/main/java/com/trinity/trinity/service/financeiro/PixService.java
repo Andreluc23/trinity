@@ -34,6 +34,7 @@ public class PixService {
         return nomeRecebedor;
     }
 
+    /** Monta o código PIX "copia e cola" (BR Code) com chave, valor, identificador e o CRC16 no final. */
     public String gerarCopiaECola(BigDecimal valor, String identificador) {
         String contaRecebedor = campo("00", GUI_PIX) + campo("01", chave);
 
@@ -51,10 +52,12 @@ public class PixService {
         return payload + crc16(payload);
     }
 
+    /** Monta um campo do padrão PIX: identificador, tamanho com 2 dígitos e valor. */
     private static String campo(String id, String valor) {
         return id + String.format("%02d", valor.length()) + valor;
     }
 
+    /** Formata o valor com ponto e duas casas decimais, como o padrão PIX exige. */
     private static String formatarValor(BigDecimal valor) {
         return valor.setScale(2, RoundingMode.HALF_UP).toPlainString();
     }
@@ -77,12 +80,14 @@ public class PixService {
         return String.format("%04X", crc);
     }
 
+    /** Remove os acentos do texto, pois o padrão PIX não aceita. */
     private static String removerAcentos(String texto) {
         return Normalizer.normalize(texto, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "")
                 .trim();
     }
 
+    /** Corta o texto no tamanho máximo permitido. */
     private static String limitar(String texto, int tamanhoMaximo) {
         return texto.length() <= tamanhoMaximo ? texto : texto.substring(0, tamanhoMaximo);
     }

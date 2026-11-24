@@ -5,10 +5,12 @@ public final class Cpf {
     private Cpf() {
     }
 
+    /** Remove tudo que não é número do texto. */
     public static String somenteDigitos(String texto) {
         return texto == null ? "" : texto.replaceAll("\\D", "");
     }
 
+    /** Valida o CPF: 11 dígitos, não todos iguais, e os dois dígitos verificadores corretos. */
     public static boolean isValido(String cpf) {
         String digitos = somenteDigitos(cpf);
 
@@ -20,6 +22,7 @@ public final class Cpf {
                 && calcularDigito(digitos, 10) == digitos.charAt(10) - '0';
     }
 
+    /** Formata o CPF como 529.982.247-25; se não tiver 11 dígitos, devolve o texto original. */
     public static String formatar(String cpf) {
         String d = somenteDigitos(cpf);
 

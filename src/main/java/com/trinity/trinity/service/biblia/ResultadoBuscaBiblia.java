@@ -7,6 +7,7 @@ import java.util.List;
  */
 public record ResultadoBuscaBiblia(List<VersiculoBiblico> versiculos, int total) {
 
+    /** Informa se há mais versículos encontrados do que os exibidos. */
     public boolean isLimitado() {
         return total > versiculos.size();
     }

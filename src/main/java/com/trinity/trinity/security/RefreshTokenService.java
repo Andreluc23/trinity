@@ -31,6 +31,7 @@ public class RefreshTokenService {
         return validade;
     }
 
+    /** Cria e salva um refresh token novo para o usuário. */
     @Transactional
     public RefreshToken criar(String email) {
         Usuario usuario = usuarioRepository.findByMembro_EmailIgnoreCase(email)
@@ -38,6 +39,10 @@ public class RefreshTokenService {
 
         return refreshTokenRepository.save(new RefreshToken(usuario, validade));
     }
+    /**
+     * Consome o refresh token (uso único) e devolve um novo, se ele existir, não tiver expirado e a conta
+     * estiver ativa.
+     */
     @Transactional
     public Optional<RefreshToken> renovar(String token) {
         return refreshTokenRepository.findByToken(token)
@@ -51,9 +56,11 @@ public class RefreshTokenService {
                     return Optional.of(refreshTokenRepository.save(new RefreshToken(atual.getUsuario(), validade)));
                 });
     }
+    /** Informa se o usuário e o membro dele estão ativos. */
     private boolean contaAtiva(Usuario usuario) {
         return usuario.isAtivo() && usuario.getMembro().isAtivo();
     }
+    /** Apaga o refresh token do banco. */
     @Transactional
     public void revogar(String token) {
         refreshTokenRepository.findByToken(token)

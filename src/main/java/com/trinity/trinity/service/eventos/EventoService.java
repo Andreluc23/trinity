@@ -26,40 +26,48 @@ public class EventoService {
         this.presencaRepository = presencaRepository;
     }
 
+    /** Todos os eventos em páginas de 12: os próximos primeiro e depois os passados. */
     public Page<Evento> listarTodos(int pagina) {
         return eventoRepository.listarProximosPrimeiro(LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
+    /** Eventos ativos de hoje em diante, do mais próximo para o mais distante, em páginas de 12. */
     public Page<Evento> listarFuturos(int pagina) {
         return eventoRepository.findByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(
                 LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
+    /** Grava um evento novo ou editado. */
     public Evento salvar(Evento evento) {
         return eventoRepository.save(evento);
     }
 
+    /** Busca um evento; se não existir, lança erro de recurso não encontrado. */
     public Evento buscarPorId(Long id) {
         return eventoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Evento não encontrado"));
     }
 
+    /** Marca o evento como cancelado (inativo). */
     public void cancelar(Long id) {
         Evento evento = buscarPorId(id);
         evento.setAtivo(false);
         eventoRepository.save(evento);
     }
 
+    /** Reativa o evento. */
     public void ativar(Long id) {
         Evento evento = buscarPorId(id);
         evento.setAtivo(true);
         eventoRepository.save(evento);
     }
+    /** Exclui o evento e as respostas de presença dele, na mesma transação. */
     @Transactional
     public void excluir(Long id) {
         Evento evento = buscarPorId(id);
         presencaRepository.deleteByEventoId(id);
         eventoRepository.delete(evento);
     }
+    /** Os 5 próximos eventos ativos, para o dashboard. */
     public List<Evento> listarProximos() {
         return eventoRepository
                 .findTop5ByAtivoTrueAndDataGreaterThanEqualOrderByDataAscHorarioAsc(

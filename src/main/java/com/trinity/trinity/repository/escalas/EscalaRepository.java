@@ -14,7 +14,9 @@ import java.util.List;
 
 @Repository
 public interface EscalaRepository extends JpaRepository<Escala, Long> {
+    /** Todas as escalas, da mais distante para a mais antiga. */
     List<Escala> findAllByOrderByDataDescHorarioDesc();
+    /** Todas as escalas, da mais antiga para a mais distante. */
     List<Escala> findAllByOrderByDataAscHorarioAsc();
     /**
      * Próximas escalas primeiro (da mais próxima para a mais distante),

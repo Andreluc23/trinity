@@ -32,6 +32,7 @@ public class LancamentoController {
         this.membroService = membroService;
     }
 
+    /** Abre o formulário de novo lançamento, com a data de hoje. */
     @GetMapping("/novo")
     public String novo(Model model) {
         if (!model.containsAttribute("lancamento")) {
@@ -42,6 +43,7 @@ public class LancamentoController {
         return exibirFormulario(model);
     }
 
+    /** Abre o formulário de edição de um lançamento. */
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
         if (!model.containsAttribute("lancamento")) {
@@ -50,6 +52,7 @@ public class LancamentoController {
         return exibirFormulario(model);
     }
 
+    /** Grava o lançamento; em erro de regra, volta ao formulário com o que foi digitado. */
     @PostMapping
     public String salvar(@ModelAttribute("lancamento") Lancamento lancamento,
                          RedirectAttributes redirectAttributes) {
@@ -67,6 +70,7 @@ public class LancamentoController {
         }
     }
 
+    /** Inativa o lançamento (ele deixa de contar no saldo, mas continua registrado). */
     @PostMapping("/inativar/{id}")
     public String inativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         Lancamento lancamento = lancamentoService.buscarPorId(id);
@@ -74,6 +78,7 @@ public class LancamentoController {
         redirectAttributes.addFlashAttribute("sucesso", "Lançamento inativado.");
         return voltarParaOMes(lancamento.getData());
     }
+    /** Exclui o lançamento manual; lançamentos de PIX não podem ser excluídos. */
     @PostMapping("/excluir/{id}")
     public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         Lancamento lancamento = lancamentoService.buscarPorId(id);
@@ -88,6 +93,7 @@ public class LancamentoController {
         return voltarParaOMes(lancamento.getData());
     }
 
+    /** Carrega categorias, membros e a data de hoje e abre o formulário de lançamento. */
     private String exibirFormulario(Model model) {
         model.addAttribute("categoriasEntrada", categoriaService.listarAtivasPorTipo(TipoLancamento.ENTRADA));
         model.addAttribute("categoriasSaida", categoriaService.listarAtivasPorTipo(TipoLancamento.SAIDA));
@@ -96,6 +102,7 @@ public class LancamentoController {
         return FORMULARIO;
     }
 
+    /** Volta ao painel financeiro no mês da data informada. */
     private String voltarParaOMes(LocalDate data) {
         return "redirect:/financeiro?mes=" + YearMonth.from(data);
     }

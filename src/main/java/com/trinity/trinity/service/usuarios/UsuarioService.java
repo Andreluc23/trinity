@@ -30,29 +30,35 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /** Todos os usuários (contas de acesso). */
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
 
+    /** Busca um usuário; se não existir, lança erro de recurso não encontrado. */
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
+    /** Busca o usuário pelo e-mail do membro; se não existir, lança erro de recurso não encontrado. */
     public Usuario buscarPorEmail(String email) {
         return usuarioRepository.findByMembro_EmailIgnoreCase(email)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
     }
 
+    /** Busca a conta de acesso de um membro; se ele não tiver, lança erro de recurso não encontrado. */
     public Usuario buscarPorMembro(Long membroId) {
         return usuarioRepository.findByMembroId(membroId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não possui conta de acesso"));
     }
 
+    /** Informa se o membro tem conta de acesso. */
     public boolean possuiAcesso(Long membroId) {
         return usuarioRepository.existsByMembroId(membroId);
     }
 
+    /** Cria a conta do membro (precisa estar ativo, ter e-mail e senha válida), com a senha criptografada. */
     public Usuario criarAcesso(Long membroId, String senhaProvisoria) {
         Membro membro = membroRepository.findById(membroId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado."));
@@ -80,10 +86,15 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    /** Grava as alterações de um usuário. */
     public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
+    /**
+     * Concede ou retira o papel de administrador; impede retirar o próprio acesso ou do último administrador
+     * ativo.
+     */
     public void definirAdmin(Long membroId, boolean admin, String emailLogado) {
         Usuario usuario = buscarPorMembro(membroId);
 
@@ -110,17 +121,20 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    /** Desativa a conta de acesso. */
     public void desativar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(false);
         usuarioRepository.save(usuario);
     }
 
+    /** Ativa a conta de acesso. */
     public void ativar(Long id) {
         Usuario usuario = buscarPorId(id);
         usuario.setAtivo(true);
         usuarioRepository.save(usuario);
     }
+    /** Troca a senha do usuário: confere a atual, valida a nova, a confirmação e se é diferente da anterior. */
     public void alterarSenha(String email, String senhaAtual, String novaSenha, String confirmacao) {
         Usuario usuario = buscarPorEmail(email);
 
@@ -142,6 +156,7 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    /** Exige pelo menos 8 caracteres e nenhum espaço. */
     private void validarSenha(String senha) {
         if (senha == null || senha.length() < TAMANHO_MINIMO_SENHA) {
             throw new RegraNegocioException(
@@ -152,6 +167,7 @@ public class UsuarioService {
             throw new RegraNegocioException("A senha não pode conter espaços.");
         }
     }
+    /** O administrador define uma nova senha para o usuário de um membro. */
     public void redefinirSenha(Long membroId, String novaSenha) {
         Usuario usuario = buscarPorMembro(membroId);
         validarSenha(novaSenha);

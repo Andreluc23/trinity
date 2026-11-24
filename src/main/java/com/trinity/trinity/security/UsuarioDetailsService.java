@@ -23,6 +23,7 @@ public class UsuarioDetailsService implements UserDetailsService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /** Carrega o usuário pelo e-mail para o Spring Security; contas inativas ficam desabilitadas. */
     @Override
     public UserDetails loadUserByUsername(String email) {
         Usuario usuario = usuarioRepository.findByMembro_EmailIgnoreCase(email.trim())
@@ -37,6 +38,7 @@ public class UsuarioDetailsService implements UserDetailsService {
                 .build();
     }
 
+    /** Converte os campos de permissão do usuário na lista de permissões do Spring. */
     private List<GrantedAuthority> permissoes(Usuario usuario) {
         List<GrantedAuthority> lista = new ArrayList<>();
         lista.add(new SimpleGrantedAuthority("ROLE_MEMBRO"));
@@ -53,6 +55,7 @@ public class UsuarioDetailsService implements UserDetailsService {
         return lista;
     }
 
+    /** Acrescenta a permissão à lista somente quando a condição é verdadeira. */
     private void adicionarSe(List<GrantedAuthority> lista, boolean condicao, String permissao) {
         if (condicao) {
             lista.add(new SimpleGrantedAuthority(permissao));

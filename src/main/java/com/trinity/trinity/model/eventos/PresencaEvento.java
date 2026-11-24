@@ -39,6 +39,7 @@ public class PresencaEvento {
         responder(resposta);
     }
 
+    /** Registra (ou troca) a resposta do membro e guarda o momento em que respondeu. */
     public void responder(RespostaPresenca resposta) {
         this.resposta = resposta;
         this.respondidaEm = LocalDateTime.now();

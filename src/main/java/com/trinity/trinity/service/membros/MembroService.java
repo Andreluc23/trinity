@@ -58,23 +58,28 @@ public class MembroService {
 
     // ---------- Consultas ----------
 
+    /** Busca um membro; se não existir, lança erro de recurso não encontrado. */
     public Membro buscarPorId(Long id) {
         return membroRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado"));
     }
 
+    /** Todos os membros, sem ordem definida. */
     public List<Membro> listarTodos() {
         return membroRepository.findAll();
     }
 
+    /** Todos os membros, em ordem alfabética. */
     public List<Membro> listarTodosPorNome() {
         return membroRepository.findAllByOrderByNomeCompletoAsc();
     }
 
+    /** Só os membros ativos, em ordem alfabética. */
     public List<Membro> listarAtivos() {
         return membroRepository.findByAtivoTrueOrderByNomeCompletoAsc();
     }
 
+    /** Busca paginada por nome, CPF ou telefone; CPF e telefone funcionam com ou sem pontuação. */
     public Page<Membro> buscar(String termo, int pagina) {
         Pageable pageable = PageRequest.of(pagina, MEMBROS_POR_PAGINA);
 
@@ -95,17 +100,21 @@ public class MembroService {
                 );
     }
 
+    /** Total de membros. */
     public long contarTodos()    {
         return membroRepository.count();
     }
 
+    /** Total de membros ativos. */
     public long contarAtivos() {
         return membroRepository.countByAtivo(true);
     }
 
+    /** Total de membros inativos. */
     public long contarInativos() {
         return membroRepository.countByAtivo(false);
     }
+    /** Total de membros que têm conta de acesso ao sistema. */
     public long contarComAcesso() {
         return usuarioRepository.count();
     }
@@ -120,6 +129,7 @@ public class MembroService {
 
     // ---------- Cadastro ----------
 
+    /** Valida e padroniza os dados (CPF, nascimento, telefone, CEP), confere duplicidade de CPF e e-mail e grava. */
     public Membro salvar(Membro membro) {
 
         // 1. Valida e padroniza os dados
@@ -176,12 +186,14 @@ public class MembroService {
 
     // ---------- Situação ----------
 
+    /** Reativa o membro. */
     public void ativar(Long id) {
         Membro membro = buscarPorId(id);
         membro.setAtivo(true);
         membroRepository.save(membro);
     }
 
+    /** Desativa o membro; recusa se ele for o único administrador ativo. */
     public void desativar(Long id) {
         Membro membro = buscarPorId(id);
 
@@ -235,6 +247,7 @@ public class MembroService {
 
     // ---------- Apoio ----------
 
+    /** Informa se o membro é o único administrador ativo do sistema. */
     private boolean ehUnicoAdministradorAtivo(Membro membro) {
         boolean ehAdministrador = usuarioRepository.findByMembroId(membro.getId())
                 .filter(usuario -> usuario.isAdmin() && usuario.isAtivo())

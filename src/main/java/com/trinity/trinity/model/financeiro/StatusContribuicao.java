@@ -17,6 +17,7 @@ public enum StatusContribuicao {
         return descricao;
     }
 
+    /** Informa se a contribuição ainda aguarda alguma ação (pagamento ou confirmação). */
     public boolean isPendente() {
         return this == AGUARDANDO_PAGAMENTO || this == AGUARDANDO_CONFIRMACAO;
     }

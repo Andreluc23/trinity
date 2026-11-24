@@ -27,11 +27,13 @@ public class UsuarioController {
         this.membroService = membroService;
     }
 
+    /** Redireciona para a lista de membros, onde os acessos são gerenciados. */
     @GetMapping
     public String listar() {
         return "redirect:/membros";
     }
 
+    /** Abre o formulário para criar o acesso de um membro; se ele já tem acesso, vai para as permissões. */
     @GetMapping("/criar-acesso/{id}")
     public String formularioCriarAcesso(
             @PathVariable("id") Long id,
@@ -46,6 +48,7 @@ public class UsuarioController {
         return "forms/criar-acesso-form";
     }
 
+    /** Cria o acesso do membro com uma senha provisória. */
     @PostMapping("/criar-acesso/{id}")
     public String criarAcesso(@PathVariable("id") Long id,
                               @RequestParam("senhaProvisoria") String senhaProvisoria,
@@ -61,6 +64,7 @@ public class UsuarioController {
         }
     }
 
+    /** Abre a tela de permissões do usuário de um membro. */
     @GetMapping("/permissoes/{id}")
     public String permissoes(
             @PathVariable("id") Long id,
@@ -74,6 +78,7 @@ public class UsuarioController {
         return "forms/permissoes-form";
     }
 
+    /** Salva as permissões; só copia os campos de permissão do formulário e protege o único administrador. */
     @PostMapping("/permissoes/{id}")
     public String salvarPermissoes(@PathVariable("id") Long id,
                                    @ModelAttribute Usuario formulario,
@@ -105,6 +110,7 @@ public class UsuarioController {
         redirectAttributes.addFlashAttribute("sucesso", "Permissões atualizadas.");
         return "redirect:/membros";
     }
+    /** Define uma nova senha provisória para o usuário de um membro. */
     @PostMapping("/redefinir-senha/{id}")
     public String redefinirSenha(@PathVariable("id") Long id,
                                  @RequestParam("novaSenha") String novaSenha,

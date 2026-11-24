@@ -29,6 +29,7 @@ public class AvisoController {
         this.leituraService = leituraService;
     }
 
+    /** Lista os avisos com paginação: quem gerencia vê todos, os demais só os ativos, e cada um vê quais já leu. */
     @GetMapping("/avisos")
     public String listarAvisos(@RequestParam(name = "pagina", defaultValue = "0") int pagina,
                                Authentication authentication,
@@ -50,18 +51,21 @@ public class AvisoController {
         return "avisos";
     }
 
+    /** Abre o formulário para cadastrar um aviso. */
     @GetMapping("/avisos/novo")
     public String novoAviso(Model model) {
         model.addAttribute("aviso", new Aviso());
         return "forms/aviso-form";
     }
 
+    /** Abre o formulário preenchido para editar um aviso. */
     @GetMapping("/avisos/editar/{id}")
     public String editarAviso(@PathVariable("id") Long id, Model model) {
         model.addAttribute("aviso", avisoService.buscarPorId(id));
         return "forms/aviso-form";
     }
 
+    /** Grava o aviso (novo ou editado) e volta para a lista. */
     @PostMapping("/avisos")
     public String salvarAviso(Aviso aviso, RedirectAttributes redirectAttributes) {
         avisoService.salvar(aviso);
@@ -69,6 +73,7 @@ public class AvisoController {
         return "redirect:/avisos";
     }
 
+    /** Desativa o aviso, escondendo-o dos membros sem apagá-lo. */
     @PostMapping("/avisos/desativar/{id}")
     public String desativarAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         avisoService.desativar(id);
@@ -76,6 +81,7 @@ public class AvisoController {
         return "redirect:/avisos";
     }
 
+    /** Reativa um aviso desativado. */
     @PostMapping("/avisos/ativar/{id}")
     public String ativarAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         avisoService.ativar(id);
@@ -85,6 +91,7 @@ public class AvisoController {
 
     // ---------- Leitura ----------
 
+    /** Registra que o membro logado leu o aviso. */
     @PostMapping("/avisos/{id}/leitura")
     public String confirmarLeitura(@PathVariable("id") Long id,
                                    Authentication authentication,
@@ -97,6 +104,7 @@ public class AvisoController {
         return "redirect:/avisos";
     }
 
+    /** Mostra quem já leu o aviso e quem ainda não leu. */
     @GetMapping("/avisos/{id}/leituras")
     public String listarLeituras(@PathVariable("id") Long id, Model model) {
         model.addAttribute("aviso", avisoService.buscarPorId(id));
@@ -104,6 +112,7 @@ public class AvisoController {
         model.addAttribute("naoLeram", leituraService.listarQuemNaoLeu(id));
         return "aviso-leituras";
     }
+    /** Exclui o aviso junto com as confirmações de leitura dele. */
     @PostMapping("/avisos/excluir/{id}")
     public String excluirAviso(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         avisoService.excluir(id);

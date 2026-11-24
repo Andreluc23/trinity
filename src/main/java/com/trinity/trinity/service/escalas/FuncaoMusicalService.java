@@ -22,19 +22,23 @@ public class FuncaoMusicalService {
         this.escalaItemRepository = escalaItemRepository;
     }
 
+    /** Todas as funções musicais, em ordem alfabética. */
     public List<FuncaoMusical> listarTodas() {
         return funcaoMusicalRepository.findAllByOrderByNomeAsc();
     }
 
+    /** Só as funções ativas, em ordem alfabética. */
     public List<FuncaoMusical> listarAtivas() {
         return funcaoMusicalRepository.findByAtivoTrueOrderByNomeAsc();
     }
 
+    /** Busca uma função; se não existir, lança erro de recurso não encontrado. */
     public FuncaoMusical buscarPorId(Long id) {
         return funcaoMusicalRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Função musical não encontrada"));
     }
 
+    /** Salva a função, exigindo nome e impedindo nomes repetidos. */
     public FuncaoMusical salvar(FuncaoMusical funcaoMusical) {
         if (funcaoMusical.getNome() == null || funcaoMusical.getNome().isBlank()) {
             throw new RegraNegocioException("Informe o nome da função.");
@@ -54,14 +58,17 @@ public class FuncaoMusicalService {
         return funcaoMusicalRepository.save(funcaoMusical);
     }
 
+    /** Marca a função como inativa. */
     public void desativar(Long id) {
         alterarStatus(id, false);
     }
 
+    /** Marca a função como ativa. */
     public void ativar(Long id) {
         alterarStatus(id, true);
     }
 
+    /** Exclui a função, a menos que já tenha sido usada em alguma escala. */
     public void excluir(Long id) {
         FuncaoMusical funcao = buscarPorId(id);
 
@@ -72,6 +79,7 @@ public class FuncaoMusicalService {
 
         funcaoMusicalRepository.delete(funcao);
     }
+    /** Troca o status ativo/inativo da função. */
     private void alterarStatus(Long id, boolean ativo) {
         FuncaoMusical funcao = buscarPorId(id);
         funcao.setAtivo(ativo);

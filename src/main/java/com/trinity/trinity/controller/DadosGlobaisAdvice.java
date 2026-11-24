@@ -23,6 +23,10 @@ public class DadosGlobaisAdvice {
         this.contribuicaoService = contribuicaoService;
     }
 
+    /**
+     * Quantidade de contribuições aguardando confirmação, para o selo do menu (só para quem gerencia o
+     * financeiro).
+     */
     @ModelAttribute("contribuicoesAguardando")
     public long contribuicoesAguardando(Authentication authentication) {
         if (authentication == null || !gerenciaFinanceiro(authentication)) {
@@ -31,6 +35,7 @@ public class DadosGlobaisAdvice {
         return contribuicaoService.contarAguardandoConfirmacao();
     }
 
+    /** Informa se o usuário logado é administrador ou tem a permissão de gerenciar o financeiro. */
     private boolean gerenciaFinanceiro(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

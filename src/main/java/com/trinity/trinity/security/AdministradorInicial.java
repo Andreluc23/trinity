@@ -39,6 +39,10 @@ public class AdministradorInicial implements CommandLineRunner {
         this.senha = senha;
     }
 
+    /**
+     * Na inicialização, cria o primeiro administrador a partir das variáveis de ambiente, se ainda não existir
+     * nenhum.
+     */
     @Override
     @Transactional
     public void run(String... args) {
@@ -65,6 +69,7 @@ public class AdministradorInicial implements CommandLineRunner {
         log.warn("Administrador inicial configurado: {}", email);
     }
 
+    /** Cria o membro técnico do administrador inicial (CPF e telefone fictícios). */
     private Membro criarMembro() {
         Membro membro = new Membro();
         membro.setNomeCompleto("Administrador do Sistema");
@@ -75,6 +80,7 @@ public class AdministradorInicial implements CommandLineRunner {
         return membroRepository.save(membro);
     }
 
+    /** Cria o usuário do administrador, com a senha informada na variável de ambiente já criptografada. */
     private Usuario novoUsuario(Membro membro) {
         Usuario usuario = new Usuario();
         usuario.setMembro(membro);

@@ -30,6 +30,10 @@ public class EventoController {
         this.presencaService = presencaService;
     }
 
+    /**
+     * Lista os eventos com paginação: quem gerencia vê todos (com contagem de presenças), os demais só os
+     * futuros.
+     */
     @GetMapping("/eventos")
     public String listarEventos(@RequestParam(name = "pagina", defaultValue = "0") int pagina,
                                 Authentication authentication,
@@ -51,18 +55,21 @@ public class EventoController {
         return "eventos";
     }
 
+    /** Abre o formulário para cadastrar um evento. */
     @GetMapping("/eventos/novo")
     public String novoEvento(Model model) {
         model.addAttribute("evento", new Evento());
         return "forms/evento-form";
     }
 
+    /** Abre o formulário preenchido para editar um evento. */
     @GetMapping("/eventos/editar/{id}")
     public String editarEvento(@PathVariable("id") Long id, Model model) {
         model.addAttribute("evento", eventoService.buscarPorId(id));
         return "forms/evento-form";
     }
 
+    /** Grava o evento (novo ou editado) e volta para a lista. */
     @PostMapping("/eventos")
     public String salvarEvento(Evento evento, RedirectAttributes redirectAttributes) {
         eventoService.salvar(evento);
@@ -70,6 +77,7 @@ public class EventoController {
         return "redirect:/eventos";
     }
 
+    /** Cancela o evento, escondendo-o dos membros sem apagá-lo. */
     @PostMapping("/eventos/cancelar/{id}")
     public String cancelarEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         eventoService.cancelar(id);
@@ -77,6 +85,7 @@ public class EventoController {
         return "redirect:/eventos";
     }
 
+    /** Reativa um evento cancelado. */
     @PostMapping("/eventos/ativar/{id}")
     public String ativarEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         eventoService.ativar(id);
@@ -86,6 +95,7 @@ public class EventoController {
 
     // ---------- Presença ----------
 
+    /** Registra se o membro logado vai ou não vai ao evento. */
     @PostMapping("/eventos/{id}/presenca")
     public String responderPresenca(@PathVariable("id") Long id,
                                     @RequestParam(name = "resposta", required = false) RespostaPresenca resposta,
@@ -100,12 +110,14 @@ public class EventoController {
         return "redirect:/eventos";
     }
 
+    /** Mostra quem confirmou e quem recusou presença no evento. */
     @GetMapping("/eventos/{id}/presencas")
     public String listarPresencas(@PathVariable("id") Long id, Model model) {
         model.addAttribute("evento", eventoService.buscarPorId(id));
         model.addAttribute("presencas", presencaService.listarDoEvento(id));
         return "evento-presencas";
     }
+    /** Exclui o evento junto com as respostas de presença. */
     @PostMapping("/eventos/excluir/{id}")
     public String excluirEvento(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         eventoService.excluir(id);

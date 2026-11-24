@@ -48,15 +48,18 @@ public class EscalaService {
      */
 
 
+    /** Escalas em páginas de 12: as próximas primeiro (da mais perto) e depois as passadas (da mais recente). */
     public Page<Escala> listarTodas(int pagina) {
         return escalaRepository.listarProximasPrimeiro(LocalDate.now(), PageRequest.of(pagina, ITENS_POR_PAGINA));
     }
 
+    /** Busca uma escala; se não existir, lança erro de recurso não encontrado. */
     public Escala buscarPorId(Long id) {
         return escalaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Escala não encontrada"));
     }
 
+    /** Integrantes de uma escala, em ordem alfabética de função. */
     public List<EscalaItem> listarIntegrantes(Long escalaId) {
         return escalaItemRepository.findByEscalaIdOrderByFuncaoMusicalNomeAsc(escalaId);
     }
@@ -79,14 +82,17 @@ public class EscalaService {
         return escalaSalva;
     }
 
+    /** Marca a escala como inativa. */
     public void desativar(Long id) {
         alterarStatus(id, false);
     }
 
+    /** Marca a escala como ativa. */
     public void ativar(Long id) {
         alterarStatus(id, true);
     }
 
+    /** Exclui a escala e os seus integrantes, na mesma transação. */
     @Transactional
     public void excluir(Long id) {
         Escala escala = buscarPorId(id);
@@ -94,12 +100,14 @@ public class EscalaService {
         escalaRepository.delete(escala);
     }
 
+    /** Troca o status ativo/inativo da escala. */
     private void alterarStatus(Long id, boolean ativo) {
         Escala escala = buscarPorId(id);
         escala.setAtivo(ativo);
         escalaRepository.save(escala);
     }
 
+    /** Confere título, data e horário da escala e remove espaços do título. */
     private void validarDados(Escala escala) {
         if (escala.getTitulo() == null || escala.getTitulo().isBlank()) {
             throw new RegraNegocioException("Informe o título da escala.");
@@ -113,6 +121,7 @@ public class EscalaService {
         escala.setTitulo(escala.getTitulo().trim());
     }
 
+    /** Valida os integrantes (sem repetir membro nem função, ambos ativos) e monta os itens da escala. */
     private List<EscalaItem> montarItens(List<IntegranteEscala> integrantes) {
         Set<Long> membrosUsados = new HashSet<>();
         Set<Long> funcoesUsadas = new HashSet<>();

@@ -31,6 +31,7 @@ public class LeituraService {
         this.usuarioService = usuarioService;
     }
 
+    /** Registra a leitura do aviso pelo membro; se já estava registrada, não faz nada. */
     public void confirmar(Long avisoId, String emailMembro) {
         Aviso aviso = avisoService.buscarPorId(avisoId);
 
@@ -70,6 +71,7 @@ public class LeituraService {
                 .collect(Collectors.groupingBy(leitura -> leitura.getAviso().getId(), Collectors.counting()));
     }
 
+    /** Leituras de um aviso, da mais antiga para a mais recente. */
     public List<LeituraAviso> listarDoAviso(Long avisoId) {
         return leituraRepository.findByAvisoIdOrderByLidoEmAsc(avisoId);
     }
@@ -97,6 +99,7 @@ public class LeituraService {
                 .toList();
     }
 
+    /** Quantos membros poderiam ler os avisos (ativos e com conta ativa). */
     public long contarLeitoresPossiveis() {
         return membrosComAcesso().size();
     }

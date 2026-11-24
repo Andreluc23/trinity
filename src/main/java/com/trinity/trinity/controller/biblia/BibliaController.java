@@ -26,6 +26,7 @@ public class BibliaController {
         this.bibliaService = bibliaService;
     }
 
+    /** Lista os livros da Bíblia separados por testamento e categoria. */
     @GetMapping
     public String livros(Model model) {
         model.addAttribute("antigoTestamento", agruparPorCategoria("AT"));
@@ -33,18 +34,21 @@ public class BibliaController {
         return "biblia";
     }
 
+    /** Filtra os livros de um testamento (AT ou NT) e os agrupa por categoria, mantendo a ordem. */
     private Map<String, List<LivroBiblia>> agruparPorCategoria(String testamento) {
         return bibliaService.listarLivros().stream()
                 .filter(livro -> livro.testamento().equals(testamento))
                 .collect(Collectors.groupingBy(LivroBiblia::categoria, LinkedHashMap::new, Collectors.toList()));
     }
 
+    /** Mostra os capítulos de um livro. */
     @GetMapping("/{livro}")
     public String capitulos(@PathVariable("livro") int livro, Model model) {
         model.addAttribute("livro", bibliaService.buscarLivro(livro));
         return "biblia-livro";
     }
 
+    /** Exibe os versículos de um capítulo, com os links para o capítulo anterior e o próximo. */
     @GetMapping("/{livro}/{capitulo}")
     public String leitura(@PathVariable("livro") int livro,
                           @PathVariable("capitulo") int capitulo,
@@ -56,6 +60,7 @@ public class BibliaController {
         model.addAttribute("proximo", bibliaService.proximoCapitulo(livro, capitulo));
         return "biblia-capitulo";
     }
+    /** Busca um texto nos versículos; mostra o erro quando o termo é curto demais. */
     @GetMapping("/busca")
     public String busca(@RequestParam(name = "termo", required = false) String termo, Model model) {
         model.addAttribute("termo", termo);

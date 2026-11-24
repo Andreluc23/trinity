@@ -19,10 +19,15 @@ public class EmissorDeTokens {
         this.refreshTokenService = refreshTokenService;
     }
 
+    /** Depois do login, cria o refresh token e grava os dois cookies (JWT e refresh). */
     public void emitirNoLogin(String email, HttpServletRequest request, HttpServletResponse response) {
         gravarCookies(email, refreshTokenService.criar(email), request, response);
     }
 
+    /**
+     * Usa o refresh token do cookie para emitir um novo par de cookies; devolve o e-mail do usuário, se der
+     * certo.
+     */
     public Optional<String> renovar(HttpServletRequest request, HttpServletResponse response) {
         return JwtCookie.ler(request, JwtCookie.REFRESH)
                 .flatMap(refreshTokenService::renovar)
@@ -33,6 +38,7 @@ public class EmissorDeTokens {
                 });
     }
 
+    /** Gera um novo JWT e grava os cookies de acesso e de refresh na resposta. */
     private void gravarCookies(String email, RefreshToken refresh,
                                HttpServletRequest request, HttpServletResponse response) {
         boolean seguro = request.isSecure();
@@ -42,6 +48,7 @@ public class EmissorDeTokens {
         response.addCookie(JwtCookie.criar(JwtCookie.REFRESH, refresh.getToken(),
                 refreshTokenService.getValidade(), seguro));
     }
+    /** No logout, apaga do banco o refresh token que veio no cookie. */
     public void revogar(HttpServletRequest request) {
         JwtCookie.ler(request, JwtCookie.REFRESH)
                 .ifPresent(refreshTokenService::revogar);

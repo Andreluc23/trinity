@@ -34,6 +34,7 @@ public class EscalaController {
         this.funcaoMusicalService = funcaoMusicalService;
     }
 
+    /** Lista as escalas com paginação (próximas primeiro) e as funções musicais para o modal de funções. */
     @GetMapping
     public String listar(@RequestParam(name = "pagina", defaultValue = "0") int pagina, Model model) {
         Page<Escala> paginaEscalas = escalaService.listarTodas(pagina);
@@ -45,6 +46,7 @@ public class EscalaController {
         model.addAttribute("novaFuncao", new FuncaoMusical());
         return "escalas";
     }
+    /** Mostra os dados de uma escala e os seus integrantes (somente leitura). */
     @GetMapping("/{id}")
     public String detalhes(@PathVariable("id") Long id, Model model) {
         model.addAttribute("escala", escalaService.buscarPorId(id));
@@ -52,6 +54,7 @@ public class EscalaController {
         return "escala-detalhes";
     }
 
+    /** Abre o formulário de nova escala; se voltou de um erro, mantém o que foi digitado. */
     @GetMapping("/nova")
     public String nova(Model model) {
         // Se voltou de um erro, a escala e os integrantes já vieram pelo redirecionamento
@@ -62,6 +65,7 @@ public class EscalaController {
         return exibirFormulario(model);
     }
 
+    /** Abre o formulário de edição com os integrantes atuais; se voltou de um erro, mantém o que foi digitado. */
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
         // Se voltou de um erro, mantém o que o usuário digitou em vez de buscar no banco
@@ -76,6 +80,7 @@ public class EscalaController {
         return exibirFormulario(model);
     }
 
+    /** Grava a escala com os integrantes; em caso de erro de regra, volta ao formulário com o que foi digitado. */
     @PostMapping
     public String salvar(@ModelAttribute("escala") Escala escala,
                          @RequestParam(name = "membroIds", required = false) List<Long> membroIds,
@@ -100,6 +105,7 @@ public class EscalaController {
         }
     }
 
+    /** Desativa a escala. */
     @PostMapping("/desativar/{id}")
     public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         escalaService.desativar(id);
@@ -107,6 +113,7 @@ public class EscalaController {
         return "redirect:/escalas";
     }
 
+    /** Reativa a escala. */
     @PostMapping("/ativar/{id}")
     public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         escalaService.ativar(id);
@@ -114,6 +121,7 @@ public class EscalaController {
         return "redirect:/escalas";
     }
 
+    /** Exclui a escala e os seus integrantes. */
     @PostMapping("/excluir/{id}")
     public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         escalaService.excluir(id);
@@ -121,6 +129,7 @@ public class EscalaController {
         return "redirect:/escalas";
     }
 
+    /** Carrega os membros ativos e as funções ativas e abre o formulário de escala. */
     private String exibirFormulario(Model model) {
         model.addAttribute("membros", membroService.listarAtivos());
         model.addAttribute("funcoes", funcaoMusicalService.listarAtivas());

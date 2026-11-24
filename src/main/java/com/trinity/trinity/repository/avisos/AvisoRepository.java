@@ -11,9 +11,12 @@ import java.util.List;
 
 @Repository
 public interface AvisoRepository extends JpaRepository<Aviso, Long> {
+    /** Os 5 avisos ativos mais recentes (card do dashboard). */
     List<Aviso> findTop5ByAtivoTrueOrderByDataPublicacaoDesc();
 
+    /** Todos os avisos, do mais recente para o mais antigo, paginados. */
     Page<Aviso> findAllByOrderByDataPublicacaoDesc(Pageable pageable);
 
+    /** Só os avisos ativos, do mais recente para o mais antigo, paginados. */
     Page<Aviso> findByAtivoTrueOrderByDataPublicacaoDesc(Pageable pageable);
 }

@@ -34,6 +34,7 @@ public class RelatorioController {
         this.membroService = membroService;
     }
 
+    /** Relatório financeiro do período, com filtros; mostra o erro se as datas forem inválidas. */
     @GetMapping("/financeiro")
     public String financeiro(@ModelAttribute("filtro") FiltroRelatorioFinanceiro filtro, Model model) {
         model.addAttribute("tipos", TipoLancamento.values());
@@ -50,6 +51,7 @@ public class RelatorioController {
         return "relatorio-financeiro";
     }
 
+    /** Monta a lista de filtros aplicados no relatório financeiro, para aparecer na impressão. */
     private List<String> descreverFiltros(FiltroRelatorioFinanceiro filtro) {
         List<String> descricoes = new ArrayList<>();
 
@@ -68,11 +70,13 @@ public class RelatorioController {
 
         return descricoes;
     }
+    /** Relatório de membros com filtros de situação, acesso e nome. */
     @GetMapping("/membros")
     public String membros(@ModelAttribute("filtro") FiltroRelatorioMembros filtro, Model model) {
         model.addAttribute("relatorio", relatorioService.gerarMembros(filtro));
         return "relatorio-membros";
     }
+    /** Relatório de patrimônio com filtros e totais. */
     @GetMapping("/patrimonio")
     public String patrimonio(@ModelAttribute("filtro") FiltroRelatorioPatrimonio filtro, Model model) {
         model.addAttribute("relatorio", relatorioService.gerarPatrimonio(filtro));
@@ -82,6 +86,7 @@ public class RelatorioController {
         return "relatorio-patrimonio";
     }
 
+    /** Monta a lista de filtros aplicados no relatório de patrimônio, para aparecer na impressão. */
     private List<String> descreverFiltrosPatrimonio(FiltroRelatorioPatrimonio filtro) {
         List<String> descricoes = new ArrayList<>();
 

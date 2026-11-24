@@ -24,12 +24,14 @@ public class FuncaoMusicalController {
         this.funcaoMusicalService = funcaoMusicalService;
     }
 
+    /** Abre o formulário de edição de uma função musical. */
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") Long id, Model model) {
         model.addAttribute("funcaoMusical", funcaoMusicalService.buscarPorId(id));
         return FORMULARIO;
     }
 
+    /** Salva a função; em erro, uma nova volta ao modal de funções e uma edição volta ao formulário. */
     @PostMapping
     public String salvar(@ModelAttribute("funcaoMusical") FuncaoMusical funcaoMusical,
                          Model model,
@@ -47,17 +49,20 @@ public class FuncaoMusicalController {
         return voltarComModalAberto(redirectAttributes);
     }
 
+    /** Desativa a função musical. */
     @PostMapping("/desativar/{id}")
     public String desativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         funcaoMusicalService.desativar(id);
         return voltarComModalAberto(redirectAttributes);
     }
 
+    /** Reativa a função musical. */
     @PostMapping("/ativar/{id}")
     public String ativar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         funcaoMusicalService.ativar(id);
         return voltarComModalAberto(redirectAttributes);
     }
+    /** Exclui a função, desde que nunca tenha sido usada em uma escala. */
     @PostMapping("/excluir/{id}")
     public String excluir(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -69,10 +74,12 @@ public class FuncaoMusicalController {
         return voltarComModalAberto(redirectAttributes);
     }
 
+    /** Volta para a tela de escalas com o modal de funções musicais já aberto. */
     private String voltarComModalAberto(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("abrirFuncoes", true);
         return "redirect:/escalas";
     }
+    /** Cria uma função musical pelo formulário de escala (resposta JSON, sem recarregar a página). */
     @PostMapping("/rapida")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> criarRapida(@RequestParam(name = "nome", required = false) String nome) {

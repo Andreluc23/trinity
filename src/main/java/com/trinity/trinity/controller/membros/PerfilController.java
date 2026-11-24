@@ -21,11 +21,13 @@ public class PerfilController {
         this.usuarioService = usuarioService;
     }
 
+    /** Mostra o perfil do membro logado. */
     @GetMapping
     public String exibir(Authentication authentication, Model model) {
         model.addAttribute("membro", usuarioService.buscarPorEmail(authentication.getName()).getMembro());
         return "perfil";
     }
+    /** Troca a senha do usuário logado, exigindo a senha atual e a confirmação da nova. */
     @PostMapping("/senha")
     public String alterarSenha(Authentication authentication,
                                @RequestParam("senhaAtual") String senhaAtual,
